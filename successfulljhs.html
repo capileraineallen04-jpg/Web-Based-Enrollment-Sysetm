@@ -1,0 +1,1191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Enrollment Successful | EnrollEase: THS</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    :root {
+      --navy: #071b49;
+      --blue: #1456c0;
+      --light-blue: #eaf2ff;
+      --green: #16834a;
+      --red: #c62828;
+      --white: #ffffff;
+      --text: #263449;
+      --muted: #697789;
+      --border: #dce5f1;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(5,24,65,.83), rgba(8,38,91,.88)),
+        url("TaalHighSchool.png") center / cover fixed no-repeat;
+      padding: 25px 16px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 920px;
+      margin: auto;
+    }
+
+    .school-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      color: white;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .school-logo {
+      width: 75px;
+      height: 75px;
+      object-fit: contain;
+      background: white;
+      border-radius: 50%;
+      padding: 5px;
+    }
+
+    .school-title h1 {
+      font-size: clamp(19px, 3vw, 27px);
+      font-weight: 800;
+    }
+
+    .school-title p {
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .main-card {
+      background: white;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+
+    .success-banner {
+      text-align: center;
+      padding: 35px 25px 30px;
+      background: linear-gradient(135deg, #edf9f1, #fff);
+      border-bottom: 1px solid #e2eee6;
+    }
+
+    .success-icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #d9f5e3;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 43px;
+      font-weight: 700;
+      margin: 0 auto 17px;
+    }
+
+    .success-banner h2 {
+      color: var(--green);
+      font-size: clamp(23px, 4vw, 31px);
+      margin-bottom: 8px;
+    }
+
+    .success-banner p {
+      max-width: 570px;
+      margin: auto;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .registration-box {
+      background: var(--light-blue);
+      border: 1px solid #cbdcff;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .registration-box .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #526783;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .registration-id {
+      color: var(--navy);
+      font-size: clamp(23px, 5vw, 32px);
+      font-weight: 800;
+      letter-spacing: 1px;
+      overflow-wrap: anywhere;
+      margin: 8px 0 14px;
+    }
+
+    .copy-button {
+      background: white;
+      border: 1px solid #c4d5f1;
+      border-radius: 8px;
+      padding: 9px 16px;
+      color: var(--blue);
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .action-button {
+      border: none;
+      border-radius: 10px;
+      min-height: 49px;
+      padding: 13px 15px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .action-button:hover {
+      filter: brightness(.96);
+    }
+
+    .primary-button {
+      background: var(--blue);
+      color: white;
+    }
+
+    .secondary-button {
+      background: #eaf1fc;
+      color: var(--navy);
+      border: 1px solid #d7e4f8;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .status-message {
+      display: none;
+      padding: 13px 15px;
+      border-radius: 9px;
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 22px;
+      overflow-wrap: anywhere;
+    }
+
+    .status-message.info,
+    .status-message.error,
+    .status-message.success {
+      display: block;
+    }
+
+    .status-message.info {
+      background: #edf4ff;
+      color: #174a91;
+      border: 1px solid #d3e3ff;
+    }
+
+    .status-message.error {
+      background: #fff0f0;
+      color: var(--red);
+      border: 1px solid #ffd5d5;
+    }
+
+    .status-message.success {
+      background: #eaf8ef;
+      color: #176d3d;
+      border: 1px solid #ccebd7;
+    }
+
+    .record-section {
+      display: none;
+      margin-top: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 25px;
+    }
+
+    .record-section.visible {
+      display: block;
+    }
+
+    .record-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .record-item {
+      min-width: 0;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fbfcff;
+    }
+
+    .record-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .record-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .notice {
+      background: #fff8e8;
+      color: #77520c;
+      border: 1px solid #f3e1b5;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 12px;
+      line-height: 1.8;
+      margin-top: 22px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 22px 10px 5px;
+      color: white;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+.back-menu-container {
+      margin-bottom: 20px;
+    }
+
+    .back-menu-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 11px 20px;
+      background: white;
+      color: var(--navy);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease;
+    }
+
+    .back-menu-button:hover {
+      background: var(--light-blue);
+      border-color: var(--blue);
+    }
+
+    .back-menu-button:focus-visible {
+      outline: 3px solid var(--blue);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 18px 10px;
+        background-attachment: scroll;
+      }
+
+      .school-header {
+        gap: 10px;
+      }
+
+      .school-logo {
+        width: 48px;
+        height: 48px;
+      }
+
+      .school-title p {
+        font-size: 10px;
+      }
+
+      .content {
+        padding: 20px 16px;
+      }
+
+      .success-banner {
+        padding: 28px 17px;
+      }
+
+      .button-group,
+      .record-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<main class="page">
+    <div class="back-menu-container">
+    <a href="index.html" class="back-menu-button">
+      <span aria-hidden="true">←</span>
+      <span>Back to Menu</span>
+    </a>
+  </div>
+
+  <header class="school-header">
+    <img src="DepED-Logo-500x281.png" alt="Department of Education logo" class="school-logo">
+    <div class="school-title">
+      <h1>TAAL HIGH SCHOOL</h1>
+      <p>EnrollEase | Online Enrollment System</p>
+    </div>
+    <img src="taal-removebg-preview.png" alt="Taal High School logo" class="school-logo">
+  </header>
+
+  <div class="main-card">
+    <section class="success-banner">
+      <div class="success-icon" aria-hidden="true">✓</div>
+      <h2>Enrollment Successful!</h2>
+      <p>
+        Your enrollment information has been submitted successfully.
+        Keep your Registration ID to retrieve your enrollment record
+        and generate your enrollment PDF.
+      </p>
+    </section>
+
+    <div class="content">
+      <section class="registration-box">
+        <p class="label">Your Registration ID</p>
+        <div class="registration-id" id="registrationID">Loading...</div>
+        <button class="copy-button" id="copyButton" type="button"
+          onclick="copyRegistrationID()">Copy Registration ID</button>
+      </section>
+
+      <h3 class="section-title">Manage Your Enrollment</h3>
+      <p class="section-description">
+        Retrieve your saved enrollment details or download a DepEd-inspired
+        enrollment record in PDF format.
+      </p>
+
+      <div class="button-group">
+        <button class="action-button primary-button" id="checkButton"
+          type="button" onclick="checkEnrollmentRecord()">
+          Check Enrollment Record
+        </button>
+
+        <button class="action-button secondary-button" id="downloadButton"
+          type="button" onclick="downloadCOR()">
+          Download Enrollment PDF
+        </button>
+      </div>
+
+      <div class="status-message" id="statusMessage"
+        role="status" aria-live="polite"></div>
+
+      <section class="record-section" id="recordSection">
+        <h3 class="section-title">Enrollment Record</h3>
+        <p class="section-description">
+          Review the information retrieved from the enrollment database.
+        </p>
+        <div class="record-grid" id="recordGrid"></div>
+        <div class="notice">
+          <strong>Reminder:</strong> Keep your Registration ID private.
+          The generated PDF is a system-generated copy and is subject to
+          verification by the school.
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>EnrollEase | Taal High School</p>
+    <p>Web-Based Enrollment System</p>
+  </footer>
+</main>
+
+<script>
+"use strict";
+
+// ============================================================
+// FIREBASE CONFIGURATION
+// ============================================================
+
+const FIREBASE_URL =
+  "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+const studentID = localStorage.getItem("studentID");
+const studentDatabase = localStorage.getItem("studentDatabase");
+
+let studentRecord = null;
+
+const registrationIDElement = document.getElementById("registrationID");
+const statusMessage = document.getElementById("statusMessage");
+const recordSection = document.getElementById("recordSection");
+const recordGrid = document.getElementById("recordGrid");
+const checkButton = document.getElementById("checkButton");
+const downloadButton = document.getElementById("downloadButton");
+const copyButton = document.getElementById("copyButton");
+
+// ============================================================
+// PAGE INITIALIZATION
+// ============================================================
+
+function initializePage() {
+  if (!studentID) {
+    registrationIDElement.textContent = "NOT AVAILABLE";
+    showStatus(
+      "Your Registration ID could not be found in this browser. " +
+      "Please contact the school for assistance.",
+      "error"
+    );
+
+    checkButton.disabled = true;
+    downloadButton.disabled = true;
+    copyButton.disabled = true;
+    return;
+  }
+
+  registrationIDElement.textContent = studentID;
+
+  if (!studentDatabase) {
+    showStatus(
+      "Your Registration ID was found, but the database location is missing.",
+      "error"
+    );
+
+    checkButton.disabled = true;
+    downloadButton.disabled = true;
+  }
+}
+
+function showStatus(message, type = "info") {
+  statusMessage.textContent = message;
+  statusMessage.className = "status-message " + type;
+}
+
+// ============================================================
+// COPY REGISTRATION ID
+// ============================================================
+
+async function copyRegistrationID() {
+  if (!studentID) {
+    showStatus("No Registration ID is available to copy.", "error");
+    return;
+  }
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(studentID);
+    } else {
+      const input = document.createElement("textarea");
+      input.value = studentID;
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.select();
+
+      const copied = document.execCommand("copy");
+      input.remove();
+
+      if (!copied) throw new Error("Copy command failed.");
+    }
+
+    showStatus("Registration ID copied successfully.", "success");
+  } catch (error) {
+    showStatus(
+      "Copy was unavailable. Please select and copy your Registration ID manually.",
+      "error"
+    );
+  }
+}
+
+// ============================================================
+// FIREBASE RECORD LOOKUP
+// ============================================================
+
+async function checkEnrollmentRecord() {
+  if (!studentID || !studentDatabase) {
+    showStatus("Registration ID or database location is missing.", "error");
+    return;
+  }
+
+  checkButton.disabled = true;
+  checkButton.textContent = "Checking Record...";
+
+  showStatus("Retrieving your enrollment record. Please wait...", "info");
+
+  try {
+    const safeDatabase = encodeURIComponent(studentDatabase);
+    const safeStudentID = encodeURIComponent(studentID);
+
+    const url =
+      `${FIREBASE_URL}/${safeDatabase}/${safeStudentID}.json`;
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Firebase request failed: " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!data) {
+      studentRecord = null;
+      recordSection.classList.remove("visible");
+
+      showStatus(
+        "No enrollment record was found at the saved database path. " +
+        "Check your Registration ID or contact the school.",
+        "error"
+      );
+      return;
+    }
+
+    studentRecord = data;
+    displayEnrollmentRecord(data);
+
+    showStatus("Enrollment record retrieved successfully.", "success");
+
+  } catch (error) {
+    console.error("Enrollment lookup error:", error);
+
+    showStatus(
+      "Unable to retrieve your record. Check your connection and Firebase database rules.",
+      "error"
+    );
+
+  } finally {
+    checkButton.disabled = false;
+    checkButton.textContent = "Check Enrollment Record";
+  }
+}
+
+// ============================================================
+// DATA HELPERS
+// ============================================================
+
+function getValue(object, key) {
+  const value = object?.[key];
+
+  return value === null || value === undefined ||
+    String(value).trim() === ""
+    ? ""
+    : String(value).trim();
+}
+
+function displayValue(value) {
+  return value === null || value === undefined ||
+    String(value).trim() === ""
+    ? "Not provided"
+    : String(value).trim();
+}
+
+function formatAddress(address) {
+  if (!address) return "";
+
+  return [
+    address["1-HOUSE-NO"],
+    address["2-STREET"],
+    address["3-BARANGAY"],
+    address["4-CITY"],
+    address["5-PROVINCE"],
+    address["6-ZIP-CODE"]
+  ]
+    .filter(value => value !== null && value !== undefined &&
+      String(value).trim() !== "")
+    .map(value => String(value).trim())
+    .join(", ");
+}
+
+// ============================================================
+// DISPLAY RECORD ON THE WEB PAGE
+// ============================================================
+
+function displayEnrollmentRecord(data) {
+  recordGrid.replaceChildren();
+
+  const learners = data["1-LEARNERS-INFORMATION"] || {};
+  const personal = data["2-PERSONAL-INFORMATION"] || {};
+  const current = data["3-CURRENT-ADDRESS"] || {};
+  const permanent = data["4-PERMANENT-ADDRESS"] || {};
+  const parents = data["5-PARENTS"] || {};
+  const optional = data["6-OPTIONAL"] || {};
+  const transfer = data["7-BALIK-ARAL-TRANSFER"] || {};
+
+  const items = [
+    ["Registration ID", data["9-REGISTRATION-ID"] || studentID],
+    ["School Year", learners["1-SCHOOL-YEAR"]],
+    ["Grade Level", learners["2-GRADE-LEVEL"]],
+    ["With LRN", learners["3-WITH-LRN"]],
+    ["LRN", learners["5-LRN"]],
+    ["Semester", learners["6-SEMESTER"]],
+    ["Track", learners["7-TRACK"]],
+    ["Strand / Cluster", learners["8-STRAND"] || learners["8-CLUSTER"]],
+
+    ["Last Name", personal["2-LAST-NAME"]],
+    ["First Name", personal["3-FIRST-NAME"]],
+    ["Middle Name", personal["4-MIDDLE-NAME"]],
+    ["Extension", personal["5-EXTENSION"]],
+    ["Birthdate", personal["6-BIRTHDATE"]],
+    ["Sex", personal["7-SEX"]],
+    ["Age", personal["8-AGE"]],
+    ["Place of Birth", personal["9-PLACE-OF-BIRTH"]],
+    ["Religion", personal["10-RELIGION"]],
+    ["Mother Tongue", personal["11-MOTHER-TONGUE"]],
+
+    ["Current Address", formatAddress(current)],
+    ["Permanent Address", formatAddress(permanent)],
+
+    ["Father's Name", parents["1-FATHER-NAME"]],
+    ["Father's Contact", parents["2-FATHER-CONTACT"]],
+    ["Mother's Name", parents["3-MOTHER-NAME"]],
+    ["Mother's Contact", parents["4-MOTHER-CONTACT"]],
+    ["Guardian's Name", parents["5-GUARDIAN-NAME"]],
+    ["Guardian's Contact", parents["6-GUARDIAN-CONTACT"]],
+
+    ["Indigenous People", optional["1-IP"]],
+    ["Culture", optional["2-CULTURE"]],
+    ["Disability", optional["3-DISABILITY"]],
+    ["Disability Type", optional["4-DISABILITY-TYPE"]],
+    ["4Ps Beneficiary", optional["5-4PS"]],
+    ["Household ID", optional["6-HOUSE-ID"]],
+    ["Learning Modality", optional["7-LEARNING-MODALITY"]],
+
+    ["Previous Grade Level", transfer["1-LAST-GRADE-LEVEL"]],
+    ["Previous School", transfer["2-LAST-SCHOOL"]],
+    ["Previous School Year", transfer["3-LAST-SCHOOL-YEAR"]],
+    ["Previous School ID", transfer["4-SCHOOL-ID"]],
+    ["Enrollment Timestamp", data["8-TIME-STAMP"]]
+  ];
+
+  items.forEach(([label, value]) => {
+    const item = document.createElement("div");
+    item.className = "record-item";
+
+    const recordLabel = document.createElement("div");
+    recordLabel.className = "record-label";
+    recordLabel.textContent = label;
+
+    const recordValue = document.createElement("div");
+    recordValue.className = "record-value";
+    recordValue.textContent = displayValue(value);
+
+    item.append(recordLabel, recordValue);
+    recordGrid.appendChild(item);
+  });
+
+  recordSection.classList.add("visible");
+}
+
+// ============================================================
+// DEPED-INSPIRED ENROLLMENT PDF
+// ============================================================
+
+async function downloadCOR() {
+  if (!studentID || !studentDatabase) {
+    showStatus("Registration ID or database location is missing.", "error");
+    return;
+  }
+
+  if (!studentRecord) {
+    await checkEnrollmentRecord();
+
+    if (!studentRecord) {
+      showStatus("The PDF could not be generated because the record was not retrieved.", "error");
+      return;
+    }
+  }
+
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    showStatus("The PDF library could not load. Reload this page and try again.", "error");
+    return;
+  }
+
+  downloadButton.disabled = true;
+  downloadButton.textContent = "Generating PDF...";
+
+  try {
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4"
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 12;
+    const contentWidth = pageWidth - margin * 2;
+
+    const data = studentRecord;
+    const learners = data["1-LEARNERS-INFORMATION"] || {};
+    const personal = data["2-PERSONAL-INFORMATION"] || {};
+    const current = data["3-CURRENT-ADDRESS"] || {};
+    const permanent = data["4-PERMANENT-ADDRESS"] || {};
+    const parents = data["5-PARENTS"] || {};
+    const optional = data["6-OPTIONAL"] || {};
+    const transfer = data["7-BALIK-ARAL-TRANSFER"] || {};
+
+    const val = (object, key) => {
+      const value = object?.[key];
+
+      return value === null || value === undefined ||
+        String(value).trim() === ""
+        ? "—"
+        : String(value).trim();
+    };
+
+    const fullName = [
+      personal["3-FIRST-NAME"],
+      personal["4-MIDDLE-NAME"],
+      personal["2-LAST-NAME"],
+      personal["5-EXTENSION"]
+    ]
+      .filter(value => value && String(value).trim())
+      .map(value => String(value).trim())
+      .join(" ") || "—";
+
+    const registration = data["9-REGISTRATION-ID"] || studentID;
+    const grade = String(learners["2-GRADE-LEVEL"] || "").trim();
+    const gradeNumber = grade.replace(/\D/g, "");
+    const isSHS = ["11", "12"].includes(gradeNumber);
+
+    const address = object => [
+      object["1-HOUSE-NO"],
+      object["2-STREET"],
+      object["3-BARANGAY"],
+      object["4-CITY"],
+      object["5-PROVINCE"],
+      object["6-ZIP-CODE"]
+    ]
+      .filter(value => value !== null && value !== undefined &&
+        String(value).trim() !== "")
+      .map(value => String(value).trim())
+      .join(", ") || "—";
+
+    let y = 12;
+
+    // HEADER
+    function drawHeader() {
+      doc.setTextColor(0, 0, 0);
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.35);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.text("Republic of the Philippines", pageWidth / 2, 15, {
+        align: "center"
+      });
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("DEPARTMENT OF EDUCATION", pageWidth / 2, 20, {
+        align: "center"
+      });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.text("Region III - Central Luzon", pageWidth / 2, 25, {
+        align: "center"
+      });
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("TAAL HIGH SCHOOL", pageWidth / 2, 30, {
+        align: "center"
+      });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text("Taal, Bocaue, Bulacan", pageWidth / 2, 34, {
+        align: "center"
+      });
+
+      doc.setLineWidth(0.7);
+      doc.line(margin, 38, pageWidth - margin, 38);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("CERTIFICATE OF REGISTRATION", pageWidth / 2, 45, {
+        align: "center"
+      });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text("ENROLLEASE", pageWidth / 2, 50, {
+        align: "center"
+      });
+
+      y = 56;
+
+      doc.rect(margin, y, contentWidth, 15);
+
+      const rightX = margin + contentWidth * 0.59;
+
+      doc.line(rightX, y, rightX, y + 15);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.text("REGISTRATION ID", margin + 3, y + 5);
+
+      doc.setFontSize(9);
+      doc.text(String(registration), margin + 3, y + 11);
+
+      doc.setFontSize(7);
+      doc.text("SCHOOL YEAR", rightX + 3, y + 5);
+
+      doc.setFontSize(9);
+      doc.text(val(learners, "1-SCHOOL-YEAR"), rightX + 3, y + 11);
+
+      y += 20;
+    }
+
+    // PAGE MANAGEMENT
+    function ensureSpace(height) {
+      if (y + height > pageHeight - 19) {
+        doc.addPage();
+        drawHeader();
+      }
+    }
+
+    // SECTION HEADING
+    function addSection(title) {
+      ensureSpace(12);
+
+      doc.setFillColor(235, 235, 235);
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.3);
+      doc.rect(margin, y, contentWidth, 7, "FD");
+
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text(title.toUpperCase(), margin + 2, y + 4.7);
+
+      y += 9;
+    }
+
+    // SINGLE FIELD
+    function addRow(label, value) {
+      const cleanValue =
+        value === null || value === undefined ||
+        String(value).trim() === ""
+          ? "—"
+          : String(value).trim();
+
+      const labelWidth = 49;
+      const valueWidth = contentWidth - labelWidth - 3;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+
+      const lines = doc.splitTextToSize(cleanValue, valueWidth);
+      const rowHeight = Math.max(7, lines.length * 3.8 + 3);
+
+      ensureSpace(rowHeight);
+
+      doc.setDrawColor(80, 80, 80);
+      doc.setLineWidth(0.2);
+      doc.rect(margin, y, contentWidth, rowHeight);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.text(label, margin + 2, y + 4.5);
+
+      doc.line(
+        margin + labelWidth, y,
+        margin + labelWidth, y + rowHeight
+      );
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.text(lines, margin + labelWidth + 2, y + 4.5);
+
+      y += rowHeight;
+    }
+
+    // TWO FIELDS
+    function addPairRow(label1, value1, label2, value2) {
+      const halfWidth = contentWidth / 2;
+      const labelWidth = 26;
+      const valueWidth = halfWidth - labelWidth - 4;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+
+      const lines1 = doc.splitTextToSize(valText(value1), valueWidth);
+      const lines2 = doc.splitTextToSize(valText(value2), valueWidth);
+
+      const rowHeight = Math.max(
+        8,
+        Math.max(lines1.length, lines2.length) * 3.5 + 3
+      );
+
+      ensureSpace(rowHeight);
+
+      doc.setDrawColor(80, 80, 80);
+      doc.setLineWidth(0.2);
+
+      doc.rect(margin, y, contentWidth, rowHeight);
+      doc.line(margin + halfWidth, y, margin + halfWidth, y + rowHeight);
+
+      doc.line(
+        margin + labelWidth, y,
+        margin + labelWidth, y + rowHeight
+      );
+
+      doc.line(
+        margin + halfWidth + labelWidth, y,
+        margin + halfWidth + labelWidth, y + rowHeight
+      );
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.text(label1, margin + 1.5, y + 4.5);
+      doc.text(label2, margin + halfWidth + 1.5, y + 4.5);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text(lines1, margin + labelWidth + 1.5, y + 4.5);
+      doc.text(
+        lines2,
+        margin + halfWidth + labelWidth + 1.5,
+        y + 4.5
+      );
+
+      y += rowHeight;
+    }
+
+    function valText(value) {
+      return value === null || value === undefined ||
+        String(value).trim() === ""
+        ? "—"
+        : String(value).trim();
+    }
+
+    // BUILD DOCUMENT
+    drawHeader();
+
+    addSection("I. LEARNER INFORMATION");
+
+    addPairRow("School Year", learners["1-SCHOOL-YEAR"],
+      "Grade Level", learners["2-GRADE-LEVEL"]);
+
+    addPairRow("With LRN", learners["3-WITH-LRN"],
+      "LRN", learners["5-LRN"]);
+
+    addPairRow("Balik-Aral", learners["4-BALIK-ARAL"],
+      "Registration ID", registration);
+
+    if (isSHS) {
+      addPairRow("Semester", learners["6-SEMESTER"],
+        "Track", learners["7-TRACK"]);
+
+      addRow(
+        gradeNumber === "12" ? "Strand" : "Cluster",
+        learners["8-STRAND"] || learners["8-CLUSTER"]
+      );
+    }
+
+    addSection("II. PERSONAL INFORMATION");
+
+    addRow("Full Name", fullName);
+
+    addPairRow("Last Name", personal["2-LAST-NAME"],
+      "First Name", personal["3-FIRST-NAME"]);
+
+    addPairRow("Middle Name", personal["4-MIDDLE-NAME"],
+      "Extension", personal["5-EXTENSION"]);
+
+    addPairRow("Birthdate", personal["6-BIRTHDATE"],
+      "Age", personal["8-AGE"]);
+
+    addPairRow("Sex", personal["7-SEX"],
+      "PSA Birth Certificate", personal["1-PSA"]);
+
+    addRow("Place of Birth", personal["9-PLACE-OF-BIRTH"]);
+
+    addPairRow("Religion", personal["10-RELIGION"],
+      "Mother Tongue", personal["11-MOTHER-TONGUE"]);
+
+    addSection("III. LEARNER ADDRESS INFORMATION");
+
+    addRow("Current Address", address(current));
+    addRow("Permanent Address", address(permanent));
+
+    addSection("IV. PARENT / GUARDIAN INFORMATION");
+
+    addPairRow("Father's Name", parents["1-FATHER-NAME"],
+      "Contact", parents["2-FATHER-CONTACT"]);
+
+    addPairRow("Mother's Name", parents["3-MOTHER-NAME"],
+      "Contact", parents["4-MOTHER-CONTACT"]);
+
+    addPairRow("Guardian's Name", parents["5-GUARDIAN-NAME"],
+      "Contact", parents["6-GUARDIAN-CONTACT"]);
+
+    addSection("V. OTHER LEARNER INFORMATION");
+
+    addPairRow("Indigenous People", optional["1-IP"],
+      "Culture", optional["2-CULTURE"]);
+
+    addPairRow("Disability", optional["3-DISABILITY"],
+      "Disability Type", optional["4-DISABILITY-TYPE"]);
+
+    addPairRow("4Ps Beneficiary", optional["5-4PS"],
+      "Household ID", optional["6-HOUSE-ID"]);
+
+    addRow("Learning Modality", optional["7-LEARNING-MODALITY"]);
+
+    addSection("VI. BALIK-ARAL / TRANSFER INFORMATION");
+
+    addPairRow("Previous Grade", transfer["1-LAST-GRADE-LEVEL"],
+      "School Year", transfer["3-LAST-SCHOOL-YEAR"]);
+
+    addRow("Previous School", transfer["2-LAST-SCHOOL"]);
+    addRow("Previous School ID", transfer["4-SCHOOL-ID"]);
+
+    // VERIFICATION AREA
+    ensureSpace(36);
+    y += 5;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text(
+      "Date of Enrollment: " + valText(data["8-TIME-STAMP"]),
+      margin, y
+    );
+
+    y += 15;
+
+    const signatureWidth = (contentWidth - 15) / 2;
+
+    doc.line(margin, y, margin + signatureWidth, y);
+    doc.line(
+      margin + signatureWidth + 15,
+      y,
+      margin + contentWidth,
+      y
+    );
+
+    doc.setFontSize(7);
+
+    doc.text("Parent / Guardian Signature",
+      margin + signatureWidth / 2, y + 4, { align: "center" });
+
+    doc.text("School Personnel / Verifier",
+      margin + signatureWidth + 15 + signatureWidth / 2,
+      y + 4, { align: "center" });
+
+    y += 13;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text("SYSTEM-GENERATED ENROLLMENT RECORD",
+      pageWidth / 2, y, { align: "center" });
+
+    y += 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.text(
+      "For school verification. This is not an official DepEd-issued form.",
+      pageWidth / 2, y, { align: "center" }
+    );
+
+    // PAGE NUMBERS
+    const pageCount = doc.getNumberOfPages();
+
+    for (let page = 1; page <= pageCount; page++) {
+      doc.setPage(page);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(80, 80, 80);
+
+      doc.text(
+        `EnrollEase | Taal High School | Page ${page} of ${pageCount}`,
+        pageWidth / 2,
+        pageHeight - 8,
+        { align: "center" }
+      );
+    }
+
+    const safeName = fullName.replace(/[^a-z0-9_-]/gi, "_");
+
+    doc.save(`Enrollment_Record_${safeName}_${registration}.pdf`);
+
+    showStatus(
+      "Your enrollment record PDF has been generated successfully.",
+      "success"
+    );
+
+  } catch (error) {
+    console.error("PDF generation error:", error);
+
+    showStatus(
+      "An error occurred while generating the PDF. Please try again.",
+      "error"
+    );
+
+  } finally {
+    downloadButton.disabled = false;
+    downloadButton.textContent = "Download Enrollment PDF";
+  }
+}
+
+// ============================================================
+// START PAGE
+// ============================================================
+
+initializePage();
+</script>
+</body>
+</html>

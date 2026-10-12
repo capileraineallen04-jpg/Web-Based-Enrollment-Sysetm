@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EnrollEase: THS - JHS</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="form.css" />
+  </head>
+
+  <body>
+    <div class="form">
+      <form id="enrollmentForm">
+        <h3>IF YOU HAVE NO INFORMATION, PLEASE TYPE N/A</h3>
+
+        <div class="row">
+          <div class="field">
+            <label>School Year</label>
+            <select name="schoolYear" required>
+              <option value="">Select</option>
+              <option>2025 - 2026</option>
+              <option>2026 - 2027</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Grade Level to Enroll</label>
+            <select name="gradeLevel" id="gradeLevel" required>
+              <option value="">Select</option>
+              <option>GRADE 7</option>
+              <option>GRADE 8</option>
+              <option>GRADE 9</option>
+              <option>GRADE 10</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>With LRN</label>
+            <select name="with-lrn" required>
+              <option value="">Select</option>
+              <option>YES</option>
+              <option>NO</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Balik-Aral/Transfer Student</label>
+            <select name="balik-aral" required>
+              <option value="">Select</option>
+              <option>YES</option>
+              <option>NO</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>LEARNER INFORMATION</h3>
+
+        <div class="row">
+          <div class="field">
+            <label>PSA NO.</label>
+            <input type="text" name="psa" />
+          </div>
+
+          <div class="field">
+            <label>LRN</label>
+            <input type="text" name="lrn" maxlength="12" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Last Name</label>
+            <input type="text" name="lastName" required />
+          </div>
+
+          <div class="field">
+            <label>First Name</label>
+            <input type="text" name="firstName" required />
+          </div>
+
+          <div class="field">
+            <label>Middle Name</label>
+            <input type="text" name="middleName" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Extension</label>
+            <input type="text" name="extension" />
+          </div>
+
+          <div class="field">
+            <label>Birthdate</label>
+            <input
+              type="text"
+              name="birthdate"
+              placeholder="MM/DD/YYYY"
+              maxlength="10"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label>Sex</label>
+            <select name="sex" required>
+              <option value="">Select</option>
+              <option>MALE</option>
+              <option>FEMALE</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Age</label>
+            <input type="number" name="age" readonly />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Place of Birth</label>
+            <input
+              type="text"
+              name="placeOfBirth"
+              placeholder="Municipality/City, Province"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label>Religion</label>
+            <input type="text" name="religion" required />
+          </div>
+
+          <div class="field">
+            <label>Mother Tongue</label>
+            <input type="text" name="motherTongue" required />
+          </div>
+        </div>
+
+        <h3>CURRENT ADDRESS</h3>
+
+        <div class="address-grid">
+          <div class="field">
+            <label>House NO.</label>
+            <input type="text" name="currenthouseNO" required />
+          </div>
+
+          <div class="field wide">
+            <label>Street</label>
+            <input type="text" name="currentstreet" required />
+          </div>
+
+          <div class="field">
+            <label>Barangay</label>
+            <input type="text" name="currentbarangay" required />
+          </div>
+
+          <div class="field">
+            <label>Municipality/City</label>
+            <input type="text" name="currentmunicipalitycity" required />
+          </div>
+
+          <div class="field wide">
+            <label>Province</label>
+            <input type="text" name="currentprovince" required />
+          </div>
+
+          <div class="field">
+            <label>Zip Code</label>
+            <input
+              type="text"
+              name="currentzipCode"
+              maxlength="4"
+              inputmode="numeric"
+              required
+            />
+          </div>
+        </div>
+
+        <h3>PERMANENT ADDRESS</h3>
+
+        <div class="section-box">
+          <label>Same As Your Current Address</label>
+          <select name="sameaddress" required>
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+        </div>
+
+        <div class="address-grid">
+          <div class="field">
+            <label>House NO.</label>
+            <input type="text" name="permanenthouseNO" />
+          </div>
+
+          <div class="field wide">
+            <label>Street</label>
+            <input type="text" name="permanentstreet" />
+          </div>
+
+          <div class="field">
+            <label>Barangay</label>
+            <input type="text" name="permanentbarangay" />
+          </div>
+
+          <div class="field">
+            <label>City</label>
+            <input type="text" name="permanentcity" />
+          </div>
+
+          <div class="field wide">
+            <label>Province</label>
+            <input type="text" name="permanentprovince" />
+          </div>
+
+          <div class="field">
+            <label>Zip Code</label>
+            <input
+              type="text"
+              name="permanentzipCode"
+              maxlength="4"
+              inputmode="numeric"
+            />
+          </div>
+        </div>
+
+        <h3>PARENT/GUARDIAN INFORMATION</h3>
+
+        <div class="row">
+          <div class="field">
+            <label>Father's Name</label>
+            <input
+              type="text"
+              name="fatherName"
+              placeholder="First Name Middle Name, Last Name"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label>Contact Number</label>
+            <input
+              type="text"
+              name="fatherContact"
+              maxlength="11"
+              inputmode="numeric"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Mother's Name</label>
+            <input
+              type="text"
+              name="motherName"
+              placeholder="First Name Middle Name, Last Name"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label>Contact Number</label>
+            <input
+              type="text"
+              name="motherContact"
+              maxlength="11"
+              inputmode="numeric"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Guardian Name</label>
+            <input
+              type="text"
+              name="guardianName"
+              placeholder="First Name Middle Name, Last Name"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label>Contact Number</label>
+            <input
+              type="text"
+              name="guardianContact"
+              maxlength="11"
+              inputmode="numeric"
+              required
+            />
+          </div>
+        </div>
+
+        <h3>OPTIONAL INFORMATION</h3>
+
+        <div class="section-box">
+          <label>Belonging to Indigenous People Community?</label>
+          <select name="ip" required>
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+
+          <br /><br />
+
+          <input type="text" name="culture" placeholder="If YES, specify" />
+        </div>
+
+        <div class="section-box">
+          <label>Learner with Disability?</label>
+          <select name="disability" required>
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+
+          <br /><br />
+
+          <label>Disability Type</label>
+          <select name="disType">
+            <option value="">Select Disability</option>
+            <option>VISUAL IMPAIRMENT (BLIND)</option>
+            <option>VISUAL IMPAIRMENT (LOW VISION DISORDER)</option>
+            <option>HEARING IMPAIRMENT</option>
+            <option>AUTISM SPECTRUM DISORDER</option>
+            <option>SPEECH/LANGUAGE</option>
+            <option>LEARNING DISABILITY</option>
+            <option>EMOTIONAL-BEHAVIORAL DISORDER</option>
+            <option>CEREBRAL PALSY DISORDER</option>
+            <option>INTELLECTUAL DISABILITY</option>
+            <option>ORTHOPEDIC/PHYSICAL HANDICAP</option>
+            <option>SPECIAL HEALTH PROBLEM/CHRONIC DISEASE (CANCER)</option>
+          </select>
+        </div>
+
+        <div class="section-box">
+          <label>Are you a 4P's Community?</label>
+          <select name="4Ps" required>
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+
+          <br /><br />
+
+          <input type="text" name="HouseID" placeholder="4P's Household ID" />
+        </div>
+
+        <div class="section-box">
+          <label>Other Learning Modalities</label>
+          <select name="LearningModalities" required>
+            <option value="">Select Modality</option>
+            <option>MODULAR (PRINT)</option>
+            <option>MODULAR (DIGITAL)</option>
+            <option>ONLINE</option>
+            <option>EDUCATIONAL TELEVISION</option>
+            <option>RADIO-BASED INSTRUCTION</option>
+            <option>HOMESCHOOLING</option>
+            <option>BLENDED</option>
+          </select>
+        </div>
+
+        <h3>RETURNING STUDENT (BALIK-ARAL)/TRANSFER STUDENT INFORMATION</h3>
+
+        <div class="row">
+          <div class="field">
+            <label>Last Grade Level to Enroll</label>
+            <input type="text" name="Lastgradelevel" />
+          </div>
+
+          <div class="field">
+            <label>Last School Attended</label>
+            <input type="text" name="Lastschool" />
+          </div>
+
+          <div class="field">
+            <label>Last School Year Completed</label>
+            <input type="text" name="Lastschoolyear" />
+          </div>
+
+          <div class="field">
+            <label>School ID</label>
+            <input type="text" name="schoolid" />
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px">
+          <button
+            type="button"
+            class="enroll-btn"
+            id="enrollButton"
+            onclick="goToSuccess()"
+          >
+            ENROLL
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      const FIREBASE_URL =
+        "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+      const form = document.getElementById("enrollmentForm");
+
+      const gradeLevel = document.getElementById("gradeLevel");
+
+      const birthdateInput = document.querySelector('[name="birthdate"]');
+
+      const ageInput = document.querySelector('[name="age"]');
+
+      // =====================================================
+      // BIRTHDATE FORMAT: MM/DD/YYYY
+      // =====================================================
+
+      birthdateInput.addEventListener("input", function () {
+        let value = this.value.replace(/\D/g, "").substring(0, 8);
+
+        if (value.length >= 5) {
+          value =
+            value.substring(0, 2) +
+            "/" +
+            value.substring(2, 4) +
+            "/" +
+            value.substring(4, 8);
+        } else if (value.length >= 3) {
+          value = value.substring(0, 2) + "/" + value.substring(2, 4);
+        }
+
+        this.value = value;
+        updateBirthdateAndAge();
+      });
+
+      birthdateInput.addEventListener("change", updateBirthdateAndAge);
+
+      function updateBirthdateAndAge() {
+        const value = birthdateInput.value.trim();
+
+        const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+        if (!match) {
+          ageInput.value = "";
+          return;
+        }
+
+        const month = Number(match[1]);
+        const day = Number(match[2]);
+        const year = Number(match[3]);
+
+        const birthDate = new Date(year, month - 1, day);
+
+        if (
+          birthDate.getFullYear() !== year ||
+          birthDate.getMonth() !== month - 1 ||
+          birthDate.getDate() !== day
+        ) {
+          ageInput.value = "";
+          return;
+        }
+
+        const today = new Date();
+
+        if (birthDate > today) {
+          ageInput.value = "";
+          return;
+        }
+
+        let age = today.getFullYear() - year;
+
+        if (
+          today.getMonth() < month - 1 ||
+          (today.getMonth() === month - 1 && today.getDate() < day)
+        ) {
+          age--;
+        }
+
+        ageInput.value = age;
+      }
+
+      // =====================================================
+      // JHS DATABASE NAME
+      // =====================================================
+
+      function getDatabaseName() {
+        const selectedGrade = gradeLevel.value;
+
+        const validGrades = ["GRADE 7", "GRADE 8", "GRADE 9", "GRADE 10"];
+
+        if (!validGrades.includes(selectedGrade)) {
+          return null;
+        }
+
+        return "JHS-Students-" + selectedGrade.replace(/\s+/g, "-");
+      }
+
+      // =====================================================
+      // COPY PERMANENT ADDRESS
+      // =====================================================
+
+      const sameAddress = document.querySelector('[name="sameaddress"]');
+
+      const addressPairs = [
+        ["currenthouseNO", "permanenthouseNO"],
+        ["currentstreet", "permanentstreet"],
+        ["currentbarangay", "permanentbarangay"],
+        ["currentmunicipalitycity", "permanentcity"],
+        ["currentprovince", "permanentprovince"],
+        ["currentzipCode", "permanentzipCode"],
+      ];
+
+      function copyPermanentAddress() {
+        if (sameAddress.value === "YES") {
+          addressPairs.forEach(([currentName, permanentName]) => {
+            document.querySelector(`[name="${permanentName}"]`).value =
+              document.querySelector(`[name="${currentName}"]`).value;
+          });
+        }
+      }
+
+      sameAddress.addEventListener("change", function () {
+        if (this.value === "YES") {
+          copyPermanentAddress();
+        } else {
+          addressPairs.forEach(([, permanentName]) => {
+            document.querySelector(`[name="${permanentName}"]`).value = "";
+          });
+        }
+
+        controlOptionalFields();
+      });
+
+      addressPairs.forEach(([currentName]) => {
+        document
+          .querySelector(`[name="${currentName}"]`)
+          .addEventListener("input", function () {
+            if (sameAddress.value === "YES") {
+              copyPermanentAddress();
+            }
+          });
+      });
+
+      // =====================================================
+      // CONDITIONAL FIELD CONTROL
+      // =====================================================
+
+      function setDisabledAndClear(field, disabled) {
+        field.disabled = disabled;
+
+        if (disabled) {
+          field.value = "";
+          field.classList.remove("input-error");
+        }
+      }
+
+      function controlOptionalFields() {
+        const withLRN = document.querySelector('[name="with-lrn"]');
+        const lrn = document.querySelector('[name="lrn"]');
+
+        const balikAral = document.querySelector('[name="balik-aral"]');
+
+        const returningFields = [
+          document.querySelector('[name="Lastgradelevel"]'),
+          document.querySelector('[name="Lastschool"]'),
+          document.querySelector('[name="Lastschoolyear"]'),
+          document.querySelector('[name="schoolid"]'),
+        ];
+
+        const ip = document.querySelector('[name="ip"]');
+        const culture = document.querySelector('[name="culture"]');
+
+        const disability = document.querySelector('[name="disability"]');
+        const disabilityType = document.querySelector('[name="disType"]');
+
+        const fourPs = document.querySelector('[name="4Ps"]');
+        const houseID = document.querySelector('[name="HouseID"]');
+
+        setDisabledAndClear(lrn, withLRN.value === "NO");
+
+        returningFields.forEach((field) => {
+          setDisabledAndClear(field, balikAral.value === "NO");
+        });
+
+        setDisabledAndClear(culture, ip.value === "NO");
+
+        setDisabledAndClear(disabilityType, disability.value === "NO");
+
+        setDisabledAndClear(houseID, fourPs.value === "NO");
+
+        if (sameAddress.value === "YES") {
+          copyPermanentAddress();
+        }
+
+        if (sameAddress.value === "YES") {
+          addressPairs.forEach(([, permanentName]) => {
+            document.querySelector(`[name="${permanentName}"]`).disabled = true;
+          });
+        } else {
+          addressPairs.forEach(([, permanentName]) => {
+            document.querySelector(`[name="${permanentName}"]`).disabled =
+              false;
+          });
+        }
+      }
+
+      ["with-lrn", "balik-aral", "ip", "disability", "4Ps"].forEach((name) => {
+        document
+          .querySelector(`[name="${name}"]`)
+          .addEventListener("change", controlOptionalFields);
+      });
+
+      // =====================================================
+      // VALIDATION HELPERS
+      // =====================================================
+
+      function validateRequiredFields(requiredFields) {
+        document.querySelectorAll(".input-error").forEach((field) => {
+          field.classList.remove("input-error");
+        });
+
+        for (const [field, label] of requiredFields) {
+          if (!field || !field.value.trim()) {
+            field?.classList.add("input-error");
+            alert(`Please fill out: ${label}`);
+            field?.focus();
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function validateBirthdate() {
+        const value = birthdateInput.value.trim();
+
+        const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+        if (!match) {
+          birthdateInput.classList.add("input-error");
+          alert("Please enter a valid birthdate in MM/DD/YYYY format.");
+          birthdateInput.focus();
+          return false;
+        }
+
+        const month = Number(match[1]);
+        const day = Number(match[2]);
+        const year = Number(match[3]);
+
+        const date = new Date(year, month - 1, day);
+
+        if (
+          date.getFullYear() !== year ||
+          date.getMonth() !== month - 1 ||
+          date.getDate() !== day ||
+          date > new Date()
+        ) {
+          birthdateInput.classList.add("input-error");
+          alert("Please enter a valid birthdate.");
+          birthdateInput.focus();
+          return false;
+        }
+
+        updateBirthdateAndAge();
+        return true;
+      }
+
+      function getField(name) {
+        return document.querySelector(`[name="${name}"]`);
+      }
+
+      // =====================================================
+      // ENROLL AND SAVE TO FIREBASE
+      // =====================================================
+
+      async function goToSuccess() {
+        const enrollButton = document.getElementById("enrollButton");
+
+        if (enrollButton.disabled) return;
+
+        try {
+          // Convert text inputs to uppercase.
+          Object.values(form.elements).forEach((field) => {
+            if (
+              field.tagName === "INPUT" &&
+              field.type === "text" &&
+              !field.disabled
+            ) {
+              field.value = field.value.toUpperCase();
+            }
+          });
+
+          copyPermanentAddress();
+          updateBirthdateAndAge();
+
+          const fields = {
+            schoolYear: getField("schoolYear"),
+            gradeLevel: getField("gradeLevel"),
+            withLRN: getField("with-lrn"),
+            balikAral: getField("balik-aral"),
+            psa: getField("psa"),
+            lrn: getField("lrn"),
+            lastName: getField("lastName"),
+            firstName: getField("firstName"),
+            middleName: getField("middleName"),
+            extension: getField("extension"),
+            birthdate: getField("birthdate"),
+            sex: getField("sex"),
+            age: getField("age"),
+            placeOfBirth: getField("placeOfBirth"),
+            religion: getField("religion"),
+            motherTongue: getField("motherTongue"),
+
+            currentHouse: getField("currenthouseNO"),
+            currentStreet: getField("currentstreet"),
+            currentBarangay: getField("currentbarangay"),
+            currentCity: getField("currentmunicipalitycity"),
+            currentProvince: getField("currentprovince"),
+            currentZip: getField("currentzipCode"),
+
+            sameAddress: getField("sameaddress"),
+            permanentHouse: getField("permanenthouseNO"),
+            permanentStreet: getField("permanentstreet"),
+            permanentBarangay: getField("permanentbarangay"),
+            permanentCity: getField("permanentcity"),
+            permanentProvince: getField("permanentprovince"),
+            permanentZip: getField("permanentzipCode"),
+
+            fatherName: getField("fatherName"),
+            fatherContact: getField("fatherContact"),
+            motherName: getField("motherName"),
+            motherContact: getField("motherContact"),
+            guardianName: getField("guardianName"),
+            guardianContact: getField("guardianContact"),
+
+            ip: getField("ip"),
+            culture: getField("culture"),
+            disability: getField("disability"),
+            disabilityType: getField("disType"),
+            fourPs: getField("4Ps"),
+            houseID: getField("HouseID"),
+            learningModalities: getField("LearningModalities"),
+
+            lastGrade: getField("Lastgradelevel"),
+            lastSchool: getField("Lastschool"),
+            lastSchoolYear: getField("Lastschoolyear"),
+            schoolID: getField("schoolid"),
+          };
+
+          // Required fields.
+          const requiredFields = [
+            [fields.schoolYear, "School Year"],
+            [fields.gradeLevel, "Grade Level"],
+            [fields.withLRN, "With LRN"],
+            [fields.balikAral, "Balik-Aral"],
+            [fields.psa, "PSA NO."],
+            [fields.lastName, "Last Name"],
+            [fields.firstName, "First Name"],
+            [fields.birthdate, "Birthdate"],
+            [fields.sex, "Sex"],
+            [fields.placeOfBirth, "Place of Birth"],
+            [fields.religion, "Religion"],
+            [fields.motherTongue, "Mother Tongue"],
+            [fields.currentHouse, "Current House NO."],
+            [fields.currentStreet, "Current Street"],
+            [fields.currentBarangay, "Current Barangay"],
+            [fields.currentCity, "Current City"],
+            [fields.currentProvince, "Current Province"],
+            [fields.currentZip, "Current Zip Code"],
+            [fields.sameAddress, "Same Address"],
+            [fields.fatherName, "Father's Name"],
+            [fields.fatherContact, "Father's Contact"],
+            [fields.motherName, "Mother's Name"],
+            [fields.motherContact, "Mother's Contact"],
+            [fields.guardianName, "Guardian Name"],
+            [fields.guardianContact, "Guardian Contact"],
+            [fields.ip, "Indigenous People"],
+            [fields.disability, "Disability"],
+            [fields.fourPs, "4P's Community"],
+            [fields.learningModalities, "Learning Modalities"],
+          ];
+
+          if (fields.withLRN.value === "YES") {
+            requiredFields.push([fields.lrn, "LRN"]);
+          }
+
+          if (fields.balikAral.value === "YES") {
+            requiredFields.push(
+              [fields.lastGrade, "Last Grade Level"],
+              [fields.lastSchool, "Last School Attended"],
+              [fields.lastSchoolYear, "Last School Year Completed"],
+              [fields.schoolID, "School ID"],
+            );
+          }
+
+          if (fields.sameAddress.value === "NO") {
+            requiredFields.push(
+              [fields.permanentHouse, "Permanent House NO."],
+              [fields.permanentStreet, "Permanent Street"],
+              [fields.permanentBarangay, "Permanent Barangay"],
+              [fields.permanentCity, "Permanent City"],
+              [fields.permanentProvince, "Permanent Province"],
+              [fields.permanentZip, "Permanent Zip Code"],
+            );
+          }
+
+          if (fields.ip.value === "YES") {
+            requiredFields.push([fields.culture, "Culture"]);
+          }
+
+          if (fields.disability.value === "YES") {
+            requiredFields.push([fields.disabilityType, "Disability Type"]);
+          }
+
+          if (fields.fourPs.value === "YES") {
+            requiredFields.push([fields.houseID, "4P's Household ID"]);
+          }
+
+          if (!validateRequiredFields(requiredFields)) return;
+
+          if (!validateBirthdate()) return;
+
+          // LRN must contain exactly 12 digits.
+          if (
+            fields.withLRN.value === "YES" &&
+            !/^\d{12}$/.test(fields.lrn.value.trim())
+          ) {
+            fields.lrn.classList.add("input-error");
+            alert("LRN must contain exactly 12 digits.");
+            fields.lrn.focus();
+            return;
+          }
+
+          // Validate contact numbers.
+          const contactFields = [
+            [fields.fatherContact, "Father's Contact Number"],
+            [fields.motherContact, "Mother's Contact Number"],
+            [fields.guardianContact, "Guardian Contact Number"],
+          ];
+
+          for (const [field, label] of contactFields) {
+            if (!/^\d{11}$/.test(field.value.trim())) {
+              field.classList.add("input-error");
+              alert(`${label} must contain exactly 11 digits.`);
+              field.focus();
+              return;
+            }
+          }
+
+          // Validate ZIP codes.
+          const zipFields = [
+            [fields.currentZip, "Current Zip Code"],
+            ...(fields.sameAddress.value === "NO"
+              ? [[fields.permanentZip, "Permanent Zip Code"]]
+              : []),
+          ];
+
+          for (const [field, label] of zipFields) {
+            if (!/^\d{4}$/.test(field.value.trim())) {
+              field.classList.add("input-error");
+              alert(`${label} must contain exactly 4 digits.`);
+              field.focus();
+              return;
+            }
+          }
+
+          const dataset = getDatabaseName();
+
+          if (!dataset) {
+            alert("Please select a valid JHS grade level.");
+            fields.gradeLevel.focus();
+            return;
+          }
+
+          enrollButton.disabled = true;
+          enrollButton.textContent = "ENROLLING...";
+
+          // Retrieve existing students from the selected grade dataset.
+          const response = await fetch(`${FIREBASE_URL}/${dataset}.json`);
+
+          if (!response.ok) {
+            throw new Error(
+              "Unable to retrieve existing students from Firebase.",
+            );
+          }
+
+          const allStudents = await response.json();
+
+          // LRN-only duplicate detection within the selected dataset.
+          if (fields.withLRN.value === "YES" && allStudents) {
+            const enteredLRN = fields.lrn.value.trim();
+
+            const duplicateLRN = Object.values(allStudents).some((student) => {
+              if (!student || typeof student !== "object") return false;
+
+              // Support the current structure and the older structure.
+              const learnerInfo =
+                student["1-LEARNERS-INFORMATION"] ||
+                student["1-School-Information"] ||
+                {};
+
+              const existingLRN = learnerInfo["5-LRN"] ?? learnerInfo["8-LRN"];
+
+              return (
+                existingLRN != null &&
+                existingLRN.toString().trim() === enteredLRN
+              );
+            });
+
+            if (duplicateLRN) {
+              alert("THIS STUDENT IS ALREADY ENROLLED.");
+              fields.lrn.classList.add("input-error");
+              fields.lrn.focus();
+              return;
+            }
+          }
+
+          // Generate a unique registration ID.
+          let studentID;
+
+          do {
+            studentID =
+              "STU-" +
+              Math.floor(Math.random() * 1000000)
+                .toString()
+                .padStart(6, "0");
+          } while (allStudents && allStudents[studentID]);
+
+          // Timestamp: MM/DD/YYYY.
+          const today = new Date();
+
+          const formattedDate =
+            String(today.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(today.getDate()).padStart(2, "0") +
+            "/" +
+            today.getFullYear();
+
+          // JHS learner information: no SHS fields.
+          const learnersInformation = {
+            "1-SCHOOL-YEAR": fields.schoolYear.value,
+            "2-GRADE-LEVEL": fields.gradeLevel.value,
+            "3-WITH-LRN": fields.withLRN.value,
+            "4-BALIK-ARAL": fields.balikAral.value,
+            "5-LRN":
+              fields.withLRN.value === "YES" ? fields.lrn.value.trim() : "",
+          };
+
+          // Student record.
+          const studentData = {
+            "1-LEARNERS-INFORMATION": learnersInformation,
+
+            "2-PERSONAL-INFORMATION": {
+              "1-PSA": fields.psa.value,
+              "2-LAST-NAME": fields.lastName.value,
+              "3-FIRST-NAME": fields.firstName.value,
+              "4-MIDDLE-NAME": fields.middleName.value,
+              "5-EXTENSION": fields.extension.value,
+              "6-BIRTHDATE": fields.birthdate.value,
+              "7-SEX": fields.sex.value,
+              "8-AGE": fields.age.value,
+              "9-PLACE-OF-BIRTH": fields.placeOfBirth.value,
+              "10-RELIGION": fields.religion.value,
+              "11-MOTHER-TONGUE": fields.motherTongue.value,
+            },
+
+            "3-CURRENT-ADDRESS": {
+              "1-HOUSE-NO": fields.currentHouse.value,
+              "2-STREET": fields.currentStreet.value,
+              "3-BARANGAY": fields.currentBarangay.value,
+              "4-CITY": fields.currentCity.value,
+              "5-PROVINCE": fields.currentProvince.value,
+              "6-ZIP-CODE": fields.currentZip.value,
+            },
+
+            "4-PERMANENT-ADDRESS": {
+              "1-HOUSE-NO": fields.permanentHouse.value,
+              "2-STREET": fields.permanentStreet.value,
+              "3-BARANGAY": fields.permanentBarangay.value,
+              "4-CITY": fields.permanentCity.value,
+              "5-PROVINCE": fields.permanentProvince.value,
+              "6-ZIP-CODE": fields.permanentZip.value,
+            },
+
+            "5-PARENTS": {
+              "1-FATHER-NAME": fields.fatherName.value,
+              "2-FATHER-CONTACT": fields.fatherContact.value,
+              "3-MOTHER-NAME": fields.motherName.value,
+              "4-MOTHER-CONTACT": fields.motherContact.value,
+              "5-GUARDIAN-NAME": fields.guardianName.value,
+              "6-GUARDIAN-CONTACT": fields.guardianContact.value,
+            },
+
+            "6-OPTIONAL": {
+              "1-IP": fields.ip.value,
+              "2-CULTURE": fields.culture.value,
+              "3-DISABILITY": fields.disability.value,
+              "4-DISABILITY-TYPE": fields.disabilityType.value,
+              "5-4PS": fields.fourPs.value,
+              "6-HOUSE-ID": fields.houseID.value,
+              "7-LEARNING-MODALITY": fields.learningModalities.value,
+            },
+
+            "7-BALIK-ARAL-TRANSFER": {
+              "1-LAST-GRADE-LEVEL": fields.lastGrade.value,
+              "2-LAST-SCHOOL": fields.lastSchool.value,
+              "3-LAST-SCHOOL-YEAR": fields.lastSchoolYear.value,
+              "4-SCHOOL-ID": fields.schoolID.value,
+            },
+
+            "8-TIME-STAMP": formattedDate,
+            "9-REGISTRATION-ID": studentID,
+          };
+
+          // Save to Firebase.
+          const saveResponse = await fetch(
+            `${FIREBASE_URL}/${dataset}/${studentID}.json`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(studentData),
+            },
+          );
+
+          if (!saveResponse.ok) {
+            throw new Error("Failed to save student enrollment.");
+          }
+
+          // Store details for the success page.
+          localStorage.setItem("studentID", studentID);
+          localStorage.setItem("studentDatabase", dataset);
+
+          alert("YOU REGISTERED SUCCESSFULLY!");
+          window.location.href = "successfulljhs.html";
+        } catch (error) {
+          console.error("Enrollment Error:", error);
+
+          alert(
+            "An error occurred while saving the enrollment. Please check your internet connection and try again.",
+          );
+        } finally {
+          enrollButton.disabled = false;
+          enrollButton.textContent = "ENROLL";
+        }
+      }
+
+      // =====================================================
+      // INITIAL STATE
+      // =====================================================
+
+      document.addEventListener("DOMContentLoaded", function () {
+        controlOptionalFields();
+        updateBirthdateAndAge();
+      });
+    </script>
+  </body>
+</html>

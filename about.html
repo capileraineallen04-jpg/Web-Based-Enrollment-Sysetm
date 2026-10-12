@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<head>
+    
+    <title>About | EnrollEase - Taal High School</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family:'Poppins', 'Segoe UI', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #f4f6f9;
+        }
+
+    
+        nav {
+            background-color: #1f2a38;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h1 {
+            font-size: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: #00c6ff;
+        }
+
+        .hero {
+            height: 90vh;
+            background: linear-gradient(rgba(0, 82, 155, 0.7), rgba(0, 198, 255, 0.7)),
+                        url('TaalHighSchool.png') center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #00c6ff;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0096c7;
+        }
+
+    
+        section {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .about-text {
+            max-width: 800px;
+            margin: auto;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .contact-container {
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            width: 260px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+        }
+
+        .card img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid #00c6ff;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        footer {
+            background-color: #1f2a38;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+
+
+
+
+
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+    <h1>EnrollEase</h1>
+    <div>
+        <a href="index.html">Home</a>
+    </div>
+</nav>
+
+<!-- HERO SECTION -->
+<div class="hero">
+    <div class="hero-content">
+        <h2>About EnrollEase</h2>
+        <p>
+            EnrollEase - Taal High School Online Enrollment System
+            simplifies student registration by making it faster,
+            easier, and more efficient.
+        </p>
+        <a href="#contact" class="btn">Contact Developers</a>
+    </div>
+</div>
+
+<!-- ABOUT SECTION -->
+<section>
+    <h2>Our Mission</h2>
+    <div class="about-text">
+        <p>
+            This system was developed to modernize the enrollment process
+            of Taal High School. It reduces paperwork, prevents long queues,
+            minimizes errors, and provides a smooth digital experience for
+            students and administrators.
+        </p>
+    </div>
+</section>
+
+<!-- CONTACT SECTION -->
+<section id="contact">
+    <h2>Report Bugs or Contact Us</h2>
+
+    <div class="contact-container">
+
+        <div class="card">
+            <img src="RaineAllenCapile.jpg" alt="Raine Allen Capile">
+            <h3>Raine Allen Capile</h3>
+            <p>📞 09676767</p>
+            <p>✉️ capileraineallen04@gmail.com</p>
+        </div>
+
+        <div class="card">
+            <img src="marc.jpg" alt="Marc Danniel Atanacio Estrella">
+            <h3>Marc Danniel Atanacio Estrella</h3>
+            <p>📞 09676767679</p>
+            <p>✉️ marcdanniele14@gmail.com</p>
+        </div>
+
+        <div class="card">
+            <img src="Kenneth.jpg" alt="Kenneth Fajutnao">
+            <h3>Kenneth Fajutnao</h3>
+            <p>📞 09696969697</p>
+            <p>✉️ Kenneth@gmail.com</p>
+        </div>
+
+        <div class="card">
+            <img src="ralf.jpg" alt="Ralfred Corcino">
+            <h3>Ralfred Corcino</h3>
+            <p>📞 0972837 2727</p>
+            <p>✉️ Ralfred@gmail.com</p>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 EnrollEase - Taal High School | All Rights Reserved</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EnrollEase: THS - SHS</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="form.css" />
+  </head>
+
+  <body>
+    <div class="form">
+      <form id="enrollmentForm" novalidate>
+        <h3>IF YOU HAVE NO INFORMATION, PLEASE TYPE N/A</h3>
+
+        <div class="row">
+          <div class="field">
+            <label>School Year</label>
+            <select name="schoolYear" required>
+              <option value="">Select</option>
+              <option>2025 - 2026</option>
+              <option>2026 - 2027</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Grade Level to Enroll</label>
+            <select name="gradeLevel" id="gradeLevel" required>
+              <option value="">Select</option>
+              <option>GRADE 11</option>
+              <option>GRADE 12</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>With LRN</label>
+            <select name="with-lrn" required>
+              <option value="">Select</option>
+              <option>YES</option>
+              <option>NO</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Balik-Aral/Transfer Student</label>
+            <select name="balik-aral" required>
+              <option value="">Select</option>
+              <option>YES</option>
+              <option>NO</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>SHS ACADEMIC INFORMATION</h3>
+
+        <div class="field">
+          <label>Termination</label>
+          <select name="termination" required>
+            <option value="">Select Termination</option>
+            <option>1ST TERMINATION</option>
+            <option>2ND TERMINATION</option>
+            <option>3RD TERMINATION</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Track</label>
+            <select name="track" id="track" required disabled>
+              <option value="">Select Track</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label id="clusterStrandLabel">Cluster/Strand</label>
+            <select name="clusterStrand" id="clusterStrand" required disabled>
+              <option value="">Select Cluster/Strand</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>LEARNER INFORMATION</h3>
+
+        <div class="row">
+          <div class="field">
+            <label>PSA NO.</label>
+            <input type="text" name="psa" required />
+          </div>
+          <div class="field">
+            <label>LRN</label>
+            <input type="text" name="lrn" maxlength="12" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Last Name</label>
+            <input type="text" name="lastName" required />
+          </div>
+          <div class="field">
+            <label>First Name</label>
+            <input type="text" name="firstName" required />
+          </div>
+          <div class="field">
+            <label>Middle Name</label>
+            <input type="text" name="middleName" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Extension</label>
+            <input type="text" name="extension" />
+          </div>
+          <div class="field">
+            <label>Birthdate</label>
+            <input
+              type="text"
+              name="birthdate"
+              placeholder="MM/DD/YYYY"
+              maxlength="10"
+              required
+            />
+          </div>
+          <div class="field">
+            <label>Sex</label>
+            <select name="sex" required>
+              <option value="">Select</option>
+              <option>MALE</option>
+              <option>FEMALE</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Age</label>
+            <input type="number" name="age" readonly />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Place of Birth</label>
+            <input
+              type="text"
+              name="placeOfBirth"
+              placeholder="Municipality/City, Province"
+              required
+            />
+          </div>
+          <div class="field">
+            <label>Religion</label>
+            <input type="text" name="religion" required />
+          </div>
+          <div class="field">
+            <label>Mother Tongue</label>
+            <input type="text" name="motherTongue" required />
+          </div>
+        </div>
+
+        <h3>CURRENT ADDRESS</h3>
+
+        <div class="address-grid">
+          <div class="field">
+            <label>House NO.</label>
+            <input type="text" name="currenthouseNO" required />
+          </div>
+          <div class="field wide">
+            <label>Street</label>
+            <input type="text" name="currentstreet" required />
+          </div>
+          <div class="field">
+            <label>Barangay</label>
+            <input type="text" name="currentbarangay" required />
+          </div>
+          <div class="field">
+            <label>Municipality/City</label>
+            <input type="text" name="currentmunicipalitycity" required />
+          </div>
+          <div class="field wide">
+            <label>Province</label>
+            <input type="text" name="currentprovince" required />
+          </div>
+          <div class="field">
+            <label>Zip Code</label>
+            <input
+              type="text"
+              name="currentzipCode"
+              maxlength="4"
+              inputmode="numeric"
+              required
+            />
+          </div>
+        </div>
+
+        <h3>PERMANENT ADDRESS</h3>
+
+        <div class="section-box">
+          <label>Same As Your Current Address</label>
+          <select name="sameaddress" required>
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+        </div>
+
+        <div class="address-grid">
+          <div class="field">
+            <label>House NO.</label>
+            <input type="text" name="permanenthouseNO" />
+          </div>
+          <div class="field wide">
+            <label>Street</label>
+            <input type="text" name="permanentstreet" />
+          </div>
+          <div class="field">
+            <label>Barangay</label>
+            <input type="text" name="permanentbarangay" />
+          </div>
+          <div class="field">
+            <label>Municipality/City</label>
+            <input type="text" name="permanentcity" />
+          </div>
+          <div class="field wide">
+            <label>Province</label>
+            <input type="text" name="permanentprovince" />
+          </div>
+          <div class="field">
+            <label>Zip Code</label>
+            <input
+              type="text"
+              name="permanentzipCode"
+              maxlength="4"
+              inputmode="numeric"
+            />
+          </div>
+        </div>
+
+        <h3>PARENT/GUARDIAN INFORMATION</h3>
+
+        <div class="row">
+          <div class="field">
+            <label>Father's Name</label>
+            <input
+              type="text"
+              name="fatherName"
+              placeholder="First Name Middle Name, Last Name"
+              required
+            />
+          </div>
+          <div class="field">
+            <label>Contact Number</label>
+            <input
+              type="text"
+              name="fatherContact"
+              maxlength="11"
+              inputmode="numeric"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Mother's Name</label>
+            <input
+              type="text"
+              name="motherName"
+              placeholder="First Name Middle Name, Last Name"
+              required
+            />
+          </div>
+          <div class="field">
+            <label>Contact Number</label>
+            <input
+              type="text"
+              name="motherContact"
+              maxlength="11"
+              inputmode="numeric"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Guardian Name</label>
+            <input
+              type="text"
+              name="guardianName"
+              placeholder="First Name Middle Name, Last Name"
+              required
+            />
+          </div>
+          <div class="field">
+            <label>Contact Number</label>
+            <input
+              type="text"
+              name="guardianContact"
+              maxlength="11"
+              inputmode="numeric"
+              required
+            />
+          </div>
+        </div>
+
+        <h3>OPTIONAL INFORMATION</h3>
+
+        <div class="section-box">
+          <label>Belonging to Indigenous People Community?</label>
+          <select name="ip" required>
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+          <br /><br />
+          <input type="text" name="culture" placeholder="If YES, specify" />
+        </div>
+
+        <div class="section-box">
+          <label>Learner with Disability?</label>
+          <select name="disability" required>
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+          <br /><br />
+          <label>Disability Type</label>
+          <select name="disType">
+            <option value="">Select Disability</option>
+            <option>VISUAL IMPAIRMENT (BLIND)</option>
+            <option>VISUAL IMPAIRMENT (LOW VISION DISORDER)</option>
+            <option>HEARING IMPAIRMENT</option>
+            <option>AUTISM SPECTRUM DISORDER</option>
+            <option>SPEECH/LANGUAGE</option>
+            <option>LEARNING DISABILITY</option>
+            <option>EMOTIONAL-BEHAVIORAL DISORDER</option>
+            <option>CEREBRAL PALSY DISORDER</option>
+            <option>INTELLECTUAL DISABILITY</option>
+            <option>ORTHOPEDIC/PHYSICAL HANDICAP</option>
+            <option>SPECIAL HEALTH PROBLEM/CHRONIC DISEASE (CANCER)</option>
+          </select>
+        </div>
+
+        <div class="section-box">
+          <label>Are you a 4P's Community?</label>
+          <select name="4Ps" required>
+            <option value="">Select</option>
+            <option>YES</option>
+            <option>NO</option>
+          </select>
+          <br /><br />
+          <input type="text" name="HouseID" placeholder="4P's Household ID" />
+        </div>
+
+        <div class="section-box">
+          <label>Other Learning Modalities</label>
+          <select name="LearningModalities" required>
+            <option value="">Select Modality</option>
+            <option>MODULAR (PRINT)</option>
+            <option>MODULAR (DIGITAL)</option>
+            <option>ONLINE</option>
+            <option>EDUCATIONAL TELEVISION</option>
+            <option>RADIO-BASED INSTRUCTION</option>
+            <option>HOMESCHOOLING</option>
+            <option>BLENDED</option>
+          </select>
+        </div>
+
+        <h3>RETURNING STUDENT (BALIK-ARAL)/TRANSFER STUDENT INFORMATION</h3>
+
+        <div class="row">
+          <div class="field">
+            <label>Last Grade Level to Enroll</label>
+            <input type="text" name="Lastgradelevel" />
+          </div>
+          <div class="field">
+            <label>Last School Attended</label>
+            <input type="text" name="Lastschool" />
+          </div>
+          <div class="field">
+            <label>Last School Year Completed</label>
+            <input type="text" name="Lastschoolyear" />
+          </div>
+          <div class="field">
+            <label>School ID</label>
+            <input type="text" name="schoolid" />
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px">
+          <button type="button" class="enroll-btn" id="enrollButton">
+            ENROLL
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      "use strict";
+
+      // =====================================================
+      // FIREBASE CONFIGURATION
+      // =====================================================
+
+      const FIREBASE_URL =
+        "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+      const form = document.getElementById("enrollmentForm");
+      const gradeLevel = document.getElementById("gradeLevel");
+      const trackSelect = document.getElementById("track");
+      const clusterStrandSelect = document.getElementById("clusterStrand");
+      const clusterStrandLabel = document.getElementById("clusterStrandLabel");
+      const birthdateInput = document.querySelector('[name="birthdate"]');
+      const ageInput = document.querySelector('[name="age"]');
+      const sameAddress = document.querySelector('[name="sameaddress"]');
+      const enrollButton = document.getElementById("enrollButton");
+
+      let isEnrolling = false;
+
+      // =====================================================
+      // SHS TRACK, CLUSTER, AND STRAND OPTIONS
+      // =====================================================
+
+      const shsOptions = {
+        "GRADE 11": {
+          ACADEMIC: [
+            "HUMANITIES AND SOCIAL SCIENCES",
+            "SCIENCE, TECHNOLOGY, ENGINEERING AND MATHEMATICS",
+            "ACCOUNTANCY, BUSINESS AND MANAGEMENT",
+          ],
+          "TECH-PRO": [
+            "INFORMATION AND COMMUNICATION TECHNOLOGY",
+            "INDUSTRIAL TECHNOLOGY",
+            "HOME ECONOMICS",
+          ],
+        },
+
+        "GRADE 12": {
+          ACADEMIC: [
+            "HUMANITIES AND SOCIAL SCIENCES",
+            "SCIENCE, TECHNOLOGY, ENGINEERING AND MATHEMATICS",
+            "ACCOUNTANCY, BUSINESS AND MANAGEMENT",
+            "GENERAL ACADEMIC STRAND",
+          ],
+          "TECHNOLOGICAL-VOCATIONAL LIVELIHOOD": [
+            "COMPUTER PROGRAMMING",
+            "CONSUMER ELECTRONICS",
+            "HOME ECONOMICS",
+          ],
+        },
+      };
+
+      function populateSelect(select, placeholder, values) {
+        select.replaceChildren();
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = placeholder;
+        select.appendChild(defaultOption);
+
+        values.forEach((value) => {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = value;
+          select.appendChild(option);
+        });
+      }
+
+      function updateSHSOptions() {
+        const selectedGrade = gradeLevel.value;
+        const options = shsOptions[selectedGrade];
+
+        // Always keep the original name used by the saving code.
+        clusterStrandSelect.name = "clusterStrand";
+
+        trackSelect.value = "";
+        clusterStrandSelect.value = "";
+
+        populateSelect(trackSelect, "Select Track", []);
+        populateSelect(clusterStrandSelect, "Select Cluster/Strand", []);
+
+        if (!options) {
+          trackSelect.disabled = true;
+          clusterStrandSelect.disabled = true;
+          trackSelect.required = false;
+          clusterStrandSelect.required = false;
+          clusterStrandLabel.textContent = "Cluster/Strand";
+          return;
+        }
+
+        trackSelect.disabled = false;
+        clusterStrandSelect.disabled = false;
+        trackSelect.required = true;
+        clusterStrandSelect.required = true;
+
+        // IF Grade 11, display CLUSTER.
+        // ELSE IF Grade 12, display STRAND.
+        if (selectedGrade === "GRADE 11") {
+          clusterStrandLabel.textContent = "Cluster";
+          populateSelect(
+            trackSelect,
+            "Select Track",
+            Object.keys(shsOptions["GRADE 11"]),
+          );
+        } else if (selectedGrade === "GRADE 12") {
+          clusterStrandLabel.textContent = "Strand";
+          populateSelect(
+            trackSelect,
+            "Select Track",
+            Object.keys(shsOptions["GRADE 12"]),
+          );
+        }
+      }
+
+      function updateClustersAndStrands() {
+        const selectedGrade = gradeLevel.value;
+        const selectedTrack = trackSelect.value;
+        const gradeOptions = shsOptions[selectedGrade];
+
+        const choices =
+          gradeOptions && gradeOptions[selectedTrack]
+            ? gradeOptions[selectedTrack]
+            : [];
+
+        // Do not rename this select. Firebase saving uses clusterStrand.
+        clusterStrandSelect.name = "clusterStrand";
+
+        const label = selectedGrade === "GRADE 11" ? "Cluster" : "Strand";
+
+        clusterStrandLabel.textContent = label;
+
+        populateSelect(clusterStrandSelect, "Select " + label, choices);
+      }
+
+      gradeLevel.addEventListener("change", updateSHSOptions);
+      trackSelect.addEventListener("change", updateClustersAndStrands);
+
+      // =====================================================
+      // FIREBASE DATASET SELECTION
+      // =====================================================
+
+      function getDatabaseName() {
+        if (gradeLevel.value === "GRADE 11") {
+          return "SHS-STUDENTS-GRADE-11";
+        } else if (gradeLevel.value === "GRADE 12") {
+          return "SHS-STUDENTS-GRADE-12";
+        }
+
+        return null;
+      }
+
+      // =====================================================
+      // BIRTHDATE FORMAT AND AGE
+      // =====================================================
+
+      birthdateInput.addEventListener("input", function () {
+        let value = this.value.replace(/\D/g, "").substring(0, 8);
+
+        if (value.length >= 5) {
+          value =
+            value.substring(0, 2) +
+            "/" +
+            value.substring(2, 4) +
+            "/" +
+            value.substring(4, 8);
+        } else if (value.length >= 3) {
+          value = value.substring(0, 2) + "/" + value.substring(2, 4);
+        }
+
+        this.value = value;
+        updateBirthdateAndAge();
+      });
+
+      function updateBirthdateAndAge() {
+        const match = birthdateInput.value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+        if (!match) {
+          ageInput.value = "";
+          return;
+        }
+
+        const month = Number(match[1]);
+        const day = Number(match[2]);
+        const year = Number(match[3]);
+
+        const birthDate = new Date(year, month - 1, day);
+        const today = new Date();
+
+        if (
+          birthDate.getFullYear() !== year ||
+          birthDate.getMonth() !== month - 1 ||
+          birthDate.getDate() !== day ||
+          birthDate > today
+        ) {
+          ageInput.value = "";
+          return;
+        }
+
+        let age = today.getFullYear() - year;
+
+        if (
+          today.getMonth() < month - 1 ||
+          (today.getMonth() === month - 1 && today.getDate() < day)
+        ) {
+          age--;
+        }
+
+        ageInput.value = age;
+      }
+
+      // =====================================================
+      // ADDRESS COPYING
+      // =====================================================
+
+      const addressPairs = [
+        ["currenthouseNO", "permanenthouseNO"],
+        ["currentstreet", "permanentstreet"],
+        ["currentbarangay", "permanentbarangay"],
+        ["currentmunicipalitycity", "permanentcity"],
+        ["currentprovince", "permanentprovince"],
+        ["currentzipCode", "permanentzipCode"],
+      ];
+
+      function getField(name) {
+        return document.querySelector(`[name="${name}"]`);
+      }
+
+      function copyPermanentAddress() {
+        if (sameAddress.value !== "YES") return;
+
+        addressPairs.forEach(([currentName, permanentName]) => {
+          getField(permanentName).value = getField(currentName).value;
+        });
+      }
+
+      sameAddress.addEventListener("change", function () {
+        if (this.value === "YES") {
+          copyPermanentAddress();
+        } else {
+          addressPairs.forEach(([, permanentName]) => {
+            getField(permanentName).value = "";
+          });
+        }
+
+        controlOptionalFields();
+      });
+
+      addressPairs.forEach(([currentName]) => {
+        getField(currentName).addEventListener("input", () => {
+          if (sameAddress.value === "YES") {
+            copyPermanentAddress();
+          }
+        });
+      });
+
+      // =====================================================
+      // CONDITIONAL FIELDS
+      // =====================================================
+
+      function setDisabledAndClear(field, disabled) {
+        field.disabled = disabled;
+
+        if (disabled) {
+          field.value = "";
+          field.classList.remove("input-error");
+        }
+      }
+
+      function controlOptionalFields() {
+        setDisabledAndClear(
+          getField("lrn"),
+          getField("with-lrn").value === "NO",
+        );
+
+        const returningDisabled = getField("balik-aral").value === "NO";
+
+        ["Lastgradelevel", "Lastschool", "Lastschoolyear", "schoolid"].forEach(
+          (name) => {
+            setDisabledAndClear(getField(name), returningDisabled);
+          },
+        );
+
+        setDisabledAndClear(
+          getField("culture"),
+          getField("ip").value !== "YES",
+        );
+
+        setDisabledAndClear(
+          getField("disType"),
+          getField("disability").value !== "YES",
+        );
+
+        setDisabledAndClear(
+          getField("HouseID"),
+          getField("4Ps").value !== "YES",
+        );
+
+        if (sameAddress.value === "YES") {
+          copyPermanentAddress();
+        }
+
+        addressPairs.forEach(([, permanentName]) => {
+          getField(permanentName).disabled = sameAddress.value === "YES";
+        });
+      }
+
+      ["with-lrn", "balik-aral", "ip", "disability", "4Ps"].forEach((name) => {
+        getField(name).addEventListener("change", controlOptionalFields);
+      });
+
+      // =====================================================
+      // VALIDATION
+      // =====================================================
+
+      function clearErrors() {
+        document.querySelectorAll(".input-error").forEach((field) => {
+          field.classList.remove("input-error");
+        });
+      }
+
+      function validateRequiredFields(requiredFields) {
+        clearErrors();
+
+        for (const [field, label] of requiredFields) {
+          if (!field || !field.value.trim()) {
+            field?.classList.add("input-error");
+            alert("Please fill out: " + label);
+            field?.focus();
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function validateDigits(field, label, length) {
+        if (!new RegExp("^\\d{" + length + "}$").test(field.value.trim())) {
+          field.classList.add("input-error");
+          alert(label + " must contain exactly " + length + " digits.");
+          field.focus();
+          return false;
+        }
+
+        return true;
+      }
+
+      function validateBirthdate() {
+        const match = birthdateInput.value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+        if (!match) {
+          birthdateInput.classList.add("input-error");
+          alert("Please enter a valid birthdate in MM/DD/YYYY format.");
+          birthdateInput.focus();
+          return false;
+        }
+
+        const month = Number(match[1]);
+        const day = Number(match[2]);
+        const year = Number(match[3]);
+
+        const date = new Date(year, month - 1, day);
+
+        if (
+          date.getFullYear() !== year ||
+          date.getMonth() !== month - 1 ||
+          date.getDate() !== day ||
+          date > new Date()
+        ) {
+          birthdateInput.classList.add("input-error");
+          alert("Please enter a valid birthdate.");
+          birthdateInput.focus();
+          return false;
+        }
+
+        updateBirthdateAndAge();
+        return true;
+      }
+
+      // =====================================================
+      // ENROLL AND SAVE TO FIREBASE
+      // =====================================================
+
+      async function goToSuccess() {
+        if (isEnrolling) return;
+
+        isEnrolling = true;
+        enrollButton.disabled = true;
+        enrollButton.textContent = "ENROLLING...";
+
+        try {
+          // Convert text inputs to uppercase.
+          Array.from(form.elements).forEach((field) => {
+            if (
+              field.tagName === "INPUT" &&
+              field.type === "text" &&
+              !field.disabled
+            ) {
+              field.value = field.value.toUpperCase();
+            }
+          });
+
+          copyPermanentAddress();
+          updateBirthdateAndAge();
+
+          const names = [
+            "schoolYear",
+            "gradeLevel",
+            "termination",
+            "with-lrn",
+            "balik-aral",
+            "track",
+            "clusterStrand",
+            "psa",
+            "lrn",
+            "lastName",
+            "firstName",
+            "middleName",
+            "extension",
+            "birthdate",
+            "sex",
+            "age",
+            "placeOfBirth",
+            "religion",
+            "motherTongue",
+            "currenthouseNO",
+            "currentstreet",
+            "currentbarangay",
+            "currentmunicipalitycity",
+            "currentprovince",
+            "currentzipCode",
+            "sameaddress",
+            "permanenthouseNO",
+            "permanentstreet",
+            "permanentbarangay",
+            "permanentcity",
+            "permanentprovince",
+            "permanentzipCode",
+            "fatherName",
+            "fatherContact",
+            "motherName",
+            "motherContact",
+            "guardianName",
+            "guardianContact",
+            "ip",
+            "culture",
+            "disability",
+            "disType",
+            "4Ps",
+            "HouseID",
+            "LearningModalities",
+            "Lastgradelevel",
+            "Lastschool",
+            "Lastschoolyear",
+            "schoolid",
+          ];
+
+          const fields = {};
+
+          names.forEach((name) => {
+            fields[name] = getField(name);
+          });
+
+          const requiredFields = [
+            ["schoolYear", "School Year"],
+            ["gradeLevel", "Grade Level"],
+            ["termination", "Termination"],
+            ["with-lrn", "With LRN"],
+            ["balik-aral", "Balik-Aral/Transfer"],
+            ["track", "Track"],
+            ["clusterStrand", "Cluster/Strand"],
+            ["psa", "PSA NO."],
+            ["lastName", "Last Name"],
+            ["firstName", "First Name"],
+            ["birthdate", "Birthdate"],
+            ["sex", "Sex"],
+            ["placeOfBirth", "Place of Birth"],
+            ["religion", "Religion"],
+            ["motherTongue", "Mother Tongue"],
+            ["currenthouseNO", "Current House NO."],
+            ["currentstreet", "Current Street"],
+            ["currentbarangay", "Current Barangay"],
+            ["currentmunicipalitycity", "Current Municipality/City"],
+            ["currentprovince", "Current Province"],
+            ["currentzipCode", "Current Zip Code"],
+            ["sameaddress", "Same Address"],
+            ["fatherName", "Father's Name"],
+            ["fatherContact", "Father's Contact"],
+            ["motherName", "Mother's Name"],
+            ["motherContact", "Mother's Contact"],
+            ["guardianName", "Guardian Name"],
+            ["guardianContact", "Guardian Contact"],
+            ["ip", "Indigenous People"],
+            ["disability", "Disability"],
+            ["4Ps", "4P's Community"],
+            ["LearningModalities", "Learning Modalities"],
+          ].map(([name, label]) => [fields[name], label]);
+
+          if (fields["with-lrn"].value === "YES") {
+            requiredFields.push([fields.lrn, "LRN"]);
+          }
+
+          if (fields["balik-aral"].value === "YES") {
+            requiredFields.push(
+              [fields.Lastgradelevel, "Last Grade Level"],
+              [fields.Lastschool, "Last School Attended"],
+              [fields.Lastschoolyear, "Last School Year Completed"],
+              [fields.schoolid, "School ID"],
+            );
+          }
+
+          if (fields.sameaddress.value === "NO") {
+            requiredFields.push(
+              [fields.permanenthouseNO, "Permanent House NO."],
+              [fields.permanentstreet, "Permanent Street"],
+              [fields.permanentbarangay, "Permanent Barangay"],
+              [fields.permanentcity, "Permanent Municipality/City"],
+              [fields.permanentprovince, "Permanent Province"],
+              [fields.permanentzipCode, "Permanent Zip Code"],
+            );
+          }
+
+          if (fields.ip.value === "YES") {
+            requiredFields.push([fields.culture, "Culture"]);
+          }
+
+          if (fields.disability.value === "YES") {
+            requiredFields.push([fields.disType, "Disability Type"]);
+          }
+
+          if (fields["4Ps"].value === "YES") {
+            requiredFields.push([fields.HouseID, "4P's Household ID"]);
+          }
+
+          if (!validateRequiredFields(requiredFields)) return;
+          if (!validateBirthdate()) return;
+
+          if (
+            fields["with-lrn"].value === "YES" &&
+            !validateDigits(fields.lrn, "LRN", 12)
+          )
+            return;
+
+          for (const [name, label] of [
+            ["fatherContact", "Father's Contact Number"],
+            ["motherContact", "Mother's Contact Number"],
+            ["guardianContact", "Guardian Contact Number"],
+          ]) {
+            if (!validateDigits(fields[name], label, 11)) return;
+          }
+
+          if (!validateDigits(fields.currentzipCode, "Current Zip Code", 4)) {
+            return;
+          }
+
+          if (
+            fields.sameaddress.value === "NO" &&
+            !validateDigits(fields.permanentzipCode, "Permanent Zip Code", 4)
+          ) {
+            return;
+          }
+
+          const dataset = getDatabaseName();
+
+          if (!dataset) {
+            alert("Please select Grade 11 or Grade 12.");
+            gradeLevel.focus();
+            return;
+          }
+
+          // Confirm the selected track and cluster/strand are valid.
+          const isGrade11 = fields.gradeLevel.value === "GRADE 11";
+          const validOptions = shsOptions[fields.gradeLevel.value];
+          const validChoices = validOptions?.[fields.track.value];
+
+          if (
+            !validChoices ||
+            !validChoices.includes(fields.clusterStrand.value)
+          ) {
+            alert("Please select a valid SHS track and cluster/strand.");
+            fields.clusterStrand.focus();
+            return;
+          }
+
+          const response = await fetch(`${FIREBASE_URL}/${dataset}.json`);
+
+          if (!response.ok) {
+            throw new Error("Unable to retrieve existing SHS students.");
+          }
+
+          const allStudents = await response.json();
+
+          // Duplicate checking by LRN only within the selected dataset.
+          if (fields["with-lrn"].value === "YES" && allStudents) {
+            const enteredLRN = fields.lrn.value.trim();
+
+            const duplicateLRN = Object.values(allStudents).some((student) => {
+              if (!student || typeof student !== "object") return false;
+
+              const learnerInfo =
+                student["1-LEARNERS-INFORMATION"] ||
+                student["1-School-Information"] ||
+                {};
+
+              const existingLRN = learnerInfo["8-LRN"] ?? learnerInfo["5-LRN"];
+
+              return (
+                existingLRN != null && String(existingLRN).trim() === enteredLRN
+              );
+            });
+
+            if (duplicateLRN) {
+              alert("THIS STUDENT IS ALREADY ENROLLED.");
+              fields.lrn.classList.add("input-error");
+              fields.lrn.focus();
+              return;
+            }
+          }
+
+          // Generate a unique registration ID.
+          let studentID;
+
+          do {
+            studentID =
+              "STU-" +
+              Math.floor(Math.random() * 1000000)
+                .toString()
+                .padStart(6, "0");
+          } while (allStudents && allStudents[studentID]);
+
+          // Format timestamp as MM/DD/YYYY.
+          const today = new Date();
+
+          const formattedDate =
+            String(today.getMonth() + 1).padStart(2, "0") +
+            "/" +
+            String(today.getDate()).padStart(2, "0") +
+            "/" +
+            today.getFullYear();
+
+          const studentData = {
+            "1-LEARNERS-INFORMATION": {
+              "1-SCHOOL-YEAR": fields.schoolYear.value,
+              "2-GRADE-LEVEL": fields.gradeLevel.value,
+              "3-TERMINATION": fields.termination.value,
+              "4-WITH-LRN": fields["with-lrn"].value,
+              "5-BALIK-ARAL": fields["balik-aral"].value,
+              "6-TRACK": fields.track.value,
+              "7-STRAND": fields.clusterStrand.value,
+              "8-LRN": fields.lrn.value,
+            },
+
+            "2-PERSONAL-INFORMATION": {
+              "1-PSA": fields.psa.value,
+              "2-LAST-NAME": fields.lastName.value,
+              "3-FIRST-NAME": fields.firstName.value,
+              "4-MIDDLE-NAME": fields.middleName.value,
+              "5-EXTENSION": fields.extension.value,
+              "6-BIRTHDATE": fields.birthdate.value,
+              "7-SEX": fields.sex.value,
+              "8-AGE": fields.age.value,
+              "9-PLACE-OF-BIRTH": fields.placeOfBirth.value,
+              "10-RELIGION": fields.religion.value,
+              "11-MOTHER-TONGUE": fields.motherTongue.value,
+            },
+
+            "3-CURRENT-ADDRESS": {
+              "1-HOUSE-NO": fields.currenthouseNO.value,
+              "2-STREET": fields.currentstreet.value,
+              "3-BARANGAY": fields.currentbarangay.value,
+              "4-CITY": fields.currentmunicipalitycity.value,
+              "5-PROVINCE": fields.currentprovince.value,
+              "6-ZIP-CODE": fields.currentzipCode.value,
+            },
+
+            "4-PERMANENT-ADDRESS": {
+              "1-HOUSE-NO": fields.permanenthouseNO.value,
+              "2-STREET": fields.permanentstreet.value,
+              "3-BARANGAY": fields.permanentbarangay.value,
+              "4-CITY": fields.permanentcity.value,
+              "5-PROVINCE": fields.permanentprovince.value,
+              "6-ZIP-CODE": fields.permanentzipCode.value,
+            },
+
+            "5-PARENTS": {
+              "1-FATHER-NAME": fields.fatherName.value,
+              "2-FATHER-CONTACT": fields.fatherContact.value,
+              "3-MOTHER-NAME": fields.motherName.value,
+              "4-MOTHER-CONTACT": fields.motherContact.value,
+              "5-GUARDIAN-NAME": fields.guardianName.value,
+              "6-GUARDIAN-CONTACT": fields.guardianContact.value,
+            },
+
+            "6-OPTIONAL": {
+              "1-IP": fields.ip.value,
+              "2-CULTURE": fields.culture.value,
+              "3-DISABILITY": fields.disability.value,
+              "4-DISABILITY-TYPE": fields.disType.value,
+              "5-4PS": fields["4Ps"].value,
+              "6-HOUSE-ID": fields.HouseID.value,
+              "7-LEARNING-MODALITY": fields.LearningModalities.value,
+            },
+
+            "7-BALIK-ARAL-TRANSFER": {
+              "1-LAST-GRADE-LEVEL": fields.Lastgradelevel.value,
+              "2-LAST-SCHOOL": fields.Lastschool.value,
+              "3-LAST-SCHOOL-YEAR": fields.Lastschoolyear.value,
+              "4-SCHOOL-ID": fields.schoolid.value,
+            },
+
+            "8-TIME-STAMP": formattedDate,
+            "9-REGISTRATION-ID": studentID,
+          };
+
+          const saveResponse = await fetch(
+            `${FIREBASE_URL}/${dataset}/${studentID}.json`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(studentData),
+            },
+          );
+
+          if (!saveResponse.ok) {
+            throw new Error("Failed to save SHS student enrollment.");
+          }
+
+          const savedRecord = await saveResponse.json();
+
+          if (!savedRecord || savedRecord["9-REGISTRATION-ID"] !== studentID) {
+            throw new Error(
+              "Firebase did not confirm the saved student record.",
+            );
+          }
+
+          localStorage.setItem("studentID", studentID);
+          localStorage.setItem("studentDatabase", dataset);
+
+          alert("YOU REGISTERED SUCCESSFULLY!");
+          window.location.href = "successfullshs.html";
+        } catch (error) {
+          console.error("SHS Enrollment Error:", error);
+
+          alert(
+            "An error occurred while saving the enrollment. Please check your internet connection and try again.",
+          );
+        } finally {
+          isEnrolling = false;
+          enrollButton.disabled = false;
+          enrollButton.textContent = "ENROLL";
+        }
+      }
+
+      enrollButton.addEventListener("click", goToSuccess);
+
+      // =====================================================
+      // INITIAL STATE
+      // =====================================================
+
+      updateSHSOptions();
+      controlOptionalFields();
+      updateBirthdateAndAge();
+    </script>
+  </body>
+</html>

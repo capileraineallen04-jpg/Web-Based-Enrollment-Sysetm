@@ -1,0 +1,166 @@
+function syncStudentsBySchoolType() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const jhsSheet = ss.getSheetByName("Junior High School") || ss.insertSheet("Junior High School");
+  jhsSheet.clearContents();
+
+  const jhsURL = "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app/JHS-Students.json";
+  const jhsData = JSON.parse(UrlFetchApp.fetch(jhsURL).getContentText());
+
+  const jhsHeaders = [
+    "Registration ID",
+    "School Year","Grade Level","With LRN","Balik-Aral",
+    "PSA Birthcertificate No.","LRN No.","Last Name","First Name","Middle Name","Extension","Birthdate","Sex","Age",
+    "Place Of Birth","Religion","Mother Tongue",
+    "Current House No","Current Street","Current Barangay","Current City","Current Province","Current Zip Code",
+    "Permanent House No","Permanent Street","Permanent Barangay","Permanent City","Permanent Province","Permanent Zip Code",
+    "Father Name","Father Contact","Mother Name","Mother Contact","Guardian Name","Guardian Contact",
+    "Indegenous People","Indegenous People Community","Disability","Disability Type","4Ps","HouseID","Learning Modality",
+    "Last Grade Level","Last School","Last School Year","School ID",
+    "Timestamp"
+  ];
+  jhsSheet.appendRow(jhsHeaders);
+
+  const jhsRows = [];
+  for (const key in jhsData) {
+    const s = jhsData[key];
+    jhsRows.push([
+      key,
+      s["1-School-Information"]["1-School-Year"] || "",
+      s["1-School-Information"]["2-Grade-Level"] || "",
+      s["1-School-Information"]["3-With-LRN"] || "",
+      s["1-School-Information"]["4-Balik-Aral"] || "",
+      s["2-Personal-Information"]["1-PSA"] || "",
+      s["2-Personal-Information"]["2-LRN"] || "",
+      s["2-Personal-Information"]["3-Last-Name"] || "",
+      s["2-Personal-Information"]["4-First-Name"] || "",
+      s["2-Personal-Information"]["5-Middle-Name"] || "",
+      s["2-Personal-Information"]["6-Extension"] || "",
+      s["2-Personal-Information"]["7-Birthdate"] || "",
+      s["2-Personal-Information"]["8-Sex"] || "",
+      s["2-Personal-Information"]["9-Age"] || "",
+      s["2-Personal-Information"]["10-Place-Of-Birth"] || "",
+      s["2-Personal-Information"]["11-Religion"] || "",
+      s["2-Personal-Information"]["12-Mother-Tongue"] || "",
+      s["3-Current-Address"]["1-House-No"] || "",
+      s["3-Current-Address"]["2-Street"] || "",
+      s["3-Current-Address"]["3-Barangay"] || "",
+      s["3-Current-Address"]["4-City"] || "",
+      s["3-Current-Address"]["5-Province"] || "",
+      s["3-Current-Address"]["6-Zip-Code"] || "",
+      s["4-Permanent-Address"]["1-House-No"] || "",
+      s["4-Permanent-Address"]["2-Street"] || "",
+      s["4-Permanent-Address"]["3-Barangay"] || "",
+      s["4-Permanent-Address"]["4-City"] || "",
+      s["4-Permanent-Address"]["5-Province"] || "",
+      s["4-Permanent-Address"]["6-Zip-Code"] || "",
+      s["5-Parents"]["1-Father-Name"] || "",
+      s["5-Parents"]["2-Father-Contact"] || "",
+      s["5-Parents"]["3-Mother-Name"] || "",
+      s["5-Parents"]["4-Mother-Contact"] || "",
+      s["5-Parents"]["5-Guardian-Name"] || "",
+      s["5-Parents"]["6-Guardian-Contact"] || "",
+      s["6-Optional"]["1-IP"] || "",
+      s["6-Optional"]["2-Culture"] || "",
+      s["6-Optional"]["3-Disability"] || "",
+      s["6-Optional"]["4-Disability-Type"] || "",
+      s["6-Optional"]["5-4Ps"] || "",
+      s["6-Optional"]["6-HouseID"] || "",
+      s["6-Optional"]["7-Learning-Modality"] || "",
+      s["7-Balik-Aral-Transfer"]["1-Last-Grade-Level"] || "",
+      s["7-Balik-Aral-Transfer"]["2-Last-School"] || "",
+      s["7-Balik-Aral-Transfer"]["3-Last-School-Year"] || "",
+      s["7-Balik-Aral-Transfer"]["4-School-ID"] || "",
+      s["8-Time-Stamp"] || ""
+    ]);
+  }
+
+  if (jhsRows.length) {
+    jhsSheet.getRange(2, 1, jhsRows.length, jhsRows[0].length).setValues(jhsRows);
+    [5,6].forEach(col => jhsSheet.getRange(2, col, jhsRows.length, 1).setNumberFormat("@STRING@"));
+  }
+
+  const shsSheet = ss.getSheetByName("Senior High School") || ss.insertSheet("Senior High School");
+  shsSheet.clearContents();
+
+  const shsURL = "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app/SHS-Students.json";
+  const shsData = JSON.parse(UrlFetchApp.fetch(shsURL).getContentText());
+
+  const shsHeaders = [
+    "Registration ID",
+    "School Year","Grade Level","With LRN","Balik-Aral","Semester","Track","Strand",
+    "PSA Birthcertificate No.","LRN No.","Last Name","First Name","Middle Name","Extension","Birthdate","Sex","Age",
+    "Place Of Birth","Religion","Mother Tongue",
+    "Current House No","Current Street","Current Barangay","Current City","Current Province","Current Zip Code",
+    "Permanent House No","Permanent Street","Permanent Barangay","Permanent City","Permanent Province","Permanent Zip Code",
+    "Father Name","Father Contact","Mother Name","Mother Contact","Guardian Name","Guardian Contact",
+    "Indegenous People","Indegenous People Community","Disability","Disability Type","4Ps","HouseID","Learning Modality",
+    "Last Grade Level","Last School","Last School Year","School ID",
+    "Timestamp"
+  ];
+  shsSheet.appendRow(shsHeaders);
+
+  const shsRows = [];
+  for (const key in shsData) {
+    const s = shsData[key];
+    shsRows.push([
+      key,
+      s["1-School-Information"]["1-School-Year"] || "",
+      s["1-School-Information"]["2-Grade-Level"] || "",
+      s["1-School-Information"]["6-With-LRN"] || "",
+      s["1-School-Information"]["7-Balik-Aral"] || "",
+      s["1-School-Information"]["3-Semester"] || "",
+      s["1-School-Information"]["4-Track"] || "",
+      s["1-School-Information"]["5-Strand"] || "",
+      s["2-Personal-Information"]["1-PSA"] || "",
+      s["2-Personal-Information"]["2-LRN"] || "",
+      s["2-Personal-Information"]["3-Last-Name"] || "",
+      s["2-Personal-Information"]["4-First-Name"] || "",
+      s["2-Personal-Information"]["5-Middle-Name"] || "",
+      s["2-Personal-Information"]["6-Extension"] || "",
+      s["2-Personal-Information"]["7-Birthdate"] || "",
+      s["2-Personal-Information"]["8-Sex"] || "",
+      s["2-Personal-Information"]["9-Age"] || "",
+      s["2-Personal-Information"]["10-Place-Of-Birth"] || "",
+      s["2-Personal-Information"]["11-Religion"] || "",
+      s["2-Personal-Information"]["12-Mother-Tongue"] || "",
+      s["3-Current-Address"]["1-House-No"] || "",
+      s["3-Current-Address"]["2-Street"] || "",
+      s["3-Current-Address"]["3-Barangay"] || "",
+      s["3-Current-Address"]["4-City"] || "",
+      s["3-Current-Address"]["5-Province"] || "",
+      s["3-Current-Address"]["6-Zip-Code"] || "",
+      s["4-Permanent-Address"]["1-House-No"] || "",
+      s["4-Permanent-Address"]["2-Street"] || "",
+      s["4-Permanent-Address"]["3-Barangay"] || "",
+      s["4-Permanent-Address"]["4-City"] || "",
+      s["4-Permanent-Address"]["5-Province"] || "",
+      s["4-Permanent-Address"]["6-Zip-Code"] || "",
+      s["5-Parents"]["1-Father-Name"] || "",
+      s["5-Parents"]["2-Father-Contact"] || "",
+      s["5-Parents"]["3-Mother-Name"] || "",
+      s["5-Parents"]["4-Mother-Contact"] || "",
+      s["5-Parents"]["5-Guardian-Name"] || "",
+      s["5-Parents"]["6-Guardian-Contact"] || "",
+      s["6-Optional"]["1-IP"] || "",
+      s["6-Optional"]["2-Culture"] || "",
+      s["6-Optional"]["3-Disability"] || "",
+      s["6-Optional"]["4-Disability-Type"] || "",
+      s["6-Optional"]["5-4Ps"] || "",
+      s["6-Optional"]["6-HouseID"] || "",
+      s["6-Optional"]["7-Learning-Modality"] || "",
+      s["7-Balik-Aral-Transfer"]["1-Last-Grade-Level"] || "",
+      s["7-Balik-Aral-Transfer"]["2-Last-School"] || "",
+      s["7-Balik-Aral-Transfer"]["3-Last-School-Year"] || "",
+      s["7-Balik-Aral-Transfer"]["4-School-ID"] || "",
+      s["8-Time-Stamp"] || ""
+    ]);
+  }
+
+  if (shsRows.length) {
+    shsSheet.getRange(2, 1, shsRows.length, shsRows[0].length).setValues(shsRows);
+    [8,9].forEach(col => shsSheet.getRange(2, col, shsRows.length, 1).setNumberFormat("@STRING@"));
+  }
+
+  Logger.log("JHS and SHS students synced successfully!");
+}

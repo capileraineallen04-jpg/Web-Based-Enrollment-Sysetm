@@ -1,0 +1,1298 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COR Recovery | EnrollEase: THS</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    :root {
+      --navy: #071b49;
+      --blue: #1456c0;
+      --light-blue: #edf4ff;
+      --green: #16834a;
+      --red: #c62828;
+      --text: #263449;
+      --muted: #6b7789;
+      --border: #dce5f1;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 25px 16px;
+      font-family: "Poppins", sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(rgba(5, 24, 65, .84), rgba(8, 38, 91, .89)),
+        url("TaalHighSchool.png") center / cover fixed no-repeat;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 950px;
+      margin: auto;
+    }
+
+    .school-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 25px;
+      color: white;
+      text-align: center;
+    }
+
+    .school-logo {
+      width: 65px;
+      height: 65px;
+      padding: 4px;
+      border-radius: 50%;
+      background: white;
+      object-fit: contain;
+    }
+
+    .school-header h1 {
+      font-size: clamp(18px, 3vw, 27px);
+      font-weight: 800;
+    }
+
+    .school-header p {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .card {
+      overflow: hidden;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+    }
+
+    .hero {
+      padding: 30px 24px;
+      text-align: center;
+      background: linear-gradient(135deg, #edf4ff, #ffffff);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 66px;
+      height: 66px;
+      margin: 0 auto 15px;
+      border-radius: 18px;
+      background: #dce9ff;
+      color: var(--blue);
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .hero h2 {
+      color: var(--navy);
+      font-size: clamp(23px, 4vw, 30px);
+      margin-bottom: 9px;
+    }
+
+    .hero p {
+      max-width: 620px;
+      margin: auto;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .section-title {
+      color: var(--navy);
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .description {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 22px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 16px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: #24354e;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid #ccd7e5;
+      border-radius: 9px;
+      outline: none;
+      background: white;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(20, 86, 192, .10);
+    }
+
+    .help-text {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.7;
+      margin-top: 7px;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 16px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      transition: background .2s ease;
+    }
+
+    .button-primary {
+      color: white;
+      background: var(--blue);
+    }
+
+    .button-primary:hover {
+      background: #1047a1;
+    }
+
+    .button-secondary {
+      color: var(--navy);
+      background: #edf2fa;
+      border-color: #d8e1ef;
+    }
+
+    .button-secondary:hover {
+      background: #e0e9f7;
+    }
+
+    .button-home {
+      width: 100%;
+      max-width: 260px;
+      color: var(--blue);
+      background: white;
+      border-color: #cbdcff;
+    }
+
+    .button-home:hover {
+      background: var(--light-blue);
+    }
+
+    .home-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 14px;
+    }
+
+    .button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 18px;
+      padding: 13px 15px;
+      border-radius: 9px;
+      font-size: 12px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.info {
+      color: #174a91;
+      background: #edf4ff;
+      border: 1px solid #d3e3ff;
+    }
+
+    .message.success {
+      color: #176d3d;
+      background: #eaf8ef;
+      border: 1px solid #ccebd7;
+    }
+
+    .message.error {
+      color: #a51e1e;
+      background: #fff0f0;
+      border: 1px solid #ffd5d5;
+    }
+
+    .record-section {
+      display: none;
+      margin-top: 28px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border);
+    }
+
+    .record-section.show {
+      display: block;
+    }
+
+    .record-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .record-item {
+      min-width: 0;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #fbfcff;
+    }
+
+    .record-label {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .record-value {
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .privacy-note {
+      margin-top: 22px;
+      padding: 14px;
+      border: 1px solid #f0dfb7;
+      border-radius: 9px;
+      background: #fff8e8;
+      color: #77520c;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .footer {
+      padding: 22px 10px 5px;
+      color: white;
+      font-size: 11px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 16px 10px;
+        background-attachment: scroll;
+      }
+
+      .school-header {
+        gap: 8px;
+      }
+
+      .school-logo {
+        width: 42px;
+        height: 42px;
+      }
+
+      .school-header p {
+        font-size: 10px;
+      }
+
+      .content {
+        padding: 21px 16px;
+      }
+
+      .form-grid,
+      .button-group,
+      .record-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<main class="page">
+
+  <header class="school-header">
+    <img src="DepED-Logo-500x281.png"
+         alt="Department of Education logo"
+         class="school-logo">
+
+    <div>
+      <h1>TAAL HIGH SCHOOL</h1>
+      <p>EnrollEase | Enrollment Management System</p>
+    </div>
+
+    <img src="taal-removebg-preview.png"
+         alt="Taal High School logo"
+         class="school-logo">
+  </header>
+
+  <section class="card">
+
+    <div class="hero">
+      <div class="hero-icon" aria-hidden="true">↻</div>
+      <h2>COR Recovery</h2>
+      <p>
+        Lost or misplaced your Certificate of Registration?
+        Recover your saved enrollment record using your Registration ID
+        or Learner Reference Number (LRN).
+      </p>
+    </div>
+
+    <div class="content">
+
+      <h3 class="section-title">Recover Your Enrollment Record</h3>
+
+      <p class="description">
+        Select your school level and recovery method. Enter the information
+        associated with your enrollment to retrieve your record.
+      </p>
+
+      <form id="recoveryForm">
+
+        <div class="form-grid">
+
+          <div class="field">
+            <label for="schoolLevel">School Level</label>
+            <select id="schoolLevel" required>
+              <option value="SHS">Senior High School</option>
+              <option value="JHS">Junior High School</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="searchType">Recovery Method</label>
+            <select id="searchType" required>
+              <option value="registrationID">Registration ID</option>
+              <option value="lrn">Learner Reference Number (LRN)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="field">
+          <label for="searchValue" id="searchLabel">Registration ID</label>
+          <input
+            type="text"
+            id="searchValue"
+            placeholder="Enter your Registration ID"
+            autocomplete="off"
+            required
+          >
+          <p class="help-text" id="searchHelp">
+            Enter the Registration ID assigned when you enrolled.
+          </p>
+        </div>
+
+        <div class="button-group">
+          <button type="submit"
+                  class="button button-primary"
+                  id="searchButton">
+            Find Enrollment Record
+          </button>
+
+          <button type="button"
+                  class="button button-secondary"
+                  id="clearButton">
+            Clear Form
+          </button>
+        </div>
+
+      </form>
+
+      <div id="message"
+           class="message"
+           role="status"
+           aria-live="polite"></div>
+
+      <section id="recordSection" class="record-section">
+
+        <h3 class="section-title">Recovered Enrollment Record</h3>
+
+        <p class="description">
+          Verify the recovered information before downloading your PDF.
+        </p>
+
+        <div id="recordGrid" class="record-grid"></div>
+
+        <div class="button-group">
+          <button type="button"
+                  id="downloadButton"
+                  class="button button-primary">
+            Download COR PDF
+          </button>
+        </div>
+
+        <div class="privacy-note">
+          <strong>Data Privacy Notice:</strong>
+          Enrollment records contain personal information. Only retrieve
+          your own record or a record you are authorized to access.
+          The generated document may require school verification.
+        </div>
+
+      </section>
+
+      <div class="home-container">
+        <button type="button"
+                class="button button-home"
+                onclick="goHome()">
+          &#8592; Back to Home
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>EnrollEase | Taal High School</p>
+    <p>Enrollment Management System</p>
+  </footer>
+
+</main>
+
+<script>
+"use strict";
+
+// ============================================================
+// 1. FIREBASE CONFIGURATION
+// ============================================================
+
+const FIREBASE_URL =
+  "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+// Exact Firebase dataset names provided by you.
+const DATABASES = {
+  JHS: [
+    "JHS-Students-GRADE-7",
+    "JHS-Students-GRADE-8",
+    "JHS-Students-GRADE-9",
+    "JHS-Students-GRADE-10"
+  ],
+
+  SHS: [
+    "SHS-STUDENTS-GRADE-11",
+    "SHS-STUDENTS-GRADE-12"
+  ]
+};
+
+// ============================================================
+// 2. PAGE ELEMENTS
+// ============================================================
+
+const form = document.getElementById("recoveryForm");
+const schoolLevel = document.getElementById("schoolLevel");
+const searchType = document.getElementById("searchType");
+const searchValue = document.getElementById("searchValue");
+const searchLabel = document.getElementById("searchLabel");
+const searchHelp = document.getElementById("searchHelp");
+const searchButton = document.getElementById("searchButton");
+const clearButton = document.getElementById("clearButton");
+const downloadButton = document.getElementById("downloadButton");
+const message = document.getElementById("message");
+const recordSection = document.getElementById("recordSection");
+const recordGrid = document.getElementById("recordGrid");
+
+let recoveredRecord = null;
+let recoveredRegistrationID = "";
+let recoveredDatabase = "";
+
+// ============================================================
+// 3. NAVIGATION
+// ============================================================
+
+function goHome() {
+  window.location.href = "index.html";
+}
+
+// ============================================================
+// 4. GENERAL HELPERS
+// ============================================================
+
+function clean(value) {
+  if (value === null || value === undefined) return "";
+  if (typeof value === "object") return "";
+  return String(value).trim();
+}
+
+function showMessage(text, type) {
+  message.textContent = text;
+  message.className = "message show " + type;
+}
+
+function clearMessage() {
+  message.textContent = "";
+  message.className = "message";
+}
+
+function getLearners(record) {
+  return record?.["1-LEARNERS-INFORMATION"] || {};
+}
+
+function getPersonal(record) {
+  return record?.["2-PERSONAL-INFORMATION"] || {};
+}
+
+function getGradeNumber(value) {
+  const match = String(value || "").match(/\d+/);
+  return match ? Number(match[0]) : 0;
+}
+
+function getRegistrationID(record, firebaseKey) {
+  const learners = getLearners(record);
+
+  return clean(record["9-REGISTRATION-ID"]) ||
+         clean(record.registrationID) ||
+         clean(record.studentID) ||
+         clean(learners["9-REGISTRATION-ID"]) ||
+         clean(firebaseKey);
+}
+
+function getLRN(record) {
+  const learners = getLearners(record);
+  const personal = getPersonal(record);
+
+  return clean(learners["8-LRN"]) ||
+         clean(learners["5-LRN"]) ||
+         clean(personal["LRN"]) ||
+         clean(record.LRN);
+}
+
+function getName(record) {
+  const personal = getPersonal(record);
+
+  return [
+    personal["3-FIRST-NAME"],
+    personal["4-MIDDLE-NAME"],
+    personal["2-LAST-NAME"],
+    personal["5-EXTENSION"]
+  ].map(clean).filter(Boolean).join(" ");
+}
+
+function getAddress(address) {
+  if (!address) return "";
+
+  return [
+    address["1-HOUSE-NO"],
+    address["2-STREET"],
+    address["3-BARANGAY"],
+    address["4-CITY"],
+    address["5-PROVINCE"],
+    address["6-ZIP-CODE"]
+  ].map(clean).filter(Boolean).join(", ");
+}
+
+function getAcademicLabel(learners) {
+  return getGradeNumber(learners["2-GRADE-LEVEL"]) === 11
+    ? "Cluster"
+    : "Strand";
+}
+
+function getLevelFromRecord(record) {
+  const learners = getLearners(record);
+  const grade = getGradeNumber(learners["2-GRADE-LEVEL"]);
+
+  if (grade >= 7 && grade <= 10) return "JHS";
+  if (grade >= 11 && grade <= 12) return "SHS";
+
+  return "";
+}
+
+// ============================================================
+// 5. SEARCH INPUT BEHAVIOR
+// ============================================================
+
+function updateSearchField() {
+  if (searchType.value === "lrn") {
+    searchLabel.textContent = "Learner Reference Number (LRN)";
+    searchValue.placeholder = "Enter your 12-digit LRN";
+    searchValue.maxLength = 12;
+    searchValue.inputMode = "numeric";
+    searchHelp.textContent = "Enter the 12-digit LRN recorded during enrollment.";
+  } else {
+    searchLabel.textContent = "Registration ID";
+    searchValue.placeholder = "Enter your Registration ID";
+    searchValue.removeAttribute("maxLength");
+    searchValue.inputMode = "text";
+    searchHelp.textContent = "Enter the Registration ID assigned when you enrolled.";
+  }
+
+  clearMessage();
+  recordSection.classList.remove("show");
+  recoveredRecord = null;
+  recoveredRegistrationID = "";
+}
+
+searchType.addEventListener("change", updateSearchField);
+
+searchValue.addEventListener("input", function () {
+  if (searchType.value === "lrn") {
+    this.value = this.value.replace(/\D/g, "").slice(0, 12);
+  }
+});
+
+schoolLevel.addEventListener("change", function () {
+  clearMessage();
+  recordSection.classList.remove("show");
+  recoveredRecord = null;
+  recoveredRegistrationID = "";
+});
+
+// ============================================================
+// 6. READ FIREBASE DATABASE
+// ============================================================
+
+async function fetchDatabase(databaseName) {
+  const url =
+    `${FIREBASE_URL}/${encodeURIComponent(databaseName)}.json`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(
+      `Firebase returned HTTP ${response.status} for "${databaseName}".`
+    );
+  }
+
+  return await response.json();
+}
+
+// ============================================================
+// 7. IDENTIFY THE STUDENT
+// ============================================================
+
+function matchesSearch(record, firebaseKey, type, query) {
+  if (!record || typeof record !== "object") return false;
+
+  if (type === "registrationID") {
+    const registrationID = getRegistrationID(record, firebaseKey);
+
+    return registrationID.toLowerCase() === query.toLowerCase();
+  }
+
+  return getLRN(record) === query;
+}
+
+// ============================================================
+// 8. SEARCH THE SELECTED SCHOOL LEVEL
+// ============================================================
+
+async function findEnrollmentRecord(type, query, level) {
+  const databaseNames = DATABASES[level] || [];
+
+  let successfulReads = 0;
+  const failedDatabases = [];
+
+  for (const databaseName of databaseNames) {
+    try {
+      const database = await fetchDatabase(databaseName);
+
+      // A null response means no data exists at this path.
+      if (!database || typeof database !== "object") {
+        successfulReads++;
+        continue;
+      }
+
+      successfulReads++;
+
+      for (const [firebaseKey, record] of Object.entries(database)) {
+        if (!record || typeof record !== "object") continue;
+
+        if (!matchesSearch(record, firebaseKey, type, query)) {
+          continue;
+        }
+
+        const actualLevel = getLevelFromRecord(record);
+
+        // The record's grade must agree with the selected level.
+        if (actualLevel && actualLevel !== level) {
+          continue;
+        }
+
+        return {
+          record,
+          registrationID: getRegistrationID(record, firebaseKey),
+          databaseName
+        };
+      }
+    } catch (error) {
+      console.error(`Could not read ${databaseName}:`, error);
+      failedDatabases.push(databaseName);
+    }
+  }
+
+  if (successfulReads === 0 && failedDatabases.length > 0) {
+    throw new Error(
+      "Unable to access any " + level + " database. Check the Firebase " +
+      "URL, dataset names, and database read permissions. Failed datasets: " +
+      failedDatabases.join(", ")
+    );
+  }
+
+  return null;
+}
+
+// ============================================================
+// 9. SEARCH FORM SUBMISSION
+// ============================================================
+
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const type = searchType.value;
+  const query = searchValue.value.trim();
+  const level = schoolLevel.value;
+
+  clearMessage();
+  recordSection.classList.remove("show");
+
+  recoveredRecord = null;
+  recoveredRegistrationID = "";
+  recoveredDatabase = "";
+
+  if (!query) {
+    showMessage("Please enter your Registration ID or LRN.", "error");
+    searchValue.focus();
+    return;
+  }
+
+  if (type === "lrn" && !/^\d{12}$/.test(query)) {
+    showMessage("Please enter a valid 12-digit LRN.", "error");
+    searchValue.focus();
+    return;
+  }
+
+  searchButton.disabled = true;
+  searchButton.textContent = "Searching...";
+
+  showMessage(
+    "Searching the " + level + " enrollment databases. Please wait...",
+    "info"
+  );
+
+  try {
+    const result = await findEnrollmentRecord(type, query, level);
+
+    if (!result) {
+      showMessage(
+        "No matching record was found in the selected school level. " +
+        "Check the Registration ID or LRN and try again.",
+        "error"
+      );
+      return;
+    }
+
+    recoveredRecord = result.record;
+    recoveredRegistrationID = result.registrationID;
+    recoveredDatabase = result.databaseName;
+
+    displayRecord(recoveredRecord, recoveredRegistrationID);
+
+    showMessage(
+      "Enrollment record recovered successfully from " +
+      recoveredDatabase + ".",
+      "success"
+    );
+
+  } catch (error) {
+    console.error("COR recovery error:", error);
+    showMessage(error.message, "error");
+
+  } finally {
+    searchButton.disabled = false;
+    searchButton.textContent = "Find Enrollment Record";
+  }
+});
+
+// ============================================================
+// 10. DISPLAY RECOVERED STUDENT RECORD
+// ============================================================
+
+function displayRecord(record, registrationID) {
+  recordGrid.replaceChildren();
+
+  const learners = record["1-LEARNERS-INFORMATION"] || {};
+  const personal = record["2-PERSONAL-INFORMATION"] || {};
+  const current = record["3-CURRENT-ADDRESS"] || {};
+  const permanent = record["4-PERMANENT-ADDRESS"] || {};
+  const parents = record["5-PARENTS"] || {};
+  const optional = record["6-OPTIONAL"] || {};
+  const transfer = record["7-BALIK-ARAL-TRANSFER"] || {};
+
+  const items = [
+    ["Registration ID", registrationID],
+    ["School Year", learners["1-SCHOOL-YEAR"]],
+    ["Grade Level", learners["2-GRADE-LEVEL"]],
+    ["Termination", learners["3-TERMINATION"]],
+    ["With LRN", learners["4-WITH-LRN"]],
+    ["Balik-Aral / Transfer", learners["5-BALIK-ARAL"]],
+    ["Track", learners["6-TRACK"]],
+    [getAcademicLabel(learners), learners["7-STRAND"]],
+    ["LRN", getLRN(record)],
+    ["Full Name", getName(record)],
+    ["PSA", personal["1-PSA"]],
+    ["Birthdate", personal["6-BIRTHDATE"]],
+    ["Sex", personal["7-SEX"]],
+    ["Age", personal["8-AGE"]],
+    ["Place of Birth", personal["9-PLACE-OF-BIRTH"]],
+    ["Religion", personal["10-RELIGION"]],
+    ["Mother Tongue", personal["11-MOTHER-TONGUE"]],
+    ["Current Address", getAddress(current)],
+    ["Permanent Address", getAddress(permanent)],
+    ["Father's Name", parents["1-FATHER-NAME"]],
+    ["Father's Contact", parents["2-FATHER-CONTACT"]],
+    ["Mother's Name", parents["3-MOTHER-NAME"]],
+    ["Mother's Contact", parents["4-MOTHER-CONTACT"]],
+    ["Guardian's Name", parents["5-GUARDIAN-NAME"]],
+    ["Guardian's Contact", parents["6-GUARDIAN-CONTACT"]],
+    ["Indigenous People", optional["1-IP"]],
+    ["Culture", optional["2-CULTURE"]],
+    ["Disability", optional["3-DISABILITY"]],
+    ["Disability Type", optional["4-DISABILITY-TYPE"]],
+    ["4Ps", optional["5-4PS"]],
+    ["Household ID", optional["6-HOUSE-ID"]],
+    ["Learning Modality", optional["7-LEARNING-MODALITY"]],
+    ["Previous Grade Level", transfer["1-LAST-GRADE-LEVEL"]],
+    ["Previous School", transfer["2-LAST-SCHOOL"]],
+    ["Previous School Year", transfer["3-LAST-SCHOOL-YEAR"]],
+    ["Previous School ID", transfer["4-SCHOOL-ID"]],
+    ["Date Submitted", record["8-TIME-STAMP"]]
+  ];
+
+  items.forEach(([label, value]) => {
+    const item = document.createElement("div");
+    item.className = "record-item";
+
+    const labelElement = document.createElement("div");
+    labelElement.className = "record-label";
+    labelElement.textContent = label;
+
+    const valueElement = document.createElement("div");
+    valueElement.className = "record-value";
+    valueElement.textContent = clean(value) || "Not provided";
+
+    item.append(labelElement, valueElement);
+    recordGrid.appendChild(item);
+  });
+
+  recordSection.classList.add("show");
+}
+
+// ============================================================
+// 11. PDF GENERATION
+// ============================================================
+
+function downloadCOR() {
+  if (!recoveredRecord) {
+    showMessage("Find your enrollment record before downloading.", "error");
+    return;
+  }
+
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    showMessage(
+      "The PDF library could not load. Check your internet connection and reload.",
+      "error"
+    );
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4"
+  });
+
+  const record = recoveredRecord;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 12;
+  const contentWidth = pageWidth - margin * 2;
+
+  const learners = record["1-LEARNERS-INFORMATION"] || {};
+  const personal = record["2-PERSONAL-INFORMATION"] || {};
+  const current = record["3-CURRENT-ADDRESS"] || {};
+  const permanent = record["4-PERMANENT-ADDRESS"] || {};
+  const parents = record["5-PARENTS"] || {};
+  const optional = record["6-OPTIONAL"] || {};
+  const transfer = record["7-BALIK-ARAL-TRANSFER"] || {};
+
+  const registrationID = recoveredRegistrationID || "Not available";
+  const fullName = getName(record) || "Student";
+  let y = 12;
+
+  function drawHeader() {
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Republic of the Philippines", pageWidth / 2, 15, {
+      align: "center"
+    });
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("DEPARTMENT OF EDUCATION", pageWidth / 2, 20, {
+      align: "center"
+    });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Region III - Central Luzon", pageWidth / 2, 25, {
+      align: "center"
+    });
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("TAAL HIGH SCHOOL", pageWidth / 2, 30, {
+      align: "center"
+    });
+
+    doc.line(margin, 35, pageWidth - margin, 35);
+
+    doc.setFontSize(12);
+    doc.text("CERTIFICATE OF REGISTRATION", pageWidth / 2, 42, {
+      align: "center"
+    });
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.text(
+      "SYSTEM-GENERATED ENROLLMENT RECORD — SUBJECT TO SCHOOL VERIFICATION",
+      pageWidth / 2,
+      47,
+      { align: "center" }
+    );
+
+    y = 53;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text("REGISTRATION ID:", margin, y);
+
+    doc.setFont("helvetica", "normal");
+    doc.text(registrationID, margin + 33, y);
+
+    doc.text(
+      "SCHOOL YEAR: " + (clean(learners["1-SCHOOL-YEAR"]) || "—"),
+      pageWidth - margin,
+      y,
+      { align: "right" }
+    );
+
+    y += 6;
+  }
+
+  function ensureSpace(height) {
+    if (y + height > pageHeight - 18) {
+      doc.addPage();
+      drawHeader();
+    }
+  }
+
+  function section(title) {
+    ensureSpace(10);
+
+    doc.setFillColor(235, 235, 235);
+    doc.setDrawColor(80, 80, 80);
+    doc.rect(margin, y, contentWidth, 7, "FD");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text(title, margin + 2, y + 4.7);
+
+    y += 9;
+  }
+
+  function row(label, value) {
+    const labelWidth = 49;
+    const valueWidth = contentWidth - labelWidth - 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+
+    const lines = doc.splitTextToSize(clean(value) || "—", valueWidth);
+    const height = Math.max(7, lines.length * 3.7 + 3);
+
+    ensureSpace(height);
+
+    doc.setDrawColor(100, 100, 100);
+    doc.rect(margin, y, contentWidth, height);
+    doc.line(margin + labelWidth, y, margin + labelWidth, y + height);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.text(label, margin + 2, y + 4.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(lines, margin + labelWidth + 2, y + 4.5);
+
+    y += height;
+  }
+
+  function pair(label1, value1, label2, value2) {
+    const half = contentWidth / 2;
+    const labelWidth = 28;
+    const valueWidth = half - labelWidth - 3;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+
+    const lines1 = doc.splitTextToSize(clean(value1) || "—", valueWidth);
+    const lines2 = doc.splitTextToSize(clean(value2) || "—", valueWidth);
+
+    const height = Math.max(
+      8,
+      Math.max(lines1.length, lines2.length) * 3.5 + 3
+    );
+
+    ensureSpace(height);
+
+    doc.setDrawColor(100, 100, 100);
+    doc.rect(margin, y, contentWidth, height);
+    doc.line(margin + half, y, margin + half, y + height);
+    doc.line(margin + labelWidth, y, margin + labelWidth, y + height);
+    doc.line(
+      margin + half + labelWidth, y,
+      margin + half + labelWidth, y + height
+    );
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.text(label1, margin + 1.5, y + 4.5);
+    doc.text(label2, margin + half + 1.5, y + 4.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text(lines1, margin + labelWidth + 1.5, y + 4.5);
+    doc.text(
+      lines2,
+      margin + half + labelWidth + 1.5,
+      y + 4.5
+    );
+
+    y += height;
+  }
+
+  drawHeader();
+
+  section("I. LEARNER AND ENROLLMENT INFORMATION");
+  pair("Grade Level", learners["2-GRADE-LEVEL"],
+       "Termination", learners["3-TERMINATION"]);
+  pair("Track", learners["6-TRACK"],
+       getAcademicLabel(learners), learners["7-STRAND"]);
+  pair("With LRN", learners["4-WITH-LRN"],
+       "LRN", getLRN(record));
+  pair("Balik-Aral", learners["5-BALIK-ARAL"],
+       "School Year", learners["1-SCHOOL-YEAR"]);
+
+  section("II. PERSONAL INFORMATION");
+  row("Full Name", fullName);
+  pair("Birthdate", personal["6-BIRTHDATE"],
+       "Age", personal["8-AGE"]);
+  pair("Sex", personal["7-SEX"],
+       "PSA Certificate", personal["1-PSA"]);
+  row("Place of Birth", personal["9-PLACE-OF-BIRTH"]);
+  row("Religion", personal["10-RELIGION"]);
+  row("Mother Tongue", personal["11-MOTHER-TONGUE"]);
+
+  section("III. ADDRESS INFORMATION");
+  row("Current Address", getAddress(current));
+  row("Permanent Address", getAddress(permanent));
+
+  section("IV. PARENTS AND GUARDIAN");
+  pair("Father's Name", parents["1-FATHER-NAME"],
+       "Contact", parents["2-FATHER-CONTACT"]);
+  pair("Mother's Name", parents["3-MOTHER-NAME"],
+       "Contact", parents["4-MOTHER-CONTACT"]);
+  pair("Guardian's Name", parents["5-GUARDIAN-NAME"],
+       "Contact", parents["6-GUARDIAN-CONTACT"]);
+
+  section("V. OTHER LEARNER INFORMATION");
+  pair("Indigenous People", optional["1-IP"],
+       "Culture", optional["2-CULTURE"]);
+  pair("Disability", optional["3-DISABILITY"],
+       "Disability Type", optional["4-DISABILITY-TYPE"]);
+  pair("4Ps Beneficiary", optional["5-4PS"],
+       "Household ID", optional["6-HOUSE-ID"]);
+  row("Learning Modality", optional["7-LEARNING-MODALITY"]);
+
+  section("VI. BALIK-ARAL / TRANSFER INFORMATION");
+  row("Previous Grade Level", transfer["1-LAST-GRADE-LEVEL"]);
+  row("Previous School", transfer["2-LAST-SCHOOL"]);
+  pair("Previous School Year", transfer["3-LAST-SCHOOL-YEAR"],
+       "Previous School ID", transfer["4-SCHOOL-ID"]);
+
+  section("VII. RECORD DETAILS");
+  row("Registration ID", registrationID);
+  row("Date Submitted", record["8-TIME-STAMP"]);
+
+  ensureSpace(25);
+  y += 8;
+
+  const signatureWidth = (contentWidth - 12) / 2;
+
+  doc.line(margin, y, margin + signatureWidth, y);
+  doc.line(
+    margin + signatureWidth + 12,
+    y,
+    margin + contentWidth,
+    y
+  );
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+
+  doc.text(
+    "Parent / Guardian Signature",
+    margin + signatureWidth / 2,
+    y + 4,
+    { align: "center" }
+  );
+
+  doc.text(
+    "School Personnel / Verifier",
+    margin + signatureWidth + 12 + signatureWidth / 2,
+    y + 4,
+    { align: "center" }
+  );
+
+  y += 12;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.text(
+    "SYSTEM-GENERATED DOCUMENT — SUBJECT TO SCHOOL VERIFICATION",
+    pageWidth / 2,
+    y,
+    { align: "center" }
+  );
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.text(
+    "This is not an official DepEd-issued form.",
+    pageWidth / 2,
+    y + 4,
+    { align: "center" }
+  );
+
+  const pageCount = doc.getNumberOfPages();
+
+  for (let page = 1; page <= pageCount; page++) {
+    doc.setPage(page);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+
+    doc.text(
+      `EnrollEase | Taal High School | Page ${page} of ${pageCount}`,
+      pageWidth / 2,
+      pageHeight - 7,
+      { align: "center" }
+    );
+  }
+
+  const safeName = fullName.replace(/[^a-z0-9_-]/gi, "_");
+  const safeID = registrationID.replace(/[^a-z0-9_-]/gi, "_");
+
+  doc.save(`COR_${safeName}_${safeID}.pdf`);
+
+  showMessage("Your enrollment record PDF has been generated.", "success");
+}
+
+downloadButton.addEventListener("click", downloadCOR);
+
+// ============================================================
+// 12. CLEAR FORM
+// ============================================================
+
+clearButton.addEventListener("click", function () {
+  form.reset();
+
+  schoolLevel.value = "SHS";
+  searchType.value = "registrationID";
+
+  updateSearchField();
+
+  recoveredRecord = null;
+  recoveredRegistrationID = "";
+  recoveredDatabase = "";
+
+  recordGrid.replaceChildren();
+  recordSection.classList.remove("show");
+  clearMessage();
+
+  searchValue.focus();
+});
+
+// ============================================================
+// 13. INITIALIZE PAGE
+// ============================================================
+
+updateSearchField();
+</script>
+
+</body>
+</html>

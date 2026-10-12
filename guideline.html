@@ -1,0 +1,728 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Enrollment Guidelines | EnrollEase</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --navy: #092c72;
+            --blue: #1769e0;
+            --light-blue: #eaf3ff;
+            --white: #ffffff;
+            --text: #263752;
+            --muted: #687991;
+            --border: #e1eaf5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            background: #f4f8ff;
+            line-height: 1.7;
+        }
+
+        /* NAVIGATION */
+
+        .navbar {
+            width: 100%;
+            min-height: 82px;
+            padding: 15px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(9, 44, 114, 0.07);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--navy);
+            font-size: 23px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .logo-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #1769e0, #092c72);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .logo-icon svg {
+            width: 27px;
+            height: 27px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #455773;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--blue);
+        }
+
+        .nav-links .nav-button {
+            padding: 10px 18px;
+            border-radius: 10px;
+            color: white;
+            background: var(--blue);
+        }
+
+        .nav-links .nav-button:hover {
+            background: var(--navy);
+            color: white;
+        }
+
+        /* HERO SECTION */
+
+        .hero {
+            padding: 75px 7% 85px;
+            background: linear-gradient(125deg, #092c72, #1769e0, #5ba6ff);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.15);
+            pointer-events: none;
+        }
+
+        .hero::before {
+            width: 350px;
+            height: 350px;
+            right: -100px;
+            top: -140px;
+        }
+
+        .hero::after {
+            width: 230px;
+            height: 230px;
+            right: 90px;
+            bottom: -170px;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: auto;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.12);
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 {
+            font-size: clamp(34px, 5vw, 55px);
+            line-height: 1.2;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            max-width: 720px;
+            margin: 0 auto;
+            font-size: 15px;
+            color: #edf5ff;
+        }
+
+        /* MAIN CONTENT */
+
+        .container {
+            max-width: 1120px;
+            width: 86%;
+            margin: -35px auto 70px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .intro-card {
+            padding: 28px 32px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(20, 60, 120, 0.07);
+            margin-bottom: 35px;
+        }
+
+        .intro-card h2 {
+            color: var(--navy);
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .intro-card p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .section-heading {
+            margin-bottom: 24px;
+        }
+
+        .section-heading h2 {
+            color: var(--navy);
+            font-size: 27px;
+            margin-bottom: 5px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .guidelines-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .guideline-card {
+            display: flex;
+            gap: 17px;
+            padding: 25px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(20, 60, 120, 0.035);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .guideline-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(20, 60, 120, 0.09);
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: var(--light-blue);
+            color: var(--blue);
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .guideline-card h3 {
+            font-size: 16px;
+            color: var(--navy);
+            margin: 2px 0 8px;
+        }
+
+        .guideline-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* REMINDER */
+
+        .reminder {
+            margin-top: 35px;
+            padding: 28px;
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            background: #eaf3ff;
+            border: 1px solid #cfe2ff;
+            border-radius: 16px;
+        }
+
+        .reminder-icon {
+            width: 43px;
+            height: 43px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            color: white;
+            background: var(--blue);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .reminder h3 {
+            color: var(--navy);
+            margin-bottom: 7px;
+            font-size: 17px;
+        }
+
+        .reminder p {
+            color: #4d6382;
+            font-size: 13px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 35px;
+        }
+
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 13px 24px;
+            border: 2px solid var(--blue);
+            border-radius: 11px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--navy);
+            border-color: var(--navy);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-blue);
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: #071f50;
+            color: #d4e3ff;
+            padding: 30px 7%;
+            text-align: center;
+        }
+
+        footer h3 {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        footer p {
+            font-size: 12px;
+            color: #c1d3f0;
+        }
+
+        footer .copyright {
+            margin-top: 17px;
+            padding-top: 17px;
+            border-top: 1px solid rgba(255,255,255,0.13);
+        }
+
+        /* RESPONSIVE DESIGN */
+
+        @media (max-width: 950px) {
+            .navbar {
+                padding: 15px 5%;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                gap: 16px;
+            }
+
+            .container {
+                width: 90%;
+            }
+
+            .hero {
+                padding: 65px 5% 75px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                position: relative;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .nav-links {
+                gap: 10px 16px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .nav-links .nav-button {
+                padding: 8px 12px;
+            }
+
+            .hero {
+                padding: 55px 6% 65px;
+            }
+
+            .hero h1 {
+                font-size: 35px;
+            }
+
+            .hero p {
+                font-size: 13px;
+            }
+
+            .container {
+                width: 92%;
+                margin-top: -25px;
+            }
+
+            .intro-card {
+                padding: 23px;
+            }
+
+            .guidelines-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .guideline-card {
+                padding: 21px;
+            }
+
+            .section-heading h2 {
+                font-size: 23px;
+            }
+
+            .reminder {
+                padding: 21px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .navbar,
+            .actions {
+                display: none;
+            }
+
+            .hero {
+                padding: 30px;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .container {
+                width: 100%;
+                margin: 25px auto;
+            }
+
+            .guidelines-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .guideline-card {
+                break-inside: avoid;
+                box-shadow: none;
+            }
+
+            footer {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            
+            EnrollEase
+        </a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="cor-recovery.html">COR Recovery</a>
+            <a href="guidelines.html" class="active">Guidelines</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-content">
+            <span class="eyebrow">STUDENT ENROLLMENT GUIDE</span>
+
+            <h1>Enrollment Guidelines</h1>
+
+            <p>
+                Your guide to a simple, organized, and convenient
+                enrollment experience. Follow these steps to complete
+                your enrollment through EnrollEase at Taal High School.
+            </p>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+
+        <section class="intro-card">
+            <h2>Welcome to EnrollEase!</h2>
+
+            <p>
+                Before starting your enrollment, please read and follow
+                the guidelines below. Providing accurate information
+                and completing each step carefully will help ensure
+                that your enrollment details are properly submitted.
+            </p>
+        </section>
+
+        <section id="guidelines">
+            <div class="section-heading">
+                <h2>How to Enroll</h2>
+                <p>Follow these ten steps to complete the process.</p>
+            </div>
+
+            <div class="guidelines-grid">
+
+                <article class="guideline-card">
+                    <div class="step-number">01</div>
+                    <div>
+                        <h3>Access the Enrollment System</h3>
+                        <p>
+                            Open the official EnrollEase website using
+                            a device with an internet connection. Read
+                            the instructions before proceeding.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">02</div>
+                    <div>
+                        <h3>Select Your Grade Level</h3>
+                        <p>
+                            Choose the appropriate grade level. Junior
+                            High School students may select Grades 7–10,
+                            while Senior High School students may select
+                            Grades 11–12.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">03</div>
+                    <div>
+                        <h3>Provide Accurate Information</h3>
+                        <p>
+                            Enter complete, correct, and updated personal
+                            details, including your LRN when applicable,
+                            address, and parent or guardian information.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">04</div>
+                    <div>
+                        <h3>Complete the Enrollment Form</h3>
+                        <p>
+                            Fill in all required fields and answer
+                            applicable questions. Senior High School
+                            students must select the appropriate semester,
+                            track, and strand or cluster when required.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">05</div>
+                    <div>
+                        <h3>Review Your Information</h3>
+                        <p>
+                            Check every entry before submitting the form.
+                            Correct any mistakes and make sure all
+                            required information is complete.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">06</div>
+                    <div>
+                        <h3>Submit Your Enrollment</h3>
+                        <p>
+                            Click the enrollment button after completing
+                            the form. Wait for the system's response and
+                            check whether your submission was successful.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">07</div>
+                    <div>
+                        <h3>Keep Your Registration ID</h3>
+                        <p>
+                            Save your assigned Registration ID and other
+                            enrollment details. Keep them for future
+                            reference and enrollment record retrieval.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">08</div>
+                    <div>
+                        <h3>Download Your Enrollment Documents</h3>
+                        <p>
+                            Follow the available instructions to access
+                            or download your enrollment documents. Save
+                            a copy for your personal records.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">09</div>
+                    <div>
+                        <h3>Protect Your Personal Information</h3>
+                        <p>
+                            Keep your Registration ID and personal
+                            information confidential. Do not share
+                            sensitive enrollment details with
+                            unauthorized individuals.
+                        </p>
+                    </div>
+                </article>
+
+                <article class="guideline-card">
+                    <div class="step-number">10</div>
+                    <div>
+                        <h3>Ask for Assistance When Needed</h3>
+                        <p>
+                            Contact authorized school personnel if you
+                            experience technical problems, encounter
+                            incorrect records, or need help with
+                            the enrollment process.
+                        </p>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- IMPORTANT REMINDER -->
+        <aside class="reminder">
+            <div class="reminder-icon">!</div>
+
+            <div>
+                <h3>Important Reminder</h3>
+                <p>
+                    Always verify your information before submitting
+                    the enrollment form. Keep your enrollment records
+                    secure and follow the school's official enrollment
+                    procedures. Submitting this form does not necessarily
+                    mean that your enrollment has been officially approved.
+                </p>
+            </div>
+        </aside>
+
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <h3>EnrollEase | Taal High School</h3>
+
+        <p>
+            Making enrollment simpler, more organized, and more convenient.
+        </p>
+
+        <p class="copyright">
+            &copy; <span id="year"></span> EnrollEase.
+            All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        document.getElementById("year").textContent =
+            new Date().getFullYear();
+    </script>
+
+</body>
+</html>

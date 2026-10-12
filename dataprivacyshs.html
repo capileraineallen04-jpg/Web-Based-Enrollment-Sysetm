@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Privacy Consent</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins', sans-serif;
+}
+
+body{
+    height:100vh;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                url('TaalHighSchool.png') no-repeat center center/cover;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    width:500px;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
+    color:white;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.header h2{
+    font-weight:600;
+}
+
+.home-btn{
+    background:#ff6b81;
+    border:none;
+    padding:6px 12px;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+    font-size:12px;
+}
+
+.home-btn:hover{
+    background:#ff4757;
+}
+
+.privacy-box{
+    background:rgba(255,255,255,0.15);
+    padding:15px;
+    border-radius:10px;
+    height:160px;
+    overflow-y:auto;
+    font-size:14px;
+    margin-bottom:15px;
+}
+
+.consent{
+    margin-bottom:20px;
+    font-size:14px;
+}
+
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#ffffff;
+    color:#0072ff;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#f1f1f1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>Data Privacy Consent</h2>
+        <button class="home-btn" onclick="goHome()">Home</button>
+    </div>
+
+    <div class="privacy-box">
+        <p>
+        <strong>Republic Act No. 10173</strong>, also known as the 
+        <strong>Data Privacy Act of 2012</strong>, is a Philippine law 
+        that protects individuals’ personal information in information 
+        and communications systems in both government and private sectors.
+        </p>
+        <br>
+        <p>
+        This law ensures that personal data such as your name, address, 
+        contact details, school records, and other identifying information 
+        are collected, processed, and stored securely and lawfully.
+        </p>
+        <br>
+        <p>
+        Under this Act, you have the right to:
+        </p>
+        <ul>
+            <li>Be informed about how your data is used</li>
+            <li>Access your personal information</li>
+            <li>Correct inaccurate data</li>
+            <li>Request deletion when applicable</li>
+            <li>Be protected against unauthorized disclosure</li>
+        </ul>
+        <br>
+        <p>
+        By agreeing below, you consent to the collection and processing 
+        of your personal information solely for legitimate educational 
+        and administrative purposes in compliance with RA 10173.
+        </p>
+    </div>
+
+    <div class="consent">
+        <input type="checkbox" id="privacyCheck">
+        <label for="privacyCheck"> I agree to the Data Privacy Policy</label>
+    </div>
+
+    <button onclick="checkConsent()">Continue</button>
+
+</div>
+
+<script>
+function checkConsent() {
+    var checkBox = document.getElementById("privacyCheck");
+
+    if (checkBox.checked === true) {
+        window.location.href = "senior.html";
+    } else {
+        alert("You must agree to the Policy to continue.");
+    }
+}
+
+function goHome(){
+    window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
