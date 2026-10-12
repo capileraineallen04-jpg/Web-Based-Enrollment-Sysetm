@@ -779,11 +779,11 @@ function displayEnrollmentRecord(data) {
     ["Registration ID", data["9-REGISTRATION-ID"] || studentID],
     ["School Year", learners["1-SCHOOL-YEAR"]],
     ["Grade Level", learners["2-GRADE-LEVEL"]],
-    ["With LRN", learners["3-WITH-LRN"]],
-    ["LRN", learners["5-LRN"]],
-    ["Semester", learners["6-SEMESTER"]],
-    ["Track", learners["7-TRACK"]],
-    ["Strand / Cluster", learners["8-STRAND"] || learners["8-CLUSTER"]],
+    ["With LRN", learners["4-WITH-LRN"]],
+    ["LRN", learners["8-LRN"]],
+    ["Termination", learners["3-TERMINATION"]],
+    ["Track", learners["6-TRACK"]],
+    ["Strand / Cluster", learners["7-STRAND"] || learners["7-CLUSTER"]],
 
     ["Last Name", personal["2-LAST-NAME"]],
     ["First Name", personal["3-FIRST-NAME"]],
@@ -1340,7 +1340,7 @@ async function downloadCOR() {
 
     addPairRow(
       "Balik-Aral",
-      learners["4-BALIK-ARAL"],
+      learners["5-BALIK-ARAL"],
       "Registration ID",
       registration
     );
