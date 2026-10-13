@@ -1482,19 +1482,16 @@ function generatePDF(record) {
     field(T, ["4-SCHOOL-ID"])
   );
 
-  /* VII. VERIFICATION */
-  section("VII. RECORD AND VERIFICATION");
+  // VERIFICATION AREA
+                ensureSpace(36);
+                y += 5;
 
-  row("Registration ID", registrationID);
-
-  row(
-    "Date of Enrollment",
-    first(record, [
-      "8-TIME-STAMP",
-      "timestamp",
-      "dateSubmitted"
-    ])
-  );
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(7.5);
+                doc.text(
+                    "Date of Enrollment: " + valText(data["8-TIME-STAMP"]),
+                    margin, y
+                );
 
   ensure(27);
 
