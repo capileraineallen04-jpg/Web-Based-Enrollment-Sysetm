@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>JHS COR Recovery | EnrollEase: THS</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -424,13 +425,8 @@ button {
 
           <div class="field">
             <label for="searchType">Recovery Method</label>
-            <input
-              type="text"
-              id="searchType"
-              value="Registration ID"
-              readonly
-              aria-readonly="true"
-            >
+            <input type="text" id="searchType"
+                   value="Registration ID" readonly>
           </div>
 
         </div>
@@ -438,13 +434,11 @@ button {
         <div class="field">
           <label for="searchValue">Registration ID</label>
 
-          <input
-            type="text"
-            id="searchValue"
-            placeholder="Enter your Registration ID"
-            autocomplete="off"
-            required
-          >
+          <input type="text"
+                 id="searchValue"
+                 placeholder="Enter your Registration ID"
+                 autocomplete="off"
+                 required>
 
           <p class="help-text">
             Enter the Registration ID assigned when you enrolled.
@@ -548,6 +542,7 @@ const message = $("message");
 const recordSection = $("recordSection");
 const recordGrid = $("recordGrid");
 const searchButton = $("searchButton");
+const downloadButton = $("downloadButton");
 
 let recoveredRecord = null;
 let recoveredID = "";
@@ -725,7 +720,8 @@ function getGrade(record, databaseName) {
 
   if (grade) return grade;
 
-  const match = String(databaseName || "").match(/GRADE[-_ ]?(\d+)/i);
+  const match = String(databaseName || "")
+    .match(/GRADE[-_ ]?(\d+)/i);
 
   return match ? Number(match[1]) : 0;
 }
@@ -765,14 +761,13 @@ function getName(personal) {
   );
 }
 
-function matchesRegistrationID(record, firebaseKey, query, databaseName) {
+function matchesRegistrationID(
+  record,
+  firebaseKey,
+  query,
+  databaseName
+) {
   if (!record || typeof record !== "object") {
-    return false;
-  }
-
-  const grade = getGrade(record, databaseName);
-
-  if (grade < 7 || grade > 10) {
     return false;
   }
 
@@ -783,7 +778,15 @@ function matchesRegistrationID(record, firebaseKey, query, databaseName) {
     firebaseKey
   ).trim().toLowerCase();
 
-  return registrationID === target;
+  if (registrationID !== target) {
+    return false;
+  }
+
+  const grade = getGrade(record, databaseName);
+
+  // Some records do not store grade inside the record.
+  // The selected database already identifies their grade.
+  return !grade || (grade >= 7 && grade <= 10);
 }
 
 /* =========================================
@@ -794,7 +797,9 @@ async function fetchDB(databaseName) {
   const url =
     FIREBASE_URL +
     "/" +
-    databaseName.split("/").map(encodeURIComponent).join("/") +
+    databaseName.split("/")
+      .map(encodeURIComponent)
+      .join("/") +
     ".json";
 
   const response = await fetch(url, {
@@ -835,6 +840,7 @@ async function findRecord(query, selectedGrade) {
     return null;
   }
 
+  // Support both object-based and array-based Firebase responses.
   for (const [firebaseKey, record] of Object.entries(data)) {
     if (
       matchesRegistrationID(
@@ -847,7 +853,7 @@ async function findRecord(query, selectedGrade) {
       return {
         record,
         id: getRegistrationID(record, firebaseKey),
-        grade: getGrade(record, databaseName),
+        grade: getGrade(record, databaseName) || selectedGrade,
         firebaseKey
       };
     }
@@ -862,8 +868,10 @@ async function findRecord(query, selectedGrade) {
 
 function sections(record) {
   return {
-    L: getLearners(record),
-    P: getPersonal(record),
+    L: record["1-LEARNERS-INFORMATION"] ||
+       record.learnersInformation || {},
+    P: record["2-PERSONAL-INFORMATION"] ||
+       record.personalInformation || {},
     C: record["3-CURRENT-ADDRESS"] ||
        record.currentAddress || {},
     A: record["4-PERMANENT-ADDRESS"] ||
@@ -889,20 +897,21 @@ function address(obj) {
     "4-CITY",
     "5-PROVINCE",
     "6-ZIP-CODE"
-  ].map(key => clean(obj?.[key])).filter(Boolean).join(", ");
+  ].map(key => clean(obj?.[key]))
+   .filter(Boolean)
+   .join(", ");
 
-  return (
-    direct ||
-    Object.values(obj || {})
-      .filter(value =>
-        typeof value === "string" ||
-        typeof value === "number"
-      )
-      .map(clean)
-      .filter(Boolean)
-      .join(", ") ||
-    "Not provided"
-  );
+  if (direct) return direct;
+
+  const values = Object.values(obj || {})
+    .filter(value =>
+      typeof value === "string" ||
+      typeof value === "number"
+    )
+    .map(clean)
+    .filter(Boolean);
+
+  return values.join(", ") || "Not provided";
 }
 
 /* =========================================
@@ -1018,7 +1027,7 @@ form.addEventListener("submit", async event => {
     );
 
   } catch (error) {
-    console.error(error);
+    console.error("Recovery error:", error);
 
     showMessage(
       error.message || "Unable to retrieve the enrollment record.",
@@ -1037,8 +1046,6 @@ form.addEventListener("submit", async event => {
 
 $("clearButton").addEventListener("click", () => {
   form.reset();
-
-  searchValue.value = "";
 
   resetRecord();
   clearMessage();
@@ -1065,13 +1072,10 @@ function val(value) {
 }
 
 function generatePDF(record) {
-  if (!window.jspdf?.jsPDF) {
-    showMessage(
-      "The PDF library could not load. Reload the page and try again.",
-      "error"
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    throw new Error(
+      "The PDF library could not load. Reload the page and try again."
     );
-
-    return;
   }
 
   const { jsPDF } = window.jspdf;
@@ -1092,56 +1096,61 @@ function generatePDF(record) {
 
   const grade = recoveredGrade;
   const registrationID = recoveredID;
-  const lrn = field(L, ["5-LRN", "8-LRN", "LRN", "lrn"]) ||
-              field(P, ["LRN", "lrn"]);
+
+  const lrn =
+    field(L, ["5-LRN", "8-LRN", "LRN", "lrn"]) ||
+    field(P, ["LRN", "lrn"]);
+
   const name = getName(P);
 
   let y = 12;
+
+  /* PDF HEADER */
 
   function header() {
     doc.setTextColor(0);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
+
     doc.text(
       "Republic of the Philippines",
-      W / 2,
-      14,
+      W / 2, 14,
       { align: "center" }
     );
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
+
     doc.text(
       "DEPARTMENT OF EDUCATION",
-      W / 2,
-      19,
+      W / 2, 19,
       { align: "center" }
     );
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
+
     doc.text(
       "Region III - Central Luzon",
-      W / 2,
-      24,
+      W / 2, 24,
       { align: "center" }
     );
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
+
     doc.text(
       "TAAL HIGH SCHOOL",
-      W / 2,
-      29,
+      W / 2, 29,
       { align: "center" }
     );
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
+
     doc.text(
       "Taal, Bocaue, Bulacan",
-      W / 2,
-      33,
+      W / 2, 33,
       { align: "center" }
     );
 
@@ -1150,18 +1159,18 @@ function generatePDF(record) {
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
+
     doc.text(
       "CERTIFICATE OF REGISTRATION",
-      W / 2,
-      44,
+      W / 2, 44,
       { align: "center" }
     );
 
     doc.setFontSize(8);
+
     doc.text(
       "JUNIOR HIGH SCHOOL",
-      W / 2,
-      49,
+      W / 2, 49,
       { align: "center" }
     );
 
@@ -1175,33 +1184,32 @@ function generatePDF(record) {
     doc.setFontSize(9);
     doc.text(
       String(registrationID || "—"),
-      margin + 3,
-      y + 10.5
+      margin + 3, y + 10.5
     );
 
+    const splitX = margin + contentWidth * .59;
+
     doc.line(
-      margin + contentWidth * .59,
-      y,
-      margin + contentWidth * .59,
-      y + 14
+      splitX, y,
+      splitX, y + 14
     );
 
     doc.setFontSize(7);
     doc.text(
       "SCHOOL YEAR",
-      margin + contentWidth * .59 + 3,
-      y + 5
+      splitX + 3, y + 5
     );
 
     doc.setFontSize(9);
     doc.text(
       val(field(L, ["1-SCHOOL-YEAR", "schoolYear"])),
-      margin + contentWidth * .59 + 3,
-      y + 10.5
+      splitX + 3, y + 10.5
     );
 
     y += 19;
   }
+
+  /* PAGE AND SECTION HELPERS */
 
   function ensure(height) {
     if (y + height > H - 18) {
@@ -1218,7 +1226,11 @@ function generatePDF(record) {
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
-    doc.text(title.toUpperCase(), margin + 2, y + 4.7);
+
+    doc.text(
+      title.toUpperCase(),
+      margin + 2, y + 4.7
+    );
 
     y += 9;
   }
@@ -1243,19 +1255,20 @@ function generatePDF(record) {
     ensure(height);
 
     doc.rect(margin, y, contentWidth, height);
+
     doc.line(
-      margin + labelWidth,
-      y,
-      margin + labelWidth,
-      y + height
+      margin + labelWidth, y,
+      margin + labelWidth, y + height
     );
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
+
     doc.text(label, margin + 2, y + 4.5);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
+
     doc.text(
       lines,
       margin + labelWidth + 2,
@@ -1291,20 +1304,20 @@ function generatePDF(record) {
     ensure(height);
 
     doc.rect(margin, y, contentWidth, height);
-    doc.line(margin + half, y, margin + half, y + height);
 
     doc.line(
-      margin + labelWidth,
-      y,
-      margin + labelWidth,
-      y + height
+      margin + half, y,
+      margin + half, y + height
     );
 
     doc.line(
-      margin + half + labelWidth,
-      y,
-      margin + half + labelWidth,
-      y + height
+      margin + labelWidth, y,
+      margin + labelWidth, y + height
+    );
+
+    doc.line(
+      margin + half + labelWidth, y,
+      margin + half + labelWidth, y + height
     );
 
     doc.setFont("helvetica", "bold");
@@ -1331,10 +1344,12 @@ function generatePDF(record) {
     y += height;
   }
 
-  /* PDF HEADER */
+  /* START DOCUMENT */
+
   header();
 
   /* I. ENROLLMENT INFORMATION */
+
   section("I. JHS ENROLLMENT INFORMATION");
 
   pair(
@@ -1346,19 +1361,20 @@ function generatePDF(record) {
 
   pair(
     "With LRN",
-    field(L, ["3-WITH-LRN", "4-WITH-LRN"]),
+    field(L, ["3-WITH-LRN", "4-WITH-LRN", "withLRN"]),
     "LRN",
     lrn
   );
 
   pair(
     "Balik-Aral / Transfer",
-    field(L, ["4-BALIK-ARAL", "5-BALIK-ARAL"]),
+    field(L, ["4-BALIK-ARAL", "5-BALIK-ARAL", "balikAral"]),
     "Registration ID",
     registrationID
   );
 
   /* II. PERSONAL INFORMATION */
+
   section("II. LEARNER PERSONAL INFORMATION");
 
   row("Full Name", name);
@@ -1404,12 +1420,14 @@ function generatePDF(record) {
   );
 
   /* III. ADDRESS */
+
   section("III. LEARNER ADDRESS");
 
   row("Current Address", address(C));
   row("Permanent Address", address(A));
 
   /* IV. PARENTS / GUARDIAN */
+
   section("IV. PARENT / GUARDIAN INFORMATION");
 
   pair(
@@ -1434,11 +1452,12 @@ function generatePDF(record) {
   );
 
   /* V. OTHER INFORMATION */
+
   section("V. OTHER LEARNER INFORMATION");
 
   pair(
     "Indigenous People",
-    field(O, ["1-IP", "IP"]),
+    field(O, ["1-IP", "IP", "indigenousPeople"]),
     "Culture",
     field(O, ["2-CULTURE", "culture"])
   );
@@ -1452,7 +1471,7 @@ function generatePDF(record) {
 
   pair(
     "4Ps Beneficiary",
-    field(O, ["5-4PS", "4PS"]),
+    field(O, ["5-4PS", "4PS", "fourPs"]),
     "Household ID",
     field(O, ["6-HOUSE-ID", "houseID"])
   );
@@ -1463,26 +1482,27 @@ function generatePDF(record) {
   );
 
   /* VI. BALIK-ARAL / TRANSFER */
+
   section("VI. BALIK-ARAL / TRANSFER INFORMATION");
 
   pair(
     "Previous Grade",
-    field(T, ["1-LAST-GRADE-LEVEL"]),
+    field(T, ["1-LAST-GRADE-LEVEL", "lastGradeLevel"]),
     "School Year",
-    field(T, ["3-LAST-SCHOOL-YEAR"])
+    field(T, ["3-LAST-SCHOOL-YEAR", "lastSchoolYear"])
   );
 
   row(
     "Previous School",
-    field(T, ["2-LAST-SCHOOL"])
+    field(T, ["2-LAST-SCHOOL", "lastSchool"])
   );
 
   row(
     "Previous School ID",
-    field(T, ["4-SCHOOL-ID"])
+    field(T, ["4-SCHOOL-ID", "schoolID"])
   );
 
-  /* VERIFICATION AREA */
+  /* VERIFICATION SECTION */
 
   const enrollmentDate = first(record, [
     "8-TIME-STAMP",
@@ -1491,7 +1511,6 @@ function generatePDF(record) {
     "dateOfEnrollment"
   ]);
 
-  // Make sure the date and signature section fit on the page.
   ensure(42);
 
   y += 5;
@@ -1501,8 +1520,7 @@ function generatePDF(record) {
 
   doc.text(
     "Date of Enrollment: " + val(enrollmentDate),
-    margin,
-    y
+    margin, y
   );
 
   y += 10;
@@ -1510,17 +1528,13 @@ function generatePDF(record) {
   const signatureWidth = (contentWidth - 15) / 2;
 
   doc.line(
-    margin,
-    y,
-    margin + signatureWidth,
-    y
+    margin, y,
+    margin + signatureWidth, y
   );
 
   doc.line(
-    margin + signatureWidth + 15,
-    y,
-    margin + contentWidth,
-    y
+    margin + signatureWidth + 15, y,
+    margin + contentWidth, y
   );
 
   doc.setFont("helvetica", "normal");
@@ -1547,8 +1561,7 @@ function generatePDF(record) {
 
   doc.text(
     "SYSTEM-GENERATED ENROLLMENT RECORD",
-    W / 2,
-    y,
+    W / 2, y,
     { align: "center" }
   );
 
@@ -1559,73 +1572,12 @@ function generatePDF(record) {
 
   doc.text(
     "For school verification. Not an official DepEd-issued form.",
-    W / 2,
-    y,
-    { align: "center" }
-  );
-
-  ensure(27);
-
-  y += 8;
-
-  const signatureWidth = (contentWidth - 15) / 2;
-
-  doc.line(
-    margin,
-    y,
-    margin + signatureWidth,
-    y
-  );
-
-  doc.line(
-    margin + signatureWidth + 15,
-    y,
-    margin + contentWidth,
-    y
-  );
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-
-  doc.text(
-    "Parent / Guardian Signature",
-    margin + signatureWidth / 2,
-    y + 4,
-    { align: "center" }
-  );
-
-  doc.text(
-    "School Personnel / Verifier",
-    margin + signatureWidth + 15 + signatureWidth / 2,
-    y + 4,
-    { align: "center" }
-  );
-
-  y += 13;
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(7);
-
-  doc.text(
-    "SYSTEM-GENERATED ENROLLMENT RECORD",
-    W / 2,
-    y,
-    { align: "center" }
-  );
-
-  y += 4;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-
-  doc.text(
-    "For school verification. Not an official DepEd-issued form.",
-    W / 2,
-    y,
+    W / 2, y,
     { align: "center" }
   );
 
   /* PAGE NUMBERS */
+
   const totalPages = doc.getNumberOfPages();
 
   for (let page = 1; page <= totalPages; page++) {
@@ -1637,13 +1589,13 @@ function generatePDF(record) {
     doc.text(
       "EnrollEase | Taal High School | JHS | Page " +
       page + " of " + totalPages,
-      W / 2,
-      H - 8,
+      W / 2, H - 8,
       { align: "center" }
     );
   }
 
   /* SAVE PDF */
+
   const safeName =
     name.replace(/[^a-z0-9_-]/gi, "_") || "Student";
 
@@ -1654,20 +1606,13 @@ function generatePDF(record) {
   doc.save(
     "JHS_COR_" + safeName + "_" + safeID + ".pdf"
   );
-
-  showMessage(
-    "JHS COR PDF generated successfully! Grade Level: Grade " +
-    grade + ".",
-    "success"
-  );
 }
 
 /* =========================================
    DOWNLOAD COR
 ========================================= */
 
-
-$("downloadButton").addEventListener("click", () => {
+downloadButton.addEventListener("click", () => {
   if (!recoveredRecord) {
     showMessage(
       "Find your enrollment record before downloading.",
@@ -1676,26 +1621,32 @@ $("downloadButton").addEventListener("click", () => {
     return;
   }
 
-  const button = $("downloadButton");
-
   try {
-    button.disabled = true;
-    button.textContent = "Generating PDF...";
+    downloadButton.disabled = true;
+    downloadButton.textContent = "Generating PDF...";
 
     generatePDF(recoveredRecord);
+
+    showMessage(
+      "JHS COR PDF generated successfully! Grade Level: Grade " +
+      recoveredGrade + ".",
+      "success"
+    );
+
   } catch (error) {
     console.error("JHS COR PDF error:", error);
 
     showMessage(
+      error.message ||
       "Unable to generate the PDF. Please check the browser console for details.",
       "error"
     );
+
   } finally {
-    button.disabled = false;
-    button.textContent = "Download JHS COR PDF";
+    downloadButton.disabled = false;
+    downloadButton.textContent = "Download JHS COR PDF";
   }
 });
-
 
 /* =========================================
    INITIALIZATION
