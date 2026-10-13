@@ -1482,16 +1482,87 @@ function generatePDF(record) {
     field(T, ["4-SCHOOL-ID"])
   );
 
-  // VERIFICATION AREA
-                ensureSpace(36);
-                y += 5;
+  /* VERIFICATION AREA */
 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(7.5);
-                doc.text(
-                    "Date of Enrollment: " + valText(data["8-TIME-STAMP"]),
-                    margin, y
-                );
+  const enrollmentDate = first(record, [
+    "8-TIME-STAMP",
+    "timestamp",
+    "timeStamp",
+    "dateOfEnrollment"
+  ]);
+
+  // Make sure the date and signature section fit on the page.
+  ensure(42);
+
+  y += 5;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+
+  doc.text(
+    "Date of Enrollment: " + val(enrollmentDate),
+    margin,
+    y
+  );
+
+  y += 10;
+
+  const signatureWidth = (contentWidth - 15) / 2;
+
+  doc.line(
+    margin,
+    y,
+    margin + signatureWidth,
+    y
+  );
+
+  doc.line(
+    margin + signatureWidth + 15,
+    y,
+    margin + contentWidth,
+    y
+  );
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+
+  doc.text(
+    "Parent / Guardian Signature",
+    margin + signatureWidth / 2,
+    y + 4,
+    { align: "center" }
+  );
+
+  doc.text(
+    "School Personnel / Verifier",
+    margin + signatureWidth + 15 + signatureWidth / 2,
+    y + 4,
+    { align: "center" }
+  );
+
+  y += 13;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+
+  doc.text(
+    "SYSTEM-GENERATED ENROLLMENT RECORD",
+    W / 2,
+    y,
+    { align: "center" }
+  );
+
+  y += 4;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+
+  doc.text(
+    "For school verification. Not an official DepEd-issued form.",
+    W / 2,
+    y,
+    { align: "center" }
+  );
 
   ensure(27);
 
@@ -1595,18 +1666,36 @@ function generatePDF(record) {
    DOWNLOAD COR
 ========================================= */
 
+
 $("downloadButton").addEventListener("click", () => {
   if (!recoveredRecord) {
     showMessage(
       "Find your enrollment record before downloading.",
       "error"
     );
-
     return;
   }
 
-  generatePDF(recoveredRecord);
+  const button = $("downloadButton");
+
+  try {
+    button.disabled = true;
+    button.textContent = "Generating PDF...";
+
+    generatePDF(recoveredRecord);
+  } catch (error) {
+    console.error("JHS COR PDF error:", error);
+
+    showMessage(
+      "Unable to generate the PDF. Please check the browser console for details.",
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "Download JHS COR PDF";
+  }
 });
+
 
 /* =========================================
    INITIALIZATION
