@@ -1490,22 +1490,16 @@ async function downloadCOR() {
       transfer["4-SCHOOL-ID"]
     );
 
-    // ========================================================
     // VERIFICATION AREA
-    // ========================================================
+                ensureSpace(36);
+                y += 5;
 
-    ensureSpace(36);
-
-    y += 5;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
-
-    doc.text(
-      "Date of Enrollment: " + valText(data["8-TIME-STAMP"]),
-      margin,
-      y
-    );
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(7.5);
+                doc.text(
+                    "Date of Enrollment: " + valText(data["8-TIME-STAMP"]),
+                    margin, y
+                );
 
     y += 15;
 
