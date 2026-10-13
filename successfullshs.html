@@ -1390,14 +1390,17 @@ async function downloadCOR() {
       val(transfer, "4-SCHOOL-ID", "schoolID")
     );
 
-    addSection("VII. RECORD AND VERIFICATION");
+    // VERIFICATION AREA
+    ensureSpace(36);
+    y += 5;
 
-    addRow("Registration ID", registration);
-
-    addRow(
-      "Date of Enrollment",
-      val(data, "8-TIME-STAMP", "timestamp", "dateCreated")
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text(
+      "Date of Enrollment: " + valText(data["8-TIME-STAMP"]),
+      margin, y
     );
+
 
     ensureSpace(32);
     y += 8;
