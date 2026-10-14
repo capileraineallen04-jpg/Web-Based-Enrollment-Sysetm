@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +16,6 @@
       --light-blue: #eaf2ff;
       --green: #16834a;
       --red: #c62828;
-      --white: #ffffff;
       --text: #263449;
       --muted: #697789;
       --border: #dce5f1;
@@ -45,7 +43,6 @@
       margin: auto;
     }
 
-    /* BACK TO MENU */
     .back-menu-container {
       margin-bottom: 20px;
     }
@@ -65,17 +62,11 @@
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
-      transition: background .2s ease, border-color .2s ease;
     }
 
     .back-menu-button:hover {
       background: var(--light-blue);
       border-color: var(--blue);
-    }
-
-    .back-menu-button:focus-visible {
-      outline: 3px solid var(--blue);
-      outline-offset: 3px;
     }
 
     .school-header {
@@ -220,7 +211,6 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: .2s ease;
     }
 
     .action-button:hover {
@@ -343,10 +333,6 @@
         background-attachment: scroll;
       }
 
-      .back-menu-container {
-        margin-bottom: 15px;
-      }
-
       .school-header {
         gap: 10px;
       }
@@ -379,7 +365,6 @@
 <body>
 <main class="page">
 
-  <!-- BACK TO MENU BUTTON -->
   <div class="back-menu-container">
     <a href="index.html" class="back-menu-button">
       <span aria-hidden="true">←</span>
@@ -387,34 +372,26 @@
     </a>
   </div>
 
-  <!-- SCHOOL HEADER -->
   <header class="school-header">
-    <img
-      src="DepED-Logo-500x281.png"
-      alt="Department of Education logo"
-      class="school-logo"
-    >
+    <img src="DepED-Logo-500x281.png"
+         alt="Department of Education logo"
+         class="school-logo">
 
     <div class="school-title">
       <h1>TAAL HIGH SCHOOL</h1>
       <p>EnrollEase | Online Enrollment System</p>
     </div>
 
-    <img
-      src="taal-removebg-preview.png"
-      alt="Taal High School logo"
-      class="school-logo"
-    >
+    <img src="taal-removebg-preview.png"
+         alt="Taal High School logo"
+         class="school-logo">
   </header>
 
-  <!-- MAIN CARD -->
   <div class="main-card">
 
     <section class="success-banner">
       <div class="success-icon" aria-hidden="true">✓</div>
-
       <h2>Enrollment Successful!</h2>
-
       <p>
         Your enrollment information has been submitted successfully.
         Keep your Registration ID to retrieve your enrollment record
@@ -424,7 +401,6 @@
 
     <div class="content">
 
-      <!-- REGISTRATION ID -->
       <section class="registration-box">
         <p class="label">Your Registration ID</p>
 
@@ -432,17 +408,14 @@
           Loading...
         </div>
 
-        <button
-          class="copy-button"
-          id="copyButton"
-          type="button"
-          onclick="copyRegistrationID()"
-        >
+        <button class="copy-button"
+                id="copyButton"
+                type="button"
+                onclick="copyRegistrationID()">
           Copy Registration ID
         </button>
       </section>
 
-      <!-- ENROLLMENT ACTIONS -->
       <h3 class="section-title">Manage Your Enrollment</h3>
 
       <p class="section-description">
@@ -451,33 +424,26 @@
       </p>
 
       <div class="button-group">
-        <button
-          class="action-button primary-button"
-          id="checkButton"
-          type="button"
-          onclick="checkEnrollmentRecord()"
-        >
+        <button class="action-button primary-button"
+                id="checkButton"
+                type="button"
+                onclick="checkEnrollmentRecord()">
           Check Enrollment Record
         </button>
 
-        <button
-          class="action-button secondary-button"
-          id="downloadButton"
-          type="button"
-          onclick="downloadCOR()"
-        >
+        <button class="action-button secondary-button"
+                id="downloadButton"
+                type="button"
+                onclick="downloadCOR()">
           Download Enrollment PDF
         </button>
       </div>
 
-      <div
-        class="status-message"
-        id="statusMessage"
-        role="status"
-        aria-live="polite"
-      ></div>
+      <div class="status-message"
+           id="statusMessage"
+           role="status"
+           aria-live="polite"></div>
 
-      <!-- ENROLLMENT RECORD -->
       <section class="record-section" id="recordSection">
         <h3 class="section-title">Enrollment Record</h3>
 
@@ -514,8 +480,39 @@
 const FIREBASE_URL =
   "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
 
-const studentID = localStorage.getItem("studentID");
-const studentDatabase = localStorage.getItem("studentDatabase");
+// ============================================================
+// RETRIEVE REGISTRATION ID AND DATABASE NAME
+// ============================================================
+
+function getSavedValue(...keys) {
+  for (const key of keys) {
+    const localValue = localStorage.getItem(key);
+    const sessionValue = sessionStorage.getItem(key);
+
+    if (localValue && localValue.trim()) {
+      return localValue.trim();
+    }
+
+    if (sessionValue && sessionValue.trim()) {
+      return sessionValue.trim();
+    }
+  }
+
+  return "";
+}
+
+const params = new URLSearchParams(window.location.search);
+
+const studentID =
+  getSavedValue("studentID", "registrationID", "registrationId") ||
+  params.get("studentID") ||
+  params.get("registrationID") ||
+  "";
+
+const studentDatabase =
+  getSavedValue("studentDatabase", "databaseName") ||
+  params.get("studentDatabase") ||
+  "";
 
 let studentRecord = null;
 
@@ -541,7 +538,7 @@ const copyButton =
   document.getElementById("copyButton");
 
 // ============================================================
-// PAGE INITIALIZATION
+// INITIALIZE PAGE
 // ============================================================
 
 function initializePage() {
@@ -549,8 +546,7 @@ function initializePage() {
     registrationIDElement.textContent = "NOT AVAILABLE";
 
     showStatus(
-      "Your Registration ID could not be found in this browser. " +
-      "Please contact the school for assistance.",
+      "Your Registration ID was not found. Your enrollment form must save the ID before opening this page. Please check the form's successful-submission code.",
       "error"
     );
 
@@ -565,7 +561,7 @@ function initializePage() {
 
   if (!studentDatabase) {
     showStatus(
-      "Your Registration ID was found, but the database location is missing.",
+      "Your Registration ID was found, but the Firebase database location is missing. You can copy the ID, but record lookup and PDF generation require the database name.",
       "error"
     );
 
@@ -589,7 +585,6 @@ async function copyRegistrationID() {
       "No Registration ID is available to copy.",
       "error"
     );
-
     return;
   }
 
@@ -604,11 +599,9 @@ async function copyRegistrationID() {
       input.style.opacity = "0";
 
       document.body.appendChild(input);
-
       input.select();
 
       const copied = document.execCommand("copy");
-
       input.remove();
 
       if (!copied) {
@@ -639,7 +632,6 @@ async function checkEnrollmentRecord() {
       "Registration ID or database location is missing.",
       "error"
     );
-
     return;
   }
 
@@ -670,12 +662,10 @@ async function checkEnrollmentRecord() {
 
     if (!data) {
       studentRecord = null;
-
       recordSection.classList.remove("visible");
 
       showStatus(
-        "No enrollment record was found at the saved database path. " +
-        "Check your Registration ID or contact the school.",
+        "No enrollment record was found at the saved database path. Check the database name and Registration ID.",
         "error"
       );
 
@@ -695,7 +685,7 @@ async function checkEnrollmentRecord() {
     console.error("Enrollment lookup error:", error);
 
     showStatus(
-      "Unable to retrieve your record. Check your connection and Firebase database rules.",
+      "Unable to retrieve your record. Check your connection, Firebase URL, database name, and Firebase database rules.",
       "error"
     );
 
@@ -709,22 +699,20 @@ async function checkEnrollmentRecord() {
 // DATA HELPERS
 // ============================================================
 
-function getValue(object, key) {
-  const value = object?.[key];
-
-  return value === null ||
-    value === undefined ||
-    String(value).trim() === ""
-      ? ""
-      : String(value).trim();
-}
-
 function displayValue(value) {
-  return value === null ||
+  if (
+    value === null ||
     value === undefined ||
     String(value).trim() === ""
-      ? "Not provided"
-      : String(value).trim();
+  ) {
+    return "Not provided";
+  }
+
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+
+  return String(value).trim();
 }
 
 function formatAddress(address) {
@@ -748,7 +736,7 @@ function formatAddress(address) {
 }
 
 // ============================================================
-// DISPLAY RECORD ON THE WEB PAGE
+// DISPLAY ENROLLMENT RECORD
 // ============================================================
 
 function displayEnrollmentRecord(data) {
@@ -784,8 +772,7 @@ function displayEnrollmentRecord(data) {
     ["LRN", learners["8-LRN"]],
     ["Semester", learners["3-TERMINATION"]],
     ["Track", learners["6-TRACK"]],
-    ["Strand / Cluster", learners["7-STRAND"],
-
+    ["Strand / Cluster", learners["7-STRAND"]],
     ["Last Name", personal["2-LAST-NAME"]],
     ["First Name", personal["3-FIRST-NAME"]],
     ["Middle Name", personal["4-MIDDLE-NAME"]],
@@ -796,17 +783,14 @@ function displayEnrollmentRecord(data) {
     ["Place of Birth", personal["9-PLACE-OF-BIRTH"]],
     ["Religion", personal["10-RELIGION"]],
     ["Mother Tongue", personal["11-MOTHER-TONGUE"]],
-
     ["Current Address", formatAddress(current)],
     ["Permanent Address", formatAddress(permanent)],
-
     ["Father's Name", parents["1-FATHER-NAME"]],
     ["Father's Contact", parents["2-FATHER-CONTACT"]],
     ["Mother's Name", parents["3-MOTHER-NAME"]],
     ["Mother's Contact", parents["4-MOTHER-CONTACT"]],
     ["Guardian's Name", parents["5-GUARDIAN-NAME"]],
     ["Guardian's Contact", parents["6-GUARDIAN-CONTACT"]],
-
     ["Indigenous People", optional["1-IP"]],
     ["Culture", optional["2-CULTURE"]],
     ["Disability", optional["3-DISABILITY"]],
@@ -814,7 +798,6 @@ function displayEnrollmentRecord(data) {
     ["4Ps Beneficiary", optional["5-4PS"]],
     ["Household ID", optional["6-HOUSE-ID"]],
     ["Learning Modality", optional["7-LEARNING-MODALITY"]],
-
     ["Previous Grade Level", transfer["1-LAST-GRADE-LEVEL"]],
     ["Previous School", transfer["2-LAST-SCHOOL"]],
     ["Previous School Year", transfer["3-LAST-SCHOOL-YEAR"]],
@@ -842,7 +825,7 @@ function displayEnrollmentRecord(data) {
 }
 
 // ============================================================
-// DEPED-INSPIRED ENROLLMENT PDF
+// DOWNLOAD ENROLLMENT PDF
 // ============================================================
 
 async function downloadCOR() {
@@ -892,99 +875,470 @@ async function downloadCOR() {
   }
 }
 
-function generatePDF(record){const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),m=12,cw=W-2*m;const L = record["1-LEARNERS-INFORMATION"] || {};
-const P = record["2-PERSONAL-INFORMATION"] || {};
-const C = record["3-CURRENT-ADDRESS"] || {};
-const A = record["4-PERMANENT-ADDRESS"] || {};
-const F = record["5-PARENTS"] || {};
-const O = record["6-OPTIONAL"] || {};
-const T = record["7-BALIK-ARAL-TRANSFER"] || {};
+// ============================================================
+// SHS CERTIFICATE OF REGISTRATION PDF
+// ============================================================
 
-function clean(value) {
-  if (value === null || value === undefined || typeof value === "object") return "";
-  return String(value).trim();
-}
+function generatePDF(record) {
+  const { jsPDF } = window.jspdf;
 
-function v(value) {
-  return clean(value) || "—";
-}
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4"
+  });
 
-function first(object, keys) {
-  for (const key of keys) {
-    const value = clean(object?.[key]);
-    if (value) return value;
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const m = 12;
+  const cw = W - 2 * m;
+
+  const L = record["1-LEARNERS-INFORMATION"] || {};
+  const P = record["2-PERSONAL-INFORMATION"] || {};
+  const C = record["3-CURRENT-ADDRESS"] || {};
+  const A = record["4-PERMANENT-ADDRESS"] || {};
+  const F = record["5-PARENTS"] || {};
+  const O = record["6-OPTIONAL"] || {};
+  const T = record["7-BALIK-ARAL-TRANSFER"] || {};
+
+  function clean(value) {
+    if (
+      value === null ||
+      value === undefined ||
+      typeof value === "object"
+    ) {
+      return "";
+    }
+
+    return String(value).trim();
   }
-  return "";
-}
 
-function pdfValue(value) {
-  return clean(value) || "—";
-}
+  function v(value) {
+    return clean(value) || "—";
+  }
 
-function address(object) {
-  return [
-    object["1-HOUSE-NO"],
-    object["2-STREET"],
-    object["3-BARANGAY"],
-    object["4-CITY"],
-    object["5-PROVINCE"],
-    object["6-ZIP-CODE"]
+  function first(object, keys) {
+    for (const key of keys) {
+      const value = clean(object?.[key]);
+
+      if (value) return value;
+    }
+
+    return "";
+  }
+
+  function address(object) {
+    return [
+      object["1-HOUSE-NO"],
+      object["2-STREET"],
+      object["3-BARANGAY"],
+      object["4-CITY"],
+      object["5-PROVINCE"],
+      object["6-ZIP-CODE"]
+    ]
+      .filter(value => clean(value))
+      .map(value => clean(value))
+      .join(", ") || "—";
+  }
+
+  const grade =
+    clean(L["2-GRADE-LEVEL"]) || "Not provided";
+
+  const regID =
+    record["9-REGISTRATION-ID"] || studentID;
+
+  const lrn =
+    first(L, ["8-LRN", "LRN"]);
+
+  const name = [
+    P["3-FIRST-NAME"],
+    P["4-MIDDLE-NAME"],
+    P["2-LAST-NAME"],
+    P["5-EXTENSION"]
   ]
-    .filter(value => clean(value))
-    .map(value => clean(value))
-    .join(", ") || "—";
+    .map(clean)
+    .filter(Boolean)
+    .join(" ") || "Not provided";
+
+  let y = 12;
+
+  function header() {
+    doc.setTextColor(0);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(
+      "Republic of the Philippines",
+      W / 2,
+      14,
+      { align: "center" }
+    );
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text(
+      "DEPARTMENT OF EDUCATION",
+      W / 2,
+      19,
+      { align: "center" }
+    );
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(
+      "Region III - Central Luzon",
+      W / 2,
+      24,
+      { align: "center" }
+    );
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text(
+      "TAAL HIGH SCHOOL",
+      W / 2,
+      29,
+      { align: "center" }
+    );
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(
+      "Taal, Bocaue, Bulacan",
+      W / 2,
+      33,
+      { align: "center" }
+    );
+
+    doc.setLineWidth(.6);
+    doc.line(m, 37, W - m, 37);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text(
+      "CERTIFICATE OF REGISTRATION",
+      W / 2,
+      44,
+      { align: "center" }
+    );
+
+    doc.setFontSize(8);
+    doc.text(
+      "SENIOR HIGH SCHOOL",
+      W / 2,
+      49,
+      { align: "center" }
+    );
+
+    y = 55;
+
+    doc.rect(m, y, cw, 14);
+    doc.setFontSize(7);
+    doc.text("REGISTRATION ID", m + 3, y + 5);
+
+    doc.setFontSize(9);
+    doc.text(String(regID), m + 3, y + 10.5);
+
+    doc.line(
+      m + cw * .59,
+      y,
+      m + cw * .59,
+      y + 14
+    );
+
+    doc.setFontSize(7);
+    doc.text(
+      "SCHOOL YEAR",
+      m + cw * .59 + 3,
+      y + 5
+    );
+
+    doc.setFontSize(9);
+    doc.text(
+      v(L["1-SCHOOL-YEAR"]),
+      m + cw * .59 + 3,
+      y + 10.5
+    );
+
+    y += 19;
+  }
+
+  function ensure(h) {
+    if (y + h > H - 18) {
+      doc.addPage();
+      header();
+    }
+  }
+
+  function section(title) {
+    ensure(11);
+
+    doc.setFillColor(232, 237, 245);
+    doc.rect(m, y, cw, 7, "FD");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.text(title.toUpperCase(), m + 2, y + 4.7);
+
+    y += 9;
+  }
+
+  function row(label, value) {
+    const lw = 49;
+    const vw = cw - lw - 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+
+    const lines = doc.splitTextToSize(v(value), vw);
+    const h = Math.max(7, lines.length * 3.8 + 3);
+
+    ensure(h);
+
+    doc.rect(m, y, cw, h);
+    doc.line(m + lw, y, m + lw, y + h);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.text(label, m + 2, y + 4.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(lines, m + lw + 2, y + 4.5);
+
+    y += h;
+  }
+
+  function pair(label1, value1, label2, value2) {
+    const half = cw / 2;
+    const lw = 27;
+    const vw = half - lw - 4;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+
+    const a = doc.splitTextToSize(v(value1), vw);
+    const b = doc.splitTextToSize(v(value2), vw);
+
+    const h = Math.max(
+      8,
+      Math.max(a.length, b.length) * 3.5 + 3
+    );
+
+    ensure(h);
+
+    doc.rect(m, y, cw, h);
+    doc.line(m + half, y, m + half, y + h);
+    doc.line(m + lw, y, m + lw, y + h);
+    doc.line(m + half + lw, y, m + half + lw, y + h);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.text(label1, m + 1.5, y + 4.5);
+    doc.text(label2, m + half + 1.5, y + 4.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text(a, m + lw + 1.5, y + 4.5);
+    doc.text(b, m + half + lw + 1.5, y + 4.5);
+
+    y += h;
+  }
+
+  header();
+
+  section("I. Learners Information");
+
+  pair(
+    "School Year", v(L["1-SCHOOL-YEAR"]),
+    "Grade Level", grade
+  );
+
+  pair(
+    "Termination", v(L["3-TERMINATION"]),
+    "With LRN", v(first(L, ["4-WITH-LRN", "3-WITH-LRN"]))
+  );
+
+  pair(
+    "Track", v(first(L, ["6-TRACK", "5-TRACK"])),
+    "Strand / Cluster", v(first(L, ["7-STRAND", "8-STRAND"]))
+  );
+
+  pair(
+    "LRN", lrn,
+    "Balik-Aral / Transfer",
+    v(first(L, ["5-BALIK-ARAL", "4-BALIK-ARAL"]))
+  );
+
+  section("II. Personal Information");
+
+  row("Full Name", name);
+
+  pair(
+    "Last Name", v(P["2-LAST-NAME"]),
+    "First Name", v(P["3-FIRST-NAME"])
+  );
+
+  pair(
+    "Middle Name", v(P["4-MIDDLE-NAME"]),
+    "Extension", v(P["5-EXTENSION"])
+  );
+
+  pair(
+    "Birthdate", v(P["6-BIRTHDATE"]),
+    "Age", v(P["8-AGE"])
+  );
+
+  pair(
+    "Sex", v(P["7-SEX"]),
+    "PSA", v(P["1-PSA"])
+  );
+
+  row("Place of Birth", v(P["9-PLACE-OF-BIRTH"]));
+
+  pair(
+    "Religion", v(P["10-RELIGION"]),
+    "Mother Tongue", v(P["11-MOTHER-TONGUE"])
+  );
+
+  section("III. Address and Family Information");
+
+  row("Current Address", address(C));
+  row("Permanent Address", address(A));
+
+  pair(
+    "Father's Name", v(F["1-FATHER-NAME"]),
+    "Contact", v(F["2-FATHER-CONTACT"])
+  );
+
+  pair(
+    "Mother's Name", v(F["3-MOTHER-NAME"]),
+    "Contact", v(F["4-MOTHER-CONTACT"])
+  );
+
+  pair(
+    "Guardian's Name", v(F["5-GUARDIAN-NAME"]),
+    "Contact", v(F["6-GUARDIAN-CONTACT"])
+  );
+
+  section("IV. Other Information");
+
+  pair(
+    "Indigenous People", v(O["1-IP"]),
+    "Culture", v(O["2-CULTURE"])
+  );
+
+  pair(
+    "Disability", v(O["3-DISABILITY"]),
+    "Disability Type", v(O["4-DISABILITY-TYPE"])
+  );
+
+  pair(
+    "4Ps Beneficiary", v(O["5-4PS"]),
+    "Household ID", v(O["6-HOUSE-ID"])
+  );
+
+  row("Learning Modality", v(O["7-LEARNING-MODALITY"]));
+
+  section("V. Balik-Aral / Transfer Information");
+
+  pair(
+    "Previous Grade", v(T["1-LAST-GRADE-LEVEL"]),
+    "School Year", v(T["3-LAST-SCHOOL-YEAR"])
+  );
+
+  row("Previous School", v(T["2-LAST-SCHOOL"]));
+  row("Previous School ID", v(T["4-SCHOOL-ID"]));
+
+  section("VI. Record and Verification");
+
+  row("Registration ID", regID);
+
+  row(
+    "Date of Enrollment",
+    first(record, ["8-TIME-STAMP", "timestamp", "dateSubmitted"])
+  );
+
+  ensure(27);
+  y += 8;
+
+  const sw = (cw - 15) / 2;
+
+  doc.line(m, y, m + sw, y);
+  doc.line(m + sw + 15, y, m + cw, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+
+  doc.text(
+    "Parent / Guardian Signature",
+    m + sw / 2,
+    y + 4,
+    { align: "center" }
+  );
+
+  doc.text(
+    "School Personnel / Verifier",
+    m + sw + 15 + sw / 2,
+    y + 4,
+    { align: "center" }
+  );
+
+  y += 13;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+
+  doc.text(
+    "SYSTEM-GENERATED ENROLLMENT RECORD",
+    W / 2,
+    y,
+    { align: "center" }
+  );
+
+  y += 4;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+
+  doc.text(
+    "For school verification. Not an official DepEd-issued form.",
+    W / 2,
+    y,
+    { align: "center" }
+  );
+
+  const pages = doc.getNumberOfPages();
+
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+
+    doc.text(
+      `EnrollEase | Taal High School | SHS | Page ${i} of ${pages}`,
+      W / 2,
+      H - 8,
+      { align: "center" }
+    );
+  }
+
+  const safeName = name.replace(/[^a-z0-9_-]/gi, "_");
+  const safeID = String(regID).replace(/[^a-z0-9_-]/gi, "_");
+
+  doc.save(`SHS_COR_${safeName}_${safeID}.pdf`);
+
+  showStatus(
+    "SHS COR PDF generated successfully!",
+    "success"
+  );
 }
 
-const grade = clean(L["2-GRADE-LEVEL"]) || "Not provided";
-const regID = record["9-REGISTRATION-ID"] || studentID;
-const lrn = first(L, ["8-LRN", "LRN"]);
-const name = [
-  P["3-FIRST-NAME"],
-  P["4-MIDDLE-NAME"],
-  P["2-LAST-NAME"],
-  P["5-EXTENSION"]
-].map(clean).filter(Boolean).join(" ") || "Not provided";
-
-let y = 12;
-function header(){doc.setTextColor(0);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Republic of the Philippines",W/2,14,{align:"center"});doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text("DEPARTMENT OF EDUCATION",W/2,19,{align:"center"});doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Region III - Central Luzon",W/2,24,{align:"center"});doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("TAAL HIGH SCHOOL",W/2,29,{align:"center"});doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Taal, Bocaue, Bulacan",W/2,33,{align:"center"});doc.setLineWidth(.6);doc.line(m,37,W-m,37);doc.setFont("helvetica","bold");doc.setFontSize(12);doc.text("CERTIFICATE OF REGISTRATION",W/2,44,{align:"center"});doc.setFontSize(8);doc.text("SENIOR HIGH SCHOOL",W/2,49,{align:"center"});y=55;doc.rect(m,y,cw,14);doc.setFontSize(7);doc.text("REGISTRATION ID",m+3,y+5);doc.setFontSize(9);doc.text(String(regID),m+3,y+10.5);doc.line(m+cw*.59,y,m+cw*.59,y+14);doc.setFontSize(7);doc.text("SCHOOL YEAR",m+cw*.59+3,y+5);doc.setFontSize(9);doc.text(pdfValue(L["1-SCHOOL-YEAR"]),m+cw*.59+3,y+10.5);y+=19}
-function ensure(h){if(y+h>H-18){doc.addPage();header()}}
-function section(t){ensure(11);doc.setFillColor(232,237,245);doc.rect(m,y,cw,7,"FD");doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text(t.toUpperCase(),m+2,y+4.7);y+=9}
-function row(label,val){const lw=49,vw=cw-lw-4;doc.setFont("helvetica","normal");doc.setFontSize(8);const lines=doc.splitTextToSize(pdfValue(val),vw),h=Math.max(7,lines.length*3.8+3);ensure(h);doc.rect(m,y,cw,h);doc.line(m+lw,y,m+lw,y+h);doc.setFont("helvetica","bold");doc.setFontSize(7.5);doc.text(label,m+2,y+4.5);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(lines,m+lw+2,y+4.5);y+=h}
-function pair(l1,v1,l2,v2){const half=cw/2,lw=27,vw=half-lw-4;doc.setFont("helvetica","normal");doc.setFontSize(7.5);const a=doc.splitTextToSize(pdfValue(v1),vw),b=doc.splitTextToSize(pdfValue(v2),vw),h=Math.max(8,Math.max(a.length,b.length)*3.5+3);ensure(h);doc.rect(m,y,cw,h);doc.line(m+half,y,m+half,y+h);doc.line(m+lw,y,m+lw,y+h);doc.line(m+half+lw,y,m+half+lw,y+h);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text(l1,m+1.5,y+4.5);doc.text(l2,m+half+1.5,y+4.5);doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.text(a,m+lw+1.5,y+4.5);doc.text(b,m+half+lw+1.5,y+4.5);y+=h}
-header();
-
-  section("I. LEARNERS INFORMATION");
-  pair("School Year",v(L["1-SCHOOL-YEAR"]),"Grade Level",grade);
-  pair("Termination",v(L["3-TERMINATION"]),"With LRN",v(first(L,["4-WITH-LRN","3-WITH-LRN"])));
-  pair("Track",v(first(L,["6-TRACK","5-TRACK"])),"Strand",v(first(L,["7-STRAND","8-STRAND"])));
-  pair("LRN",lrn,"Balik-Aral / Transfer",v(first(L,["5-BALIK-ARAL","4-BALIK-ARAL"])));
-  section("II. PERSONAL INFORMATION");
-  row("Full Name",name); pair("Last Name",v(P["2-LAST-NAME"]),"First Name",v(P["3-FIRST-NAME"]));
-  pair("Middle Name",v(P["4-MIDDLE-NAME"]),"Extension",v(P["5-EXTENSION"]));
-  pair("Birthdate",v(P["6-BIRTHDATE"]),"Age",v(P["8-AGE"])); pair("Sex",v(P["7-SEX"]),"PSA",v(P["1-PSA"]));
-  row("Place of Birth",v(P["9-PLACE-OF-BIRTH"])); pair("Religion",v(P["10-RELIGION"]),"Mother Tongue",v(P["11-MOTHER-TONGUE"]));
-  section("III. ADDRESS AND FAMILY INFORMATION");
-  row("Current Address",address(C)); row("Permanent Address",address(A));
-  pair("Father's Name",v(F["1-FATHER-NAME"]),"Contact",v(F["2-FATHER-CONTACT"]));
-  pair("Mother's Name",v(F["3-MOTHER-NAME"]),"Contact",v(F["4-MOTHER-CONTACT"]));
-  pair("Guardian's Name",v(F["5-GUARDIAN-NAME"]),"Contact",v(F["6-GUARDIAN-CONTACT"]));
-  section("IV. OTHER INFORMATION");
-  pair("Indigenous People",v(O["1-IP"]),"Culture",v(O["2-CULTURE"]));
-  pair("Disability",v(O["3-DISABILITY"]),"Disability Type",v(O["4-DISABILITY-TYPE"]));
-  pair("4Ps Beneficiary",v(O["5-4PS"]),"Household ID",v(O["6-HOUSE-ID"])); row("Learning Modality",v(O["7-LEARNING-MODALITY"]));
-  section("V. BALIK-ARAL / TRANSFER INFORMATION");
-  pair("Previous Grade",v(T["1-LAST-GRADE-LEVEL"]),"School Year",v(T["3-LAST-SCHOOL-YEAR"])); row("Previous School",v(T["2-LAST-SCHOOL"])); row("Previous School ID",v(T["4-SCHOOL-ID"]));
-
-section("VII. RECORD AND VERIFICATION");
-row("Registration ID",regID);row("Date of Enrollment",first(record,["8-TIME-STAMP","timestamp","dateSubmitted"]));
-ensure(27);y+=8;const sw=(cw-15)/2;doc.line(m,y,m+sw,y);doc.line(m+sw+15,y,m+cw,y);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text("Parent / Guardian Signature",m+sw/2,y+4,{align:"center"});doc.text("School Personnel / Verifier",m+sw+15+sw/2,y+4,{align:"center"});y+=13;doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("SYSTEM-GENERATED ENROLLMENT RECORD",W/2,y,{align:"center"});y+=4;doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text("For school verification. Not an official DepEd-issued form.",W/2,y,{align:"center"});
-const pages=doc.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text("EnrollEase | Taal High School | SHS | Page "+i+" of "+pages,W/2,H-8,{align:"center"})}
-const safeName=name.replace(/[^a-z0-9_-]/gi,"_"),safeID=String(regID).replace(/[^a-z0-9_-]/gi,"_");doc.save("SHS_COR_"+safeName+"_"+safeID+".pdf");showStatus("SHS COR PDF generated successfully!","success")}
+// ============================================================
 // START PAGE
 // ============================================================
 
 initializePage();
-</script>
 
+</script>
 </body>
 </html>
