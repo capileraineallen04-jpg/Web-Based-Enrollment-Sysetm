@@ -850,7 +850,6 @@ async function downloadCOR() {
       "Registration ID or database location is missing.",
       "error"
     );
-
     return;
   }
 
@@ -862,7 +861,6 @@ async function downloadCOR() {
         "The PDF could not be generated because the record was not retrieved.",
         "error"
       );
-
       return;
     }
   }
@@ -872,7 +870,6 @@ async function downloadCOR() {
       "The PDF library could not load. Reload this page and try again.",
       "error"
     );
-
     return;
   }
 
@@ -880,745 +877,108 @@ async function downloadCOR() {
   downloadButton.textContent = "Generating PDF...";
 
   try {
-    const { jsPDF } = window.jspdf;
-
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4"
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 12;
-    const contentWidth = pageWidth - margin * 2;
-
-    const data = studentRecord;
-
-    const learners =
-      data["1-LEARNERS-INFORMATION"] || {};
-
-    const personal =
-      data["2-PERSONAL-INFORMATION"] || {};
-
-    const current =
-      data["3-CURRENT-ADDRESS"] || {};
-
-    const permanent =
-      data["4-PERMANENT-ADDRESS"] || {};
-
-    const parents =
-      data["5-PARENTS"] || {};
-
-    const optional =
-      data["6-OPTIONAL"] || {};
-
-    const transfer =
-      data["7-BALIK-ARAL-TRANSFER"] || {};
-
-    const val = (object, key) => {
-      const value = object?.[key];
-
-      return value === null ||
-        value === undefined ||
-        String(value).trim() === ""
-          ? "—"
-          : String(value).trim();
-    };
-
-    const fullName = [
-      personal["3-FIRST-NAME"],
-      personal["4-MIDDLE-NAME"],
-      personal["2-LAST-NAME"],
-      personal["5-EXTENSION"]
-    ]
-      .filter(value =>
-        value && String(value).trim()
-      )
-      .map(value => String(value).trim())
-      .join(" ") || "—";
-
-    const registration =
-      data["9-REGISTRATION-ID"] || studentID;
-
-    const grade =
-      String(learners["2-GRADE-LEVEL"] || "").trim();
-
-    const gradeNumber = grade.replace(/\D/g, "");
-
-    const isSHS = ["11", "12"].includes(gradeNumber);
-
-    const address = object => [
-      object["1-HOUSE-NO"],
-      object["2-STREET"],
-      object["3-BARANGAY"],
-      object["4-CITY"],
-      object["5-PROVINCE"],
-      object["6-ZIP-CODE"]
-    ]
-      .filter(value =>
-        value !== null &&
-        value !== undefined &&
-        String(value).trim() !== ""
-      )
-      .map(value => String(value).trim())
-      .join(", ") || "—";
-
-    let y = 12;
-
-    // ========================================================
-    // PDF HEADER
-    // ========================================================
-
-    function drawHeader() {
-      doc.setTextColor(0, 0, 0);
-      doc.setDrawColor(0, 0, 0);
-      doc.setLineWidth(0.35);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-
-      doc.text(
-        "Republic of the Philippines",
-        pageWidth / 2,
-        15,
-        { align: "center" }
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-
-      doc.text(
-        "DEPARTMENT OF EDUCATION",
-        pageWidth / 2,
-        20,
-        { align: "center" }
-      );
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-
-      doc.text(
-        "Region III - Central Luzon",
-        pageWidth / 2,
-        25,
-        { align: "center" }
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
-
-      doc.text(
-        "TAAL HIGH SCHOOL",
-        pageWidth / 2,
-        30,
-        { align: "center" }
-      );
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
-
-      doc.text(
-        "Taal, Bocaue, Bulacan",
-        pageWidth / 2,
-        34,
-        { align: "center" }
-      );
-
-      doc.setLineWidth(0.7);
-
-      doc.line(
-        margin,
-        38,
-        pageWidth - margin,
-        38
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-
-      doc.text(
-        "CERTIFICATE OF REGISTRATION",
-        pageWidth / 2,
-        45,
-        { align: "center" }
-      );
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
-
-      doc.text(
-        "ENROLLEASE",
-        pageWidth / 2,
-        50,
-        { align: "center" }
-      );
-
-      y = 56;
-
-      doc.rect(margin, y, contentWidth, 15);
-
-      const rightX = margin + contentWidth * 0.59;
-
-      doc.line(
-        rightX,
-        y,
-        rightX,
-        y + 15
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7);
-
-      doc.text(
-        "REGISTRATION ID",
-        margin + 3,
-        y + 5
-      );
-
-      doc.setFontSize(9);
-
-      doc.text(
-        String(registration),
-        margin + 3,
-        y + 11
-      );
-
-      doc.setFontSize(7);
-
-      doc.text(
-        "SCHOOL YEAR",
-        rightX + 3,
-        y + 5
-      );
-
-      doc.setFontSize(9);
-
-      doc.text(
-        val(learners, "1-SCHOOL-YEAR"),
-        rightX + 3,
-        y + 11
-      );
-
-      y += 20;
-    }
-
-    // ========================================================
-    // PAGE MANAGEMENT
-    // ========================================================
-
-    function ensureSpace(height) {
-      if (y + height > pageHeight - 19) {
-        doc.addPage();
-        drawHeader();
-      }
-    }
-
-    // ========================================================
-    // SECTION HEADING
-    // ========================================================
-
-    function addSection(title) {
-      ensureSpace(12);
-
-      doc.setFillColor(235, 235, 235);
-      doc.setDrawColor(0, 0, 0);
-      doc.setLineWidth(0.3);
-
-      doc.rect(
-        margin,
-        y,
-        contentWidth,
-        7,
-        "FD"
-      );
-
-      doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-
-      doc.text(
-        title.toUpperCase(),
-        margin + 2,
-        y + 4.7
-      );
-
-      y += 9;
-    }
-
-    // ========================================================
-    // SINGLE FIELD
-    // ========================================================
-
-    function addRow(label, value) {
-      const cleanValue =
-        value === null ||
-        value === undefined ||
-        String(value).trim() === ""
-          ? "—"
-          : String(value).trim();
-
-      const labelWidth = 49;
-      const valueWidth = contentWidth - labelWidth - 3;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-
-      const lines = doc.splitTextToSize(
-        cleanValue,
-        valueWidth
-      );
-
-      const rowHeight = Math.max(
-        7,
-        lines.length * 3.8 + 3
-      );
-
-      ensureSpace(rowHeight);
-
-      doc.setDrawColor(80, 80, 80);
-      doc.setLineWidth(0.2);
-
-      doc.rect(
-        margin,
-        y,
-        contentWidth,
-        rowHeight
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.5);
-
-      doc.text(
-        label,
-        margin + 2,
-        y + 4.5
-      );
-
-      doc.line(
-        margin + labelWidth,
-        y,
-        margin + labelWidth,
-        y + rowHeight
-      );
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-
-      doc.text(
-        lines,
-        margin + labelWidth + 2,
-        y + 4.5
-      );
-
-      y += rowHeight;
-    }
-
-    // ========================================================
-    // TWO FIELDS
-    // ========================================================
-
-    function addPairRow(label1, value1, label2, value2) {
-      const halfWidth = contentWidth / 2;
-      const labelWidth = 26;
-      const valueWidth = halfWidth - labelWidth - 4;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
-
-      const lines1 = doc.splitTextToSize(
-        valText(value1),
-        valueWidth
-      );
-
-      const lines2 = doc.splitTextToSize(
-        valText(value2),
-        valueWidth
-      );
-
-      const rowHeight = Math.max(
-        8,
-        Math.max(lines1.length, lines2.length) * 3.5 + 3
-      );
-
-      ensureSpace(rowHeight);
-
-      doc.setDrawColor(80, 80, 80);
-      doc.setLineWidth(0.2);
-
-      doc.rect(
-        margin,
-        y,
-        contentWidth,
-        rowHeight
-      );
-
-      doc.line(
-        margin + halfWidth,
-        y,
-        margin + halfWidth,
-        y + rowHeight
-      );
-
-      doc.line(
-        margin + labelWidth,
-        y,
-        margin + labelWidth,
-        y + rowHeight
-      );
-
-      doc.line(
-        margin + halfWidth + labelWidth,
-        y,
-        margin + halfWidth + labelWidth,
-        y + rowHeight
-      );
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7);
-
-      doc.text(
-        label1,
-        margin + 1.5,
-        y + 4.5
-      );
-
-      doc.text(
-        label2,
-        margin + halfWidth + 1.5,
-        y + 4.5
-      );
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
-
-      doc.text(
-        lines1,
-        margin + labelWidth + 1.5,
-        y + 4.5
-      );
-
-      doc.text(
-        lines2,
-        margin + halfWidth + labelWidth + 1.5,
-        y + 4.5
-      );
-
-      y += rowHeight;
-    }
-
-    function valText(value) {
-      return value === null ||
-        value === undefined ||
-        String(value).trim() === ""
-          ? "—"
-          : String(value).trim();
-    }
-
-    // ========================================================
-    // BUILD PDF DOCUMENT
-    // ========================================================
-
-    drawHeader();
-
-    // I. LEARNER INFORMATION
-    addSection("I. LEARNER INFORMATION");
-
-    addPairRow(
-      "School Year",
-      learners["1-SCHOOL-YEAR"],
-      "Grade Level",
-      learners["2-GRADE-LEVEL"]
-    );
-
-    addPairRow(
-      "With LRN",
-      learners["3-WITH-LRN"],
-      "LRN",
-      learners["5-LRN"]
-    );
-
-    addPairRow(
-      "Balik-Aral",
-      learners["4-BALIK-ARAL"],
-      "Registration ID",
-      registration
-    );
-
-    if (isSHS) {
-      addPairRow(
-        "Semester",
-        learners["6-SEMESTER"],
-        "Track",
-        learners["7-TRACK"]
-      );
-
-      addRow(
-        gradeNumber === "12" ? "Strand" : "Cluster",
-        learners["8-STRAND"] || learners["8-CLUSTER"]
-      );
-    }
-
-    // II. PERSONAL INFORMATION
-    addSection("II. PERSONAL INFORMATION");
-
-    addRow("Full Name", fullName);
-
-    addPairRow(
-      "Last Name",
-      personal["2-LAST-NAME"],
-      "First Name",
-      personal["3-FIRST-NAME"]
-    );
-
-    addPairRow(
-      "Middle Name",
-      personal["4-MIDDLE-NAME"],
-      "Extension",
-      personal["5-EXTENSION"]
-    );
-
-    addPairRow(
-      "Birthdate",
-      personal["6-BIRTHDATE"],
-      "Age",
-      personal["8-AGE"]
-    );
-
-    addPairRow(
-      "Sex",
-      personal["7-SEX"],
-      "PSA Birth Certificate",
-      personal["1-PSA"]
-    );
-
-    addRow(
-      "Place of Birth",
-      personal["9-PLACE-OF-BIRTH"]
-    );
-
-    addPairRow(
-      "Religion",
-      personal["10-RELIGION"],
-      "Mother Tongue",
-      personal["11-MOTHER-TONGUE"]
-    );
-
-    // III. ADDRESS INFORMATION
-    addSection("III. LEARNER ADDRESS INFORMATION");
-
-    addRow(
-      "Current Address",
-      address(current)
-    );
-
-    addRow(
-      "Permanent Address",
-      address(permanent)
-    );
-
-    // IV. PARENTS AND GUARDIAN
-    addSection("IV. PARENT / GUARDIAN INFORMATION");
-
-    addPairRow(
-      "Father's Name",
-      parents["1-FATHER-NAME"],
-      "Contact",
-      parents["2-FATHER-CONTACT"]
-    );
-
-    addPairRow(
-      "Mother's Name",
-      parents["3-MOTHER-NAME"],
-      "Contact",
-      parents["4-MOTHER-CONTACT"]
-    );
-
-    addPairRow(
-      "Guardian's Name",
-      parents["5-GUARDIAN-NAME"],
-      "Contact",
-      parents["6-GUARDIAN-CONTACT"]
-    );
-
-    // V. OTHER INFORMATION
-    addSection("V. OTHER LEARNER INFORMATION");
-
-    addPairRow(
-      "Indigenous People",
-      optional["1-IP"],
-      "Culture",
-      optional["2-CULTURE"]
-    );
-
-    addPairRow(
-      "Disability",
-      optional["3-DISABILITY"],
-      "Disability Type",
-      optional["4-DISABILITY-TYPE"]
-    );
-
-    addPairRow(
-      "4Ps Beneficiary",
-      optional["5-4PS"],
-      "Household ID",
-      optional["6-HOUSE-ID"]
-    );
-
-    addRow(
-      "Learning Modality",
-      optional["7-LEARNING-MODALITY"]
-    );
-
-    // VI. BALIK-ARAL / TRANSFER
-    addSection("VI. BALIK-ARAL / TRANSFER INFORMATION");
-
-    addPairRow(
-      "Previous Grade",
-      transfer["1-LAST-GRADE-LEVEL"],
-      "School Year",
-      transfer["3-LAST-SCHOOL-YEAR"]
-    );
-
-    addRow(
-      "Previous School",
-      transfer["2-LAST-SCHOOL"]
-    );
-
-    addRow(
-      "Previous School ID",
-      transfer["4-SCHOOL-ID"]
-    );
-
-    // ========================================================
-    // VERIFICATION AREA
-    // ========================================================
-
-    ensureSpace(36);
-
-    y += 5;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
-
-    doc.text(
-      "Date of Enrollment: " + valText(data["8-TIME-STAMP"]),
-      margin,
-      y
-    );
-
-    y += 15;
-
-    const signatureWidth = (contentWidth - 15) / 2;
-
-    doc.line(
-      margin,
-      y,
-      margin + signatureWidth,
-      y
-    );
-
-    doc.line(
-      margin + signatureWidth + 15,
-      y,
-      margin + contentWidth,
-      y
-    );
-
-    doc.setFontSize(7);
-
-    doc.text(
-      "Parent / Guardian Signature",
-      margin + signatureWidth / 2,
-      y + 4,
-      { align: "center" }
-    );
-
-    doc.text(
-      "School Personnel / Verifier",
-      margin + signatureWidth + 15 + signatureWidth / 2,
-      y + 4,
-      { align: "center" }
-    );
-
-    y += 13;
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-
-    doc.text(
-      "SYSTEM-GENERATED ENROLLMENT RECORD",
-      pageWidth / 2,
-      y,
-      { align: "center" }
-    );
-
-    y += 4;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
-
-    doc.text(
-      "For school verification. This is not an official DepEd-issued form.",
-      pageWidth / 2,
-      y,
-      { align: "center" }
-    );
-
-    // ========================================================
-    // PAGE NUMBERS
-    // ========================================================
-
-    const pageCount = doc.getNumberOfPages();
-
-    for (let page = 1; page <= pageCount; page++) {
-      doc.setPage(page);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      doc.setTextColor(80, 80, 80);
-
-      doc.text(
-        `EnrollEase | Taal High School | Page ${page} of ${pageCount}`,
-        pageWidth / 2,
-        pageHeight - 8,
-        { align: "center" }
-      );
-    }
-
-    // ========================================================
-    // SAVE PDF
-    // ========================================================
-
-    const safeName = fullName.replace(
-      /[^a-z0-9_-]/gi,
-      "_"
-    );
-
-    doc.save(
-      `Enrollment_Record_${safeName}_${registration}.pdf`
-    );
-
-    showStatus(
-      "Your enrollment record PDF has been generated successfully.",
-      "success"
-    );
-
+    generatePDF(studentRecord);
   } catch (error) {
-    console.error("PDF generation error:", error);
+    console.error("SHS COR PDF error:", error);
 
     showStatus(
       "An error occurred while generating the PDF. Please try again.",
       "error"
     );
-
   } finally {
     downloadButton.disabled = false;
     downloadButton.textContent = "Download Enrollment PDF";
   }
 }
 
-// ============================================================
+function generatePDF(record){const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"}),W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight(),m=12,cw=W-2*m;const L = record["1-LEARNERS-INFORMATION"] || {};
+const P = record["2-PERSONAL-INFORMATION"] || {};
+const C = record["3-CURRENT-ADDRESS"] || {};
+const A = record["4-PERMANENT-ADDRESS"] || {};
+const F = record["5-PARENTS"] || {};
+const O = record["6-OPTIONAL"] || {};
+const T = record["7-BALIK-ARAL-TRANSFER"] || {};
+
+function clean(value) {
+  if (value === null || value === undefined || typeof value === "object") return "";
+  return String(value).trim();
+}
+
+function v(value) {
+  return clean(value) || "—";
+}
+
+function first(object, keys) {
+  for (const key of keys) {
+    const value = clean(object?.[key]);
+    if (value) return value;
+  }
+  return "";
+}
+
+function pdfValue(value) {
+  return clean(value) || "—";
+}
+
+function address(object) {
+  return [
+    object["1-HOUSE-NO"],
+    object["2-STREET"],
+    object["3-BARANGAY"],
+    object["4-CITY"],
+    object["5-PROVINCE"],
+    object["6-ZIP-CODE"]
+  ]
+    .filter(value => clean(value))
+    .map(value => clean(value))
+    .join(", ") || "—";
+}
+
+const grade = clean(L["2-GRADE-LEVEL"]) || "Not provided";
+const regID = record["9-REGISTRATION-ID"] || studentID;
+const lrn = first(L, ["8-LRN", "LRN"]);
+const name = [
+  P["3-FIRST-NAME"],
+  P["4-MIDDLE-NAME"],
+  P["2-LAST-NAME"],
+  P["5-EXTENSION"]
+].map(clean).filter(Boolean).join(" ") || "Not provided";
+
+let y = 12;
+function header(){doc.setTextColor(0);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Republic of the Philippines",W/2,14,{align:"center"});doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text("DEPARTMENT OF EDUCATION",W/2,19,{align:"center"});doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Region III - Central Luzon",W/2,24,{align:"center"});doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text("TAAL HIGH SCHOOL",W/2,29,{align:"center"});doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("Taal, Bocaue, Bulacan",W/2,33,{align:"center"});doc.setLineWidth(.6);doc.line(m,37,W-m,37);doc.setFont("helvetica","bold");doc.setFontSize(12);doc.text("CERTIFICATE OF REGISTRATION",W/2,44,{align:"center"});doc.setFontSize(8);doc.text("SENIOR HIGH SCHOOL",W/2,49,{align:"center"});y=55;doc.rect(m,y,cw,14);doc.setFontSize(7);doc.text("REGISTRATION ID",m+3,y+5);doc.setFontSize(9);doc.text(String(regID),m+3,y+10.5);doc.line(m+cw*.59,y,m+cw*.59,y+14);doc.setFontSize(7);doc.text("SCHOOL YEAR",m+cw*.59+3,y+5);doc.setFontSize(9);doc.text(pdfValue(L["1-SCHOOL-YEAR"]),m+cw*.59+3,y+10.5);y+=19}
+function ensure(h){if(y+h>H-18){doc.addPage();header()}}
+function section(t){ensure(11);doc.setFillColor(232,237,245);doc.rect(m,y,cw,7,"FD");doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text(t.toUpperCase(),m+2,y+4.7);y+=9}
+function row(label,val){const lw=49,vw=cw-lw-4;doc.setFont("helvetica","normal");doc.setFontSize(8);const lines=doc.splitTextToSize(pdfValue(val),vw),h=Math.max(7,lines.length*3.8+3);ensure(h);doc.rect(m,y,cw,h);doc.line(m+lw,y,m+lw,y+h);doc.setFont("helvetica","bold");doc.setFontSize(7.5);doc.text(label,m+2,y+4.5);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text(lines,m+lw+2,y+4.5);y+=h}
+function pair(l1,v1,l2,v2){const half=cw/2,lw=27,vw=half-lw-4;doc.setFont("helvetica","normal");doc.setFontSize(7.5);const a=doc.splitTextToSize(pdfValue(v1),vw),b=doc.splitTextToSize(pdfValue(v2),vw),h=Math.max(8,Math.max(a.length,b.length)*3.5+3);ensure(h);doc.rect(m,y,cw,h);doc.line(m+half,y,m+half,y+h);doc.line(m+lw,y,m+lw,y+h);doc.line(m+half+lw,y,m+half+lw,y+h);doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text(l1,m+1.5,y+4.5);doc.text(l2,m+half+1.5,y+4.5);doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.text(a,m+lw+1.5,y+4.5);doc.text(b,m+half+lw+1.5,y+4.5);y+=h}
+header();
+
+  section("I. LEARNERS INFORMATION");
+  pair("School Year",v(L["1-SCHOOL-YEAR"]),"Grade Level",grade);
+  pair("Termination",v(L["3-TERMINATION"]),"With LRN",v(first(L,["4-WITH-LRN","3-WITH-LRN"])));
+  pair("Track",v(first(L,["6-TRACK","5-TRACK"])),"Strand",v(first(L,["7-STRAND","8-STRAND"])));
+  pair("LRN",lrn,"Balik-Aral / Transfer",v(first(L,["5-BALIK-ARAL","4-BALIK-ARAL"])));
+  section("II. PERSONAL INFORMATION");
+  row("Full Name",name); pair("Last Name",v(P["2-LAST-NAME"]),"First Name",v(P["3-FIRST-NAME"]));
+  pair("Middle Name",v(P["4-MIDDLE-NAME"]),"Extension",v(P["5-EXTENSION"]));
+  pair("Birthdate",v(P["6-BIRTHDATE"]),"Age",v(P["8-AGE"])); pair("Sex",v(P["7-SEX"]),"PSA",v(P["1-PSA"]));
+  row("Place of Birth",v(P["9-PLACE-OF-BIRTH"])); pair("Religion",v(P["10-RELIGION"]),"Mother Tongue",v(P["11-MOTHER-TONGUE"]));
+  section("III. ADDRESS AND FAMILY INFORMATION");
+  row("Current Address",address(C)); row("Permanent Address",address(A));
+  pair("Father's Name",v(F["1-FATHER-NAME"]),"Contact",v(F["2-FATHER-CONTACT"]));
+  pair("Mother's Name",v(F["3-MOTHER-NAME"]),"Contact",v(F["4-MOTHER-CONTACT"]));
+  pair("Guardian's Name",v(F["5-GUARDIAN-NAME"]),"Contact",v(F["6-GUARDIAN-CONTACT"]));
+  section("IV. OTHER INFORMATION");
+  pair("Indigenous People",v(O["1-IP"]),"Culture",v(O["2-CULTURE"]));
+  pair("Disability",v(O["3-DISABILITY"]),"Disability Type",v(O["4-DISABILITY-TYPE"]));
+  pair("4Ps Beneficiary",v(O["5-4PS"]),"Household ID",v(O["6-HOUSE-ID"])); row("Learning Modality",v(O["7-LEARNING-MODALITY"]));
+  section("V. BALIK-ARAL / TRANSFER INFORMATION");
+  pair("Previous Grade",v(T["1-LAST-GRADE-LEVEL"]),"School Year",v(T["3-LAST-SCHOOL-YEAR"])); row("Previous School",v(T["2-LAST-SCHOOL"])); row("Previous School ID",v(T["4-SCHOOL-ID"]));
+
+section("VII. RECORD AND VERIFICATION");
+row("Registration ID",regID);row("Date of Enrollment",first(record,["8-TIME-STAMP","timestamp","dateSubmitted"]));
+ensure(27);y+=8;const sw=(cw-15)/2;doc.line(m,y,m+sw,y);doc.line(m+sw+15,y,m+cw,y);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text("Parent / Guardian Signature",m+sw/2,y+4,{align:"center"});doc.text("School Personnel / Verifier",m+sw+15+sw/2,y+4,{align:"center"});y+=13;doc.setFont("helvetica","bold");doc.setFontSize(7);doc.text("SYSTEM-GENERATED ENROLLMENT RECORD",W/2,y,{align:"center"});y+=4;doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text("For school verification. Not an official DepEd-issued form.",W/2,y,{align:"center"});
+const pages=doc.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.text("EnrollEase | Taal High School | SHS | Page "+i+" of "+pages,W/2,H-8,{align:"center"})}
+const safeName=name.replace(/[^a-z0-9_-]/gi,"_"),safeID=String(regID).replace(/[^a-z0-9_-]/gi,"_");doc.save("SHS_COR_"+safeName+"_"+safeID+".pdf");showStatus("SHS COR PDF generated successfully!","success")}
 // START PAGE
 // ============================================================
 
