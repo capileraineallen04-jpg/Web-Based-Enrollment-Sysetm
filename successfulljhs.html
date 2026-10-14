@@ -915,14 +915,14 @@ async function downloadCOR() {
 
     // JHS ENROLLMENT INFORMATION
     header();
-    section("I. JHS ENROLLMENT INFORMATION");
+    section("I. LEARNERS INFORMATION");
     pair("School Year", val(L, "1-SCHOOL-YEAR"), "Grade Level", grade);
     pair("With LRN", first(L, ["3-WITH-LRN", "4-WITH-LRN"]),
       "LRN", first(L, ["5-LRN", "4-LRN", "LRN"]));
     pair("Balik-Aral / Transfer", first(L, ["4-BALIK-ARAL", "5-BALIK-ARAL"]),
       "Registration ID", registration);
 
-    section("II. LEARNER PERSONAL INFORMATION");
+    section("II. PERSONAL INFORMATION");
     row("Full Name", fullName);
     pair("Last Name", val(P, "2-LAST-NAME"), "First Name", val(P, "3-FIRST-NAME"));
     pair("Middle Name", val(P, "4-MIDDLE-NAME"), "Extension", val(P, "5-EXTENSION"));
