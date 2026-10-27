@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -369,22 +370,18 @@ button {
 <main class="page">
 
   <header class="school-header">
-    <img
-      src="DepED-Logo-500x281.png"
-      alt="Department of Education logo"
-      class="school-logo"
-    >
+    <img src="DepED-Logo-500x281.png"
+         alt="Department of Education logo"
+         class="school-logo">
 
     <div>
       <h1>TAAL HIGH SCHOOL</h1>
       <p>EnrollEase | Enrollment Management System</p>
     </div>
 
-    <img
-      src="taal-removebg-preview.png"
-      alt="Taal High School logo"
-      class="school-logo"
-    >
+    <img src="taal-removebg-preview.png"
+         alt="Taal High School logo"
+         class="school-logo">
   </header>
 
   <section class="card">
@@ -409,18 +406,15 @@ button {
       </p>
 
       <form id="recoveryForm">
-
         <div class="form-grid">
 
           <div class="field">
             <label for="gradeLevel">Select Your Grade Level</label>
-
             <select id="gradeLevel" required>
               <option value="">Choose your grade level</option>
               <option value="11">Grade 11</option>
               <option value="12">Grade 12</option>
             </select>
-
             <p class="help-text">
               Select the grade level you enrolled in.
               Only that grade's database will be searched.
@@ -429,64 +423,41 @@ button {
 
           <div class="field">
             <label for="searchType">Recovery Method</label>
-            <input
-              type="text"
-              id="searchType"
-              value="Registration ID"
-              readonly
-              aria-readonly="true"
-            >
+            <input type="text" id="searchType"
+                   value="Registration ID" readonly
+                   aria-readonly="true">
           </div>
 
         </div>
 
         <div class="field">
           <label for="searchValue">Registration ID</label>
-
-          <input
-            type="text"
-            id="searchValue"
-            placeholder="Enter your Registration ID"
-            autocomplete="off"
-            required
-          >
-
+          <input type="text" id="searchValue"
+                 placeholder="Enter your Registration ID"
+                 autocomplete="off" required>
           <p class="help-text">
             Enter the Registration ID assigned when you enrolled.
           </p>
         </div>
 
         <div class="button-group">
-          <button
-            type="submit"
-            class="button primary"
-            id="searchButton"
-          >
+          <button type="submit" class="button primary"
+                  id="searchButton">
             Find Enrollment Record
           </button>
 
-          <button
-            type="button"
-            class="button secondary"
-            id="clearButton"
-          >
+          <button type="button" class="button secondary"
+                  id="clearButton">
             Clear Form
           </button>
         </div>
-
       </form>
 
-      <div
-        id="message"
-        class="message"
-        role="status"
-        aria-live="polite"
-      ></div>
+      <div id="message" class="message"
+           role="status" aria-live="polite"></div>
 
       <section id="recordSection" class="record-section">
-
         <h3 class="section-title">Recovered Enrollment Record</h3>
-
         <p class="description">
           Verify the recovered information before downloading the PDF.
         </p>
@@ -494,11 +465,8 @@ button {
         <div id="recordGrid" class="record-grid"></div>
 
         <div class="button-group">
-          <button
-            type="button"
-            id="downloadButton"
-            class="button primary"
-          >
+          <button type="button" id="downloadButton"
+                  class="button primary">
             Download SHS COR PDF
           </button>
         </div>
@@ -510,15 +478,10 @@ button {
           to access. This system-generated document may require
           school verification.
         </div>
-
       </section>
 
       <div class="home-wrap">
-        <button
-          type="button"
-          class="button home"
-          id="homeButton"
-        >
+        <button type="button" class="button home" id="homeButton">
           ← Back to Home
         </button>
       </div>
@@ -538,7 +501,6 @@ button {
 
 /* =========================================
    FIREBASE CONFIGURATION
-   DATABASE NAMES ARE UNCHANGED
 ========================================= */
 
 const FIREBASE_URL =
@@ -592,10 +554,8 @@ function clean(value) {
 function first(obj, keys) {
   for (const key of keys) {
     const value = clean(obj?.[key]);
-
     if (value) return value;
   }
-
   return "";
 }
 
@@ -630,18 +590,12 @@ function normalizeKey(value) {
 }
 
 function flatten(obj, path = "", output = []) {
-  if (!obj || typeof obj !== "object") {
-    return output;
-  }
+  if (!obj || typeof obj !== "object") return output;
 
   for (const [key, value] of Object.entries(obj)) {
     const currentPath = path ? path + "." + key : key;
 
-    output.push({
-      key,
-      path: currentPath,
-      value
-    });
+    output.push({ key, path: currentPath, value });
 
     if (value && typeof value === "object") {
       flatten(value, currentPath, output);
@@ -688,16 +642,11 @@ function getPersonal(record) {
 function getLRN(record) {
   return (
     first(getLearners(record), [
-      "5-LRN",
-      "8-LRN",
-      "LRN",
-      "lrn"
+      "5-LRN", "8-LRN", "LRN", "lrn"
     ]) ||
     first(getPersonal(record), ["LRN", "lrn"]) ||
     findScalar(record, [
-      "LRN",
-      "learnerReferenceNumber",
-      "learnerReferenceNo"
+      "LRN", "learnerReferenceNumber", "learnerReferenceNo"
     ])
   );
 }
@@ -722,9 +671,7 @@ function getRegistrationID(record, firebaseKey) {
       "studentID"
     ]) ||
     findScalar(record, [
-      "registrationID",
-      "studentID",
-      "registration_id"
+      "registrationID", "studentID", "registration_id"
     ]) ||
     clean(firebaseKey)
   );
@@ -733,7 +680,6 @@ function getRegistrationID(record, firebaseKey) {
 function gradeFromValue(raw) {
   const value = String(raw || "").trim();
   const match = value.match(/(?:grade\s*)?(11|12)(?:\b|$)/i);
-
   return match ? Number(match[1]) : 0;
 }
 
@@ -751,70 +697,38 @@ function getGrade(record, databaseName) {
     findScalar(record, ["gradeLevel", "grade"]);
 
   const grade = gradeFromValue(storedGrade);
-
   if (grade) return grade;
 
   const match = String(databaseName || "").match(/GRADE[-_ ]?(\d+)/i);
-
   return match ? Number(match[1]) : 0;
 }
 
 function getName(personal) {
   const name = [
-    first(personal, [
-      "3-FIRST-NAME",
-      "FIRST-NAME",
-      "firstName"
-    ]),
-    first(personal, [
-      "4-MIDDLE-NAME",
-      "MIDDLE-NAME",
-      "middleName"
-    ]),
-    first(personal, [
-      "2-LAST-NAME",
-      "LAST-NAME",
-      "lastName"
-    ]),
-    first(personal, [
-      "5-EXTENSION",
-      "EXTENSION",
-      "extension"
-    ])
+    first(personal, ["3-FIRST-NAME", "FIRST-NAME", "firstName"]),
+    first(personal, ["4-MIDDLE-NAME", "MIDDLE-NAME", "middleName"]),
+    first(personal, ["2-LAST-NAME", "LAST-NAME", "lastName"]),
+    first(personal, ["5-EXTENSION", "EXTENSION", "extension"])
   ].filter(Boolean).join(" ");
 
   return (
     name ||
-    findScalar(personal, [
-      "fullName",
-      "studentName",
-      "name"
-    ]) ||
+    findScalar(personal, ["fullName", "studentName", "name"]) ||
     "Not provided"
   );
 }
 
 function matchesRegistrationID(
-  record,
-  firebaseKey,
-  query,
-  databaseName
+  record, firebaseKey, query, databaseName
 ) {
-  if (!record || typeof record !== "object") {
-    return false;
-  }
+  if (!record || typeof record !== "object") return false;
 
   const grade = getGrade(record, databaseName);
-
-  if (grade !== 11 && grade !== 12) {
-    return false;
-  }
+  if (grade !== 11 && grade !== 12) return false;
 
   const target = query.trim().toLowerCase();
-
   const registrationID = getRegistrationID(
-    record,
-    firebaseKey
+    record, firebaseKey
   ).trim().toLowerCase();
 
   return registrationID === target;
@@ -826,19 +740,14 @@ function matchesRegistrationID(
 
 async function fetchDB(databaseName) {
   const url =
-    FIREBASE_URL +
-    "/" +
+    FIREBASE_URL + "/" +
     databaseName.split("/").map(encodeURIComponent).join("/") +
     ".json";
 
-  const response = await fetch(url, {
-    cache: "no-store"
-  });
+  const response = await fetch(url, { cache: "no-store" });
 
   if (!response.ok) {
-    throw new Error(
-      "Firebase returned HTTP " + response.status + "."
-    );
+    throw new Error("Firebase returned HTTP " + response.status + ".");
   }
 
   return response.json();
@@ -859,23 +768,17 @@ async function findRecord(query, selectedGrade) {
     console.error("Firebase database error:", error);
 
     throw new Error(
-      "Unable to access Grade " +
-      selectedGrade +
+      "Unable to access Grade " + selectedGrade +
       " records. Verify the Firebase database name and read permissions."
     );
   }
 
-  if (!data || typeof data !== "object") {
-    return null;
-  }
+  if (!data || typeof data !== "object") return null;
 
   for (const [firebaseKey, record] of Object.entries(data)) {
     if (
       matchesRegistrationID(
-        record,
-        firebaseKey,
-        query,
-        databaseName
+        record, firebaseKey, query, databaseName
       )
     ) {
       return {
@@ -897,19 +800,19 @@ async function findRecord(query, selectedGrade) {
 function sections(record) {
   return {
     L: record["1-LEARNERS-INFORMATION"] ||
-       record.learnersInformation || {},
+        record.learnersInformation || {},
     P: record["2-PERSONAL-INFORMATION"] ||
-       record.personalInformation || {},
+        record.personalInformation || {},
     C: record["3-CURRENT-ADDRESS"] ||
-       record.currentAddress || {},
+        record.currentAddress || {},
     A: record["4-PERMANENT-ADDRESS"] ||
-       record.permanentAddress || {},
+        record.permanentAddress || {},
     F: record["5-PARENTS"] ||
-       record.parents || {},
+        record.parents || {},
     O: record["6-OPTIONAL"] ||
-       record.optional || {},
+        record.optional || {},
     T: record["7-BALIK-ARAL-TRANSFER"] ||
-       record.balikAralTransfer || {}
+        record.balikAralTransfer || {}
   };
 }
 
@@ -957,39 +860,18 @@ function displayRecord(record, registrationID, grade) {
     ["School Level", "Senior High School"],
     ["Grade Level", "Grade " + grade],
     ["Registration ID", registrationID],
-    [
-      "School Year",
-      field(L, ["1-SCHOOL-YEAR", "schoolYear"])
-    ],
+    ["School Year", field(L, ["1-SCHOOL-YEAR", "schoolYear"])],
     ["Student Name", getName(P)],
-    [
-      "Termination",
-      field(L, [
-        "3-TERMINATION",
-        "TERMINATION",
-        "termination"
-      ])
-    ],
-    [
-      "Track",
-      field(L, [
-        "6-TRACK",
-        "5-TRACK",
-        "TRACK",
-        "track"
-      ])
-    ],
-    [
-      grade === 11 ? "Cluster" : "Strand",
-      field(L, [
-        "7-STRAND",
-        "8-STRAND",
-        "STRAND",
-        "CLUSTER",
-        "cluster",
-        "strand"
-      ])
-    ]
+    ["Termination", field(L, [
+      "3-TERMINATION", "TERMINATION", "termination"
+    ])],
+    ["Track", field(L, [
+      "6-TRACK", "5-TRACK", "TRACK", "track"
+    ])],
+    [grade === 11 ? "Cluster" : "Strand", field(L, [
+      "7-STRAND", "8-STRAND", "STRAND",
+      "CLUSTER", "cluster", "strand"
+    ])]
   ];
 
   items.forEach(([label, value]) => {
@@ -1095,7 +977,6 @@ $("clearButton").addEventListener("click", () => {
 
   resetRecord();
   clearMessage();
-
   searchValue.focus();
 });
 
@@ -1117,15 +998,13 @@ function val(value) {
   return clean(value) || "—";
 }
 
+
 function generatePDF(record) {
   if (!window.jspdf?.jsPDF) {
-    throw new Error(
-      "The PDF library could not load. Reload the page and try again."
-    );
+    throw new Error("The PDF library could not load. Please reload the page.");
   }
 
   const { jsPDF } = window.jspdf;
-
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
@@ -1134,124 +1013,145 @@ function generatePDF(record) {
 
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  const margin = 12;
-  const contentWidth = W - 2 * margin;
+  const m = 12;
+  const cw = W - 2 * m;
 
-  const { L, P, C, A, F, O, T } = sections(record);
+  const L = record["1-LEARNERS-INFORMATION"] || record.learnersInformation || {};
+  const P = record["2-PERSONAL-INFORMATION"] || record.personalInformation || {};
+  const C = record["3-CURRENT-ADDRESS"] || record.currentAddress || {};
+  const A = record["4-PERMANENT-ADDRESS"] || record.permanentAddress || {};
+  const F = record["5-PARENTS"] || record.parents || {};
+  const O = record["6-OPTIONAL"] || record.optional || {};
+  const T = record["7-BALIK-ARAL-TRANSFER"] || record.balikAralTransfer || {};
 
-  const grade = recoveredGrade;
-  const registrationID = recoveredID;
+  function clean(value) {
+    if (value === null || value === undefined || typeof value === "object") {
+      return "";
+    }
+    return String(value).trim();
+  }
+
+  function v(value) {
+    return clean(value) || "—";
+  }
+
+  function first(object, keys) {
+    for (const key of keys) {
+      const value = clean(object?.[key]);
+      if (value) return value;
+    }
+    return "";
+  }
+
+  function field(object, keys) {
+    return first(object, keys);
+  }
+
+  function address(object) {
+    return [
+      object["1-HOUSE-NO"],
+      object["2-STREET"],
+      object["3-BARANGAY"],
+      object["4-CITY"],
+      object["5-PROVINCE"],
+      object["6-ZIP-CODE"]
+    ]
+      .filter(value => clean(value))
+      .map(value => clean(value))
+      .join(", ") || "—";
+  }
+
+  const grade = recoveredGrade || getGrade(record, "");
+  const regID = recoveredID || getRegistrationID(record, recoveredFirebaseKey);
   const lrn = getLRN(record);
-  const name = getName(P);
+
+  const name = [
+    P["3-FIRST-NAME"],
+    P["4-MIDDLE-NAME"],
+    P["2-LAST-NAME"],
+    P["5-EXTENSION"]
+  ].map(clean).filter(Boolean).join(" ") || "Not provided";
 
   let y = 12;
 
-  /* =========================================
-     PDF HEADER
-  ========================================= */
+  // ============================================================
+  // DOCUMENT HEADER
+  // ============================================================
 
   function header() {
     doc.setTextColor(0);
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.6);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text(
-      "Republic of the Philippines",
-      W / 2,
-      14,
-      { align: "center" }
-    );
+    doc.text("Republic of the Philippines", W / 2, 14, {
+      align: "center"
+    });
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
-    doc.text(
-      "DEPARTMENT OF EDUCATION",
-      W / 2,
-      19,
-      { align: "center" }
-    );
+    doc.text("DEPARTMENT OF EDUCATION", W / 2, 19, {
+      align: "center"
+    });
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text(
-      "Region III - Central Luzon",
-      W / 2,
-      24,
-      { align: "center" }
-    );
+    doc.text("Region III - Central Luzon", W / 2, 24, {
+      align: "center"
+    });
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(
-      "TAAL HIGH SCHOOL",
-      W / 2,
-      29,
-      { align: "center" }
-    );
+    doc.text("TAAL HIGH SCHOOL", W / 2, 29, {
+      align: "center"
+    });
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text(
-      "Taal, Bocaue, Bulacan",
-      W / 2,
-      33,
-      { align: "center" }
-    );
+    doc.text("Taal, Bocaue, Bulacan", W / 2, 33, {
+      align: "center"
+    });
 
-    doc.setLineWidth(.6);
-    doc.line(margin, 37, W - margin, 37);
+    doc.line(m, 37, W - m, 37);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.text(
-      "CERTIFICATE OF REGISTRATION",
-      W / 2,
-      44,
-      { align: "center" }
-    );
+    doc.text("CERTIFICATE OF REGISTRATION", W / 2, 44, {
+      align: "center"
+    });
 
     doc.setFontSize(8);
-    doc.text(
-      "SENIOR HIGH SCHOOL",
-      W / 2,
-      49,
-      { align: "center" }
-    );
+    doc.text("SENIOR HIGH SCHOOL", W / 2, 49, {
+      align: "center"
+    });
 
     y = 55;
 
-    doc.rect(margin, y, contentWidth, 14);
+    // Registration ID and School Year box
+    doc.rect(m, y, cw, 14);
 
     doc.setFontSize(7);
-    doc.text("REGISTRATION ID", margin + 3, y + 5);
+    doc.text("REGISTRATION ID", m + 3, y + 5);
 
     doc.setFontSize(9);
-    doc.text(
-      String(registrationID || "—"),
-      margin + 3,
-      y + 10.5
-    );
+    doc.text(String(regID || "—"), m + 3, y + 10.5);
 
-    const dividerX = margin + contentWidth * .59;
-
+    const dividerX = m + cw * 0.59;
     doc.line(dividerX, y, dividerX, y + 14);
 
     doc.setFontSize(7);
     doc.text("SCHOOL YEAR", dividerX + 3, y + 5);
 
     doc.setFontSize(9);
-    doc.text(
-      val(field(L, ["1-SCHOOL-YEAR", "schoolYear"])),
-      dividerX + 3,
-      y + 10.5
-    );
+    doc.text(v(L["1-SCHOOL-YEAR"]), dividerX + 3, y + 10.5);
 
     y += 19;
   }
 
-  /* =========================================
-     PAGE BREAK HANDLER
-  ========================================= */
+  // ============================================================
+  // PAGE BREAK HANDLER
+  // ============================================================
 
   function ensure(height) {
     if (y + height > H - 18) {
@@ -1260,350 +1160,298 @@ function generatePDF(record) {
     }
   }
 
-  /* =========================================
-     SECTION TITLE
-  ========================================= */
+  // ============================================================
+  // SECTION HEADER
+  // ============================================================
 
   function section(title) {
     ensure(11);
 
     doc.setFillColor(232, 237, 245);
-    doc.rect(margin, y, contentWidth, 7, "FD");
+    doc.rect(m, y, cw, 7, "FD");
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
-    doc.text(title.toUpperCase(), margin + 2, y + 4.7);
+    doc.setTextColor(0);
+    doc.text(title.toUpperCase(), m + 2, y + 4.7);
 
     y += 9;
   }
 
-  /* =========================================
-     SINGLE ROW
-  ========================================= */
+  // ============================================================
+  // SINGLE-COLUMN ROW
+  // ============================================================
 
   function row(label, value) {
-    const labelWidth = 49;
-    const valueWidth = contentWidth - labelWidth - 4;
+    const lw = 49;
+    const vw = cw - lw - 4;
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
 
-    const lines = doc.splitTextToSize(
-      val(value),
-      valueWidth
-    );
+    const lines = doc.splitTextToSize(v(value), vw);
+    const h = Math.max(7, lines.length * 3.8 + 3);
 
-    const height = Math.max(7, lines.length * 3.8 + 3);
+    ensure(h);
 
-    ensure(height);
-
-    doc.rect(margin, y, contentWidth, height);
-
-    doc.line(
-      margin + labelWidth,
-      y,
-      margin + labelWidth,
-      y + height
-    );
+    doc.rect(m, y, cw, h);
+    doc.line(m + lw, y, m + lw, y + h);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
-    doc.text(label, margin + 2, y + 4.5);
+    doc.text(label, m + 2, y + 4.5);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text(lines, margin + labelWidth + 2, y + 4.5);
+    doc.text(lines, m + lw + 2, y + 4.5);
 
-    y += height;
+    y += h;
   }
 
-  /* =========================================
-     TWO-COLUMN ROW
-  ========================================= */
+  // ============================================================
+  // TWO-COLUMN ROW
+  // ============================================================
 
   function pair(label1, value1, label2, value2) {
-    const half = contentWidth / 2;
-    const labelWidth = 27;
-    const valueWidth = half - labelWidth - 4;
+    const half = cw / 2;
+    const lw = 27;
+    const vw = half - lw - 4;
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
 
-    const lines1 = doc.splitTextToSize(val(value1), valueWidth);
-    const lines2 = doc.splitTextToSize(val(value2), valueWidth);
+    const a = doc.splitTextToSize(v(value1), vw);
+    const b = doc.splitTextToSize(v(value2), vw);
 
-    const height = Math.max(
-      8,
-      Math.max(lines1.length, lines2.length) * 3.5 + 3
-    );
+    const h = Math.max(8, Math.max(a.length, b.length) * 3.5 + 3);
 
-    ensure(height);
+    ensure(h);
 
-    doc.rect(margin, y, contentWidth, height);
-
-    doc.line(margin + half, y, margin + half, y + height);
-
-    doc.line(
-      margin + labelWidth,
-      y,
-      margin + labelWidth,
-      y + height
-    );
-
-    doc.line(
-      margin + half + labelWidth,
-      y,
-      margin + half + labelWidth,
-      y + height
-    );
+    doc.rect(m, y, cw, h);
+    doc.line(m + half, y, m + half, y + h);
+    doc.line(m + lw, y, m + lw, y + h);
+    doc.line(m + half + lw, y, m + half + lw, y + h);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7);
 
-    doc.text(label1, margin + 1.5, y + 4.5);
-    doc.text(label2, margin + half + 1.5, y + 4.5);
+    doc.text(label1, m + 1.5, y + 4.5);
+    doc.text(label2, m + half + 1.5, y + 4.5);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
 
-    doc.text(lines1, margin + labelWidth + 1.5, y + 4.5);
+    doc.text(a, m + lw + 1.5, y + 4.5);
+    doc.text(b, m + half + lw + 1.5, y + 4.5);
 
-    doc.text(
-      lines2,
-      margin + half + labelWidth + 1.5,
-      y + 4.5
-    );
-
-    y += height;
+    y += h;
   }
 
-  /* =========================================
-     GENERATE PDF
-  ========================================= */
+  // ============================================================
+  // GENERATE COR
+  // ============================================================
 
   header();
 
-  /* I. SHS ENROLLMENT INFORMATION */
-
-  section("I. LEARNERS INFORMATION");
+  // I. SHS ENROLLMENT INFORMATION
+  section("I. SHS ENROLLMENT INFORMATION");
 
   pair(
     "School Year",
-    field(L, ["1-SCHOOL-YEAR", "schoolYear"]),
+    L["1-SCHOOL-YEAR"],
     "Grade Level",
     "Grade " + grade
   );
 
   pair(
-    "Termination",
-    field(L, [
-      "3-TERMINATION",
-      "TERMINATION",
-      "termination"
-    ]),
     "With LRN",
-    field(L, ["4-WITH-LRN", "3-WITH-LRN"])
-  );
-
-  pair(
-    "Track",
-    field(L, ["6-TRACK", "5-TRACK", "TRACK", "track"]),
-    grade === 11 ? "Cluster" : "Strand",
-    field(L, [
-      "7-STRAND",
-      "8-STRAND",
-      "STRAND",
-      "CLUSTER",
-      "cluster",
-      "strand"
-    ])
-  );
-
-  pair(
+    first(L, ["4-WITH-LRN", "3-WITH-LRN"]),
     "LRN",
-    lrn,
-    "Balik-Aral",
-    field(L, ["5-BALIK-ARAL", "4-BALIK-ARAL"])
+    lrn
   );
 
-  /* II. PERSONAL INFORMATION */
-
-  section("II. PERSONAL INFORMATION");
+  // II. LEARNER PERSONAL INFORMATION
+  section("II. LEARNER PERSONAL INFORMATION");
 
   row("Full Name", name);
 
   pair(
     "Last Name",
-    field(P, ["2-LAST-NAME", "lastName"]),
+    P["2-LAST-NAME"],
     "First Name",
-    field(P, ["3-FIRST-NAME", "firstName"])
+    P["3-FIRST-NAME"]
   );
 
   pair(
     "Middle Name",
-    field(P, ["4-MIDDLE-NAME", "middleName"]),
+    P["4-MIDDLE-NAME"],
     "Extension",
-    field(P, ["5-EXTENSION", "extension"])
+    P["5-EXTENSION"]
   );
 
   pair(
     "Birthdate",
-    field(P, ["6-BIRTHDATE", "birthdate"]),
+    P["6-BIRTHDATE"],
     "Age",
-    field(P, ["8-AGE", "age"])
+    P["8-AGE"]
   );
 
   pair(
     "Sex",
-    field(P, ["7-SEX", "sex"]),
+    P["7-SEX"],
     "PSA",
-    field(P, ["1-PSA", "PSA"])
+    P["1-PSA"]
   );
 
-  row(
-    "Place of Birth",
-    field(P, ["9-PLACE-OF-BIRTH", "placeOfBirth"])
-  );
+  row("Place of Birth", P["9-PLACE-OF-BIRTH"]);
 
   pair(
     "Religion",
-    field(P, ["10-RELIGION", "religion"]),
+    P["10-RELIGION"],
     "Mother Tongue",
-    field(P, ["11-MOTHER-TONGUE", "motherTongue"])
+    P["11-MOTHER-TONGUE"]
   );
 
-  /* III. ADDRESS */
-
-  section("III. LEARNER ADDRESS");
+  // III. ADDRESS AND FAMILY INFORMATION
+  section("III. ADDRESS AND FAMILY INFORMATION");
 
   row("Current Address", address(C));
   row("Permanent Address", address(A));
 
-  /* IV. PARENTS / GUARDIAN */
-
-  section("IV. PARENT / GUARDIAN INFORMATION");
-
   pair(
     "Father's Name",
-    field(F, ["1-FATHER-NAME", "fatherName"]),
+    F["1-FATHER-NAME"],
     "Contact",
-    field(F, ["2-FATHER-CONTACT", "fatherContact"])
+    F["2-FATHER-CONTACT"]
   );
 
   pair(
     "Mother's Name",
-    field(F, ["3-MOTHER-NAME", "motherName"]),
+    F["3-MOTHER-NAME"],
     "Contact",
-    field(F, ["4-MOTHER-CONTACT", "motherContact"])
+    F["4-MOTHER-CONTACT"]
   );
 
   pair(
     "Guardian's Name",
-    field(F, ["5-GUARDIAN-NAME", "guardianName"]),
+    F["5-GUARDIAN-NAME"],
     "Contact",
-    field(F, ["6-GUARDIAN-CONTACT", "guardianContact"])
+    F["6-GUARDIAN-CONTACT"]
   );
 
-  /* V. OTHER INFORMATION */
-
-  section("V. OTHER LEARNER INFORMATION");
+  // IV. OTHER INFORMATION
+  section("IV. OTHER INFORMATION");
 
   pair(
     "Indigenous People",
-    field(O, ["1-IP", "IP"]),
+    O["1-IP"],
     "Culture",
-    field(O, ["2-CULTURE", "culture"])
+    O["2-CULTURE"]
   );
 
   pair(
     "Disability",
-    field(O, ["3-DISABILITY", "disability"]),
+    O["3-DISABILITY"],
     "Disability Type",
-    field(O, ["4-DISABILITY-TYPE", "disabilityType"])
+    O["4-DISABILITY-TYPE"]
   );
 
   pair(
     "4Ps Beneficiary",
-    field(O, ["5-4PS", "4PS"]),
+    O["5-4PS"],
     "Household ID",
-    field(O, ["6-HOUSE-ID", "houseID"])
+    O["6-HOUSE-ID"]
+  );
+
+  row("Learning Modality", O["7-LEARNING-MODALITY"]);
+
+  row(
+    "Termination",
+    first(L, ["3-TERMINATION", "TERMINATION", "termination"])
   );
 
   row(
-    "Learning Modality",
-    field(O, ["7-LEARNING-MODALITY", "learningModality"])
+    "Track",
+    first(L, ["6-TRACK", "5-TRACK", "TRACK", "track"])
   );
 
-  /* VI. BALIK-ARAL / TRANSFER */
+  const strandLabel = Number(grade) === 11 ? "Cluster" : "Strand";
 
-  section("VI. BALIK-ARAL / TRANSFER INFORMATION");
+  row(
+    strandLabel,
+    first(L, [
+      "7-STRAND",
+      "8-STRAND",
+      "7-CLUSTER",
+      "8-CLUSTER",
+      "STRAND",
+      "CLUSTER",
+      "strand",
+      "cluster"
+    ])
+  );
+
+  row(
+    "Balik-Aral / Transfer",
+    first(L, [
+      "5-BALIK-ARAL",
+      "4-BALIK-ARAL",
+      "BALIK-ARAL",
+      "balik-aral"
+    ])
+  );
+
+  // V. BALIK-ARAL / TRANSFER INFORMATION
+  section("V. BALIK-ARAL / TRANSFER INFORMATION");
 
   pair(
     "Previous Grade",
-    field(T, ["1-LAST-GRADE-LEVEL"]),
+    T["1-LAST-GRADE-LEVEL"],
     "School Year",
-    field(T, ["3-LAST-SCHOOL-YEAR"])
+    T["3-LAST-SCHOOL-YEAR"]
   );
 
-  row("Previous School", field(T, ["2-LAST-SCHOOL"]));
-  row("Previous School ID", field(T, ["4-SCHOOL-ID"]));
+  row("Previous School", T["2-LAST-SCHOOL"]);
+  row("Previous School ID", T["4-SCHOOL-ID"]);
 
-  /* =========================================
-     VERIFICATION SECTION
-     Only one signature section is generated.
-  ========================================= */
+  // VI. RECORD AND VERIFICATION
+  section("VI. RECORD AND VERIFICATION");
 
-  const enrollmentDate = first(record, [
-    "8-TIME-STAMP",
-    "timestamp",
-    "timeStamp",
-    "dateOfEnrollment"
-  ]);
+  row("Registration ID", regID);
 
-  ensure(42);
-
-  y += 5;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-
-  doc.text(
-    "Date of Enrollment: " + val(enrollmentDate),
-    margin,
-    y
+  row(
+    "Date of Enrollment",
+    first(record, [
+      "8-TIME-STAMP",
+      "timestamp",
+      "timeStamp",
+      "dateSubmitted",
+      "dateOfEnrollment"
+    ])
   );
 
-  y += 12;
+  ensure(27);
 
-  const signatureWidth = (contentWidth - 15) / 2;
+  y += 8;
 
-  doc.line(
-    margin,
-    y,
-    margin + signatureWidth,
-    y
-  );
+  const sw = (cw - 15) / 2;
 
-  doc.line(
-    margin + signatureWidth + 15,
-    y,
-    margin + contentWidth,
-    y
-  );
+  doc.line(m, y, m + sw, y);
+  doc.line(m + sw + 15, y, m + cw, y);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
 
   doc.text(
     "Parent / Guardian Signature",
-    margin + signatureWidth / 2,
+    m + sw / 2,
     y + 4,
     { align: "center" }
   );
 
   doc.text(
     "School Personnel / Verifier",
-    margin + signatureWidth + 15 + signatureWidth / 2,
+    m + sw + 15 + sw / 2,
     y + 4,
     { align: "center" }
   );
@@ -1632,42 +1480,37 @@ function generatePDF(record) {
     { align: "center" }
   );
 
-  /* =========================================
-     PAGE NUMBERS
-  ========================================= */
+  // ============================================================
+  // PAGE NUMBERS
+  // ============================================================
 
-  const totalPages = doc.getNumberOfPages();
+  const pages = doc.getNumberOfPages();
 
-  for (let page = 1; page <= totalPages; page++) {
-    doc.setPage(page);
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
 
     doc.text(
       "EnrollEase | Taal High School | SHS | Page " +
-      page + " of " + totalPages,
+      i + " of " + pages,
       W / 2,
       H - 8,
       { align: "center" }
     );
   }
 
-  /* =========================================
-     SAVE PDF
-  ========================================= */
+  // ============================================================
+  // SAVE PDF
+  // ============================================================
 
-  const safeName =
-    name.replace(/[^a-z0-9_-]/gi, "_") || "Student";
+  const safeName = name.replace(/[^a-z0-9_-]/gi, "_");
+  const safeID = String(regID || "NoID").replace(/[^a-z0-9_-]/gi, "_");
 
-  const safeID =
-    String(registrationID || "NoID")
-      .replace(/[^a-z0-9_-]/gi, "_");
-
-  doc.save(
-    "SHS_COR_" + safeName + "_" + safeID + ".pdf"
-  );
+  doc.save("SHS_COR_" + safeName + "_" + safeID + ".pdf");
 }
+
 
 /* =========================================
    DOWNLOAD SHS COR
