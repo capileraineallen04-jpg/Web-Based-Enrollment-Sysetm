@@ -10,25 +10,116 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="form.css" />
+    <style>
+      .required { color: #d93025; font-weight: 700; margin-left: 2px; }
+      .field, .section-box { position: relative; }
+      .field-error {
+        display: block; margin-top: 6px; color: #c62828; font-size: 12px;
+        font-weight: 500; line-height: 1.45;
+      }
+      .field-error::before {
+        content: "!"; display: inline-flex; align-items: center; justify-content: center;
+        width: 15px; height: 15px; margin-right: 6px; border-radius: 50%;
+        background: #c62828; color: #fff; font-size: 10px; font-weight: 700;
+      }
+      input.input-error, select.input-error, textarea.input-error {
+        border: 1.5px solid #d93025 !important; background: #fff8f8 !important;
+        box-shadow: 0 0 0 3px rgba(217, 48, 37, .08);
+      }
+      input:disabled, select:disabled { cursor: not-allowed; }
+/* =====================================================
+   FLOATING HOME BUTTON
+   ===================================================== */
+
+.home-button {
+  position: fixed;
+  top: 24px;
+left: 30px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 11px 18px;
+
+  background: #0a2a88;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 10px;
+
+  text-decoration: none;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.home-button:hover {
+  background: #061f6b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+.home-button:active {
+  transform: translateY(0);
+}
+
+.home-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Prevent the button from covering the form on smaller screens */
+@media (max-width: 768px) {
+  .home-button {
+    top: 15px;
+    right: 15px;
+    padding: 9px 13px;
+    font-size: 12px;
+  }
+
+  .home-icon {
+    font-size: 16px;
+  }
+}
+
+    </style>
   </head>
 
   <body>
+
+<body>
+
+  <!-- Floating Home Button -->
+  <a href="index.html" class="home-button" aria-label="Go to Home">
+    <span class="home-icon">⌂</span>
+    <span>HOME</span>
+  </a>
+
+  <div class="form">
     <div class="form">
       <form id="enrollmentForm">
         <h3>IF YOU HAVE NO INFORMATION, PLEASE TYPE N/A</h3>
 
         <div class="row">
           <div class="field">
-            <label>School Year</label>
+            <label>School Year *</label>
             <select name="schoolYear" required>
               <option value="">Select</option>
-              <option>2025 - 2026</option>
               <option>2026 - 2027</option>
             </select>
           </div>
 
           <div class="field">
-            <label>Grade Level to Enroll</label>
+            <label>Grade Level to Enroll *</label>
             <select name="gradeLevel" id="gradeLevel" required>
               <option value="">Select</option>
               <option>GRADE 7</option>
@@ -39,7 +130,7 @@
           </div>
 
           <div class="field">
-            <label>With LRN</label>
+            <label>With LRN *</label>
             <select name="with-lrn" required>
               <option value="">Select</option>
               <option>YES</option>
@@ -48,7 +139,7 @@
           </div>
 
           <div class="field">
-            <label>Balik-Aral/Transfer Student</label>
+            <label>Balik-Aral/Transfer Student *</label>
             <select name="balik-aral" required>
               <option value="">Select</option>
               <option>YES</option>
@@ -537,6 +628,7 @@
         }
 
         controlOptionalFields();
+        refreshRequiredAsterisks();
       });
 
       addressPairs.forEach(([currentName]) => {
@@ -615,29 +707,105 @@
       ["with-lrn", "balik-aral", "ip", "disability", "4Ps"].forEach((name) => {
         document
           .querySelector(`[name="${name}"]`)
-          .addEventListener("change", controlOptionalFields);
+          .addEventListener("change", function () {
+            controlOptionalFields();
+            refreshRequiredAsterisks();
+          });
       });
 
       // =====================================================
       // VALIDATION HELPERS
       // =====================================================
 
-      function validateRequiredFields(requiredFields) {
-        document.querySelectorAll(".input-error").forEach((field) => {
-          field.classList.remove("input-error");
-        });
+      function getFieldContainer(field) {
+        return field?.closest(".field") || field?.closest(".section-box");
+      }
 
+      function showFieldError(field, message = "Please fill out this field.") {
+        if (!field) return;
+        const container = getFieldContainer(field);
+        field.classList.add("input-error");
+        if (!container) return;
+        let error = container.querySelector(":scope > .field-error");
+        if (!error) {
+          error = document.createElement("div");
+          error.className = "field-error";
+          error.setAttribute("role", "alert");
+          container.appendChild(error);
+        }
+        error.textContent = message;
+      }
+
+      function clearFieldError(field) {
+        if (!field) return;
+        field.classList.remove("input-error");
+        const container = getFieldContainer(field);
+        if (!container) return;
+        const error = container.querySelector(":scope > .field-error");
+        if (error) error.remove();
+      }
+
+      function validateRequiredFields(requiredFields) {
+        document.querySelectorAll(".input-error").forEach(clearFieldError);
         for (const [field, label] of requiredFields) {
-          if (!field || !field.value.trim()) {
-            field?.classList.add("input-error");
-            alert(`Please fill out: ${label}`);
-            field?.focus();
+          if (!field || field.disabled) continue;
+          if (!String(field.value ?? "").trim()) {
+            showFieldError(field, `${label} is required. Please provide an answer.`);
+            field.focus({ preventScroll: true });
+            field.scrollIntoView({ behavior: "smooth", block: "center" });
             return false;
           }
         }
-
         return true;
       }
+
+      // Show red asterisks beside labels that are actually required.
+      function refreshRequiredAsterisks() {
+        const alwaysRequired = [
+          "schoolYear", "gradeLevel", "with-lrn", "balik-aral", "psa",
+          "lastName", "firstName", "birthdate", "sex", "placeOfBirth",
+          "religion", "motherTongue", "currenthouseNO", "currentstreet",
+          "currentbarangay", "currentmunicipalitycity", "currentprovince",
+          "currentzipCode", "sameaddress", "fatherName", "fatherContact",
+          "motherName", "motherContact", "guardianName", "guardianContact",
+          "ip", "disability", "4Ps"
+        ];
+        const conditionalRequired = [];
+        if (getField("with-lrn")?.value === "YES") conditionalRequired.push("lrn");
+        if (getField("balik-aral")?.value === "YES") conditionalRequired.push("Lastgradelevel", "Lastschool", "Lastschoolyear", "schoolid");
+        if (getField("sameaddress")?.value === "NO") conditionalRequired.push("permanenthouseNO", "permanentstreet", "permanentbarangay", "permanentcity", "permanentprovince", "permanentzipCode");
+        if (getField("ip")?.value === "YES") conditionalRequired.push("culture");
+        if (getField("disability")?.value === "YES") conditionalRequired.push("disType");
+        if (getField("4Ps")?.value === "YES") conditionalRequired.push("HouseID");
+        const requiredNames = new Set([...alwaysRequired, ...conditionalRequired]);
+
+        document.querySelectorAll("label").forEach((label) => {
+          label.querySelectorAll(".required").forEach((star) => star.remove());
+          const container = label.closest(".field") || label.closest(".section-box");
+          const control = container?.querySelector("input[name], select[name], textarea[name]");
+          if (control && requiredNames.has(control.name)) {
+            const star = document.createElement("span");
+            star.className = "required";
+            star.setAttribute("aria-label", "required");
+            star.textContent = " *";
+            label.appendChild(star);
+          }
+        });
+      }
+
+      document.addEventListener("input", (event) => {
+        const field = event.target;
+        if (field.matches("input, select, textarea") && field.classList.contains("input-error") && field.value.trim()) {
+          clearFieldError(field);
+        }
+      });
+      document.addEventListener("change", (event) => {
+        const field = event.target;
+        if (field.matches("input, select, textarea")) {
+          if (field.classList.contains("input-error") && field.value.trim()) clearFieldError(field);
+          refreshRequiredAsterisks();
+        }
+      });
 
       function validateBirthdate() {
         const value = birthdateInput.value.trim();
@@ -645,9 +813,9 @@
         const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
 
         if (!match) {
-          birthdateInput.classList.add("input-error");
-          alert("Please enter a valid birthdate in MM/DD/YYYY format.");
-          birthdateInput.focus();
+          showFieldError(birthdateInput, "Please enter your birthdate in MM/DD/YYYY format.");
+          birthdateInput.focus({ preventScroll: true });
+          birthdateInput.scrollIntoView({ behavior: "smooth", block: "center" });
           return false;
         }
 
@@ -663,9 +831,9 @@
           date.getDate() !== day ||
           date > new Date()
         ) {
-          birthdateInput.classList.add("input-error");
-          alert("Please enter a valid birthdate.");
-          birthdateInput.focus();
+          showFieldError(birthdateInput, "Please enter a valid birthdate.");
+          birthdateInput.focus({ preventScroll: true });
+          birthdateInput.scrollIntoView({ behavior: "smooth", block: "center" });
           return false;
         }
 
@@ -784,8 +952,7 @@
             [fields.guardianContact, "Guardian Contact"],
             [fields.ip, "Indigenous People"],
             [fields.disability, "Disability"],
-            [fields.fourPs, "4P's Community"],
-            [fields.learningModalities, "Learning Modalities"],
+            [fields.fourPs, "4P's Community"]
           ];
 
           if (fields.withLRN.value === "YES") {
@@ -833,9 +1000,9 @@
             fields.withLRN.value === "YES" &&
             !/^\d{12}$/.test(fields.lrn.value.trim())
           ) {
-            fields.lrn.classList.add("input-error");
-            alert("LRN must contain exactly 12 digits.");
-            fields.lrn.focus();
+            showFieldError(fields.lrn, "LRN must contain exactly 12 digits.");
+            fields.lrn.focus({ preventScroll: true });
+            fields.lrn.scrollIntoView({ behavior: "smooth", block: "center" });
             return;
           }
 
@@ -848,9 +1015,9 @@
 
           for (const [field, label] of contactFields) {
             if (!/^\d{11}$/.test(field.value.trim())) {
-              field.classList.add("input-error");
-              alert(`${label} must contain exactly 11 digits.`);
-              field.focus();
+              showFieldError(field, `${label} must contain exactly 11 digits.`);
+              field.focus({ preventScroll: true });
+              field.scrollIntoView({ behavior: "smooth", block: "center" });
               return;
             }
           }
@@ -865,9 +1032,9 @@
 
           for (const [field, label] of zipFields) {
             if (!/^\d{4}$/.test(field.value.trim())) {
-              field.classList.add("input-error");
-              alert(`${label} must contain exactly 4 digits.`);
-              field.focus();
+              showFieldError(field, `${label} must contain exactly 4 digits.`);
+              field.focus({ preventScroll: true });
+              field.scrollIntoView({ behavior: "smooth", block: "center" });
               return;
             }
           }
@@ -1061,6 +1228,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         controlOptionalFields();
         updateBirthdateAndAge();
+        refreshRequiredAsterisks();
       });
     </script>
   </body>
