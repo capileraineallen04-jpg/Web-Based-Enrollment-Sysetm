@@ -1072,7 +1072,7 @@ function val(value) {
 function generatePDF(record) {
   if (!window.jspdf || !window.jspdf.jsPDF) {
     throw new Error(
-      "The PDF library failed to load. Check your internet connection and reload the page."
+      "THE PDF LIBRARY FAILED TO LOAD. CHECK YOUR INTERNET CONNECTION AND RELOAD THE PAGE."
     );
   }
 
@@ -1097,11 +1097,13 @@ function generatePDF(record) {
   const grade = recoveredGrade;
   const registrationID = recoveredID;
 
+  const upper = (value) => val(value).toUpperCase();
+
   const lrn =
     field(L, ["5-LRN", "8-LRN", "LRN", "lrn"]) ||
     field(P, ["LRN", "lrn"]);
 
-  const name = getName(P);
+  const name = getName(P).toUpperCase();
 
   let y = 12;
 
@@ -1115,7 +1117,7 @@ function generatePDF(record) {
     doc.setFontSize(8);
 
     doc.text(
-      "Republic of the Philippines",
+      "REPUBLIC OF THE PHILIPPINES",
       W / 2, 14,
       { align: "center" }
     );
@@ -1133,7 +1135,7 @@ function generatePDF(record) {
     doc.setFontSize(8);
 
     doc.text(
-      "Region III - Central Luzon",
+      "REGION III - CENTRAL LUZON",
       W / 2, 24,
       { align: "center" }
     );
@@ -1151,7 +1153,7 @@ function generatePDF(record) {
     doc.setFontSize(8);
 
     doc.text(
-      "Taal, Bocaue, Bulacan",
+      "TAAL, BOCAUE, BULACAN",
       W / 2, 33,
       { align: "center" }
     );
@@ -1190,7 +1192,7 @@ function generatePDF(record) {
 
     doc.text(
       doc.splitTextToSize(
-        String(registrationID || "—"),
+        String(registrationID || "—").toUpperCase(),
         contentWidth * 0.52
       ),
       margin + 3,
@@ -1210,7 +1212,7 @@ function generatePDF(record) {
     doc.setFontSize(9);
 
     doc.text(
-      val(field(L, ["1-SCHOOL-YEAR", "schoolYear"])),
+      upper(field(L, ["1-SCHOOL-YEAR", "schoolYear"])),
       splitX + 3,
       y + 10.5
     );
@@ -1255,7 +1257,7 @@ function generatePDF(record) {
     doc.setFontSize(8);
 
     const lines = doc.splitTextToSize(
-      val(value),
+      upper(value),
       valueWidth
     );
 
@@ -1277,7 +1279,7 @@ function generatePDF(record) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
 
-    doc.text(label, margin + 2, y + 4.5);
+    doc.text(label.toUpperCase(), margin + 2, y + 4.5);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
@@ -1302,12 +1304,12 @@ function generatePDF(record) {
     doc.setFontSize(7.5);
 
     const lines1 = doc.splitTextToSize(
-      val(value1),
+      upper(value1),
       valueWidth
     );
 
     const lines2 = label2
-      ? doc.splitTextToSize(val(value2), valueWidth)
+      ? doc.splitTextToSize(upper(value2), valueWidth)
       : [""];
 
     const height = Math.max(
@@ -1338,11 +1340,11 @@ function generatePDF(record) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7);
 
-    doc.text(label1, margin + 1.5, y + 4.5);
+    doc.text(label1.toUpperCase(), margin + 1.5, y + 4.5);
 
     if (label2) {
       doc.text(
-        label2,
+        label2.toUpperCase(),
         margin + half + 1.5,
         y + 4.5
       );
@@ -1374,24 +1376,24 @@ function generatePDF(record) {
 
   /* I. LEARNERS INFORMATION */
 
-  section("I. Learners Information");
+  section("I. LEARNERS INFORMATION");
 
   pair(
-    "School Year",
+    "SCHOOL YEAR",
     field(L, ["1-SCHOOL-YEAR", "schoolYear"]),
-    "Grade Level",
-    "Grade " + grade
+    "GRADE LEVEL",
+    "GRADE " + grade
   );
 
   pair(
-    "With LRN",
+    "WITH LRN",
     field(L, ["3-WITH-LRN", "4-WITH-LRN", "withLRN"]),
     "LRN",
     lrn
   );
 
   row(
-    "Balik-Aral / Transfer",
+    "BALIK-ARAL / TRANSFER",
     field(L, [
       "4-BALIK-ARAL",
       "5-BALIK-ARAL",
@@ -1401,109 +1403,109 @@ function generatePDF(record) {
 
   /* II. PERSONAL INFORMATION */
 
-  section("II. Personal Information");
+  section("II. PERSONAL INFORMATION");
 
-  row("Full Name", name);
+  row("FULL NAME", name);
 
   pair(
-    "Last Name",
+    "LAST NAME",
     field(P, ["2-LAST-NAME", "lastName"]),
-    "First Name",
+    "FIRST NAME",
     field(P, ["3-FIRST-NAME", "firstName"])
   );
 
   pair(
-    "Middle Name",
+    "MIDDLE NAME",
     field(P, ["4-MIDDLE-NAME", "middleName"]),
-    "Extension",
+    "EXTENSION",
     field(P, ["5-EXTENSION", "extension"])
   );
 
   pair(
-    "Birthdate",
+    "BIRTHDATE",
     field(P, ["6-BIRTHDATE", "birthdate"]),
-    "Age",
+    "AGE",
     field(P, ["8-AGE", "age"])
   );
 
   pair(
-    "Sex",
+    "SEX",
     field(P, ["7-SEX", "sex"]),
     "PSA",
     field(P, ["1-PSA", "PSA"])
   );
 
   row(
-    "Place of Birth",
+    "PLACE OF BIRTH",
     field(P, ["9-PLACE-OF-BIRTH", "placeOfBirth"])
   );
 
   pair(
-    "Religion",
+    "RELIGION",
     field(P, ["10-RELIGION", "religion"]),
-    "Mother Tongue",
+    "MOTHER TONGUE",
     field(P, ["11-MOTHER-TONGUE", "motherTongue"])
   );
 
   /* III. ADDRESS */
 
-  section("III. Learner Address");
+  section("III. ADDRESS INFORMATION");
 
-  row("Current Address", address(C));
-  row("Permanent Address", address(A));
+  row("CURRENT ADDRESS", address(C));
+  row("PERMANENT ADDRESS", address(A));
 
   /* IV. PARENT / GUARDIAN */
 
-  section("IV. Parent / Guardian Information");
+  section("IV. PARENT / GUARDIAN INFORMATION");
 
   pair(
-    "Father's Name",
+    "FATHER'S NAME",
     field(F, ["1-FATHER-NAME", "fatherName"]),
-    "Contact",
+    "CONTACT",
     field(F, ["2-FATHER-CONTACT", "fatherContact"])
   );
 
   pair(
-    "Mother's Name",
+    "MOTHER'S NAME",
     field(F, ["3-MOTHER-NAME", "motherName"]),
-    "Contact",
+    "CONTACT",
     field(F, ["4-MOTHER-CONTACT", "motherContact"])
   );
 
   pair(
-    "Guardian's Name",
+    "GUARDIAN'S NAME",
     field(F, ["5-GUARDIAN-NAME", "guardianName"]),
-    "Contact",
+    "CONTACT",
     field(F, ["6-GUARDIAN-CONTACT", "guardianContact"])
   );
 
   /* V. OTHER INFORMATION */
 
-  section("V. Other Learner Information");
+  section("V. OTHER INFORMATION");
 
   pair(
-    "Indigenous People",
+    "INDIGENOUS PEOPLE",
     field(O, ["1-IP", "IP", "indigenousPeople"]),
-    "Culture",
+    "CULTURE",
     field(O, ["2-CULTURE", "culture"])
   );
 
   pair(
-    "Disability",
+    "DISABILITY",
     field(O, ["3-DISABILITY", "disability"]),
-    "Disability Type",
+    "DISABILITY TYPE",
     field(O, ["4-DISABILITY-TYPE", "disabilityType"])
   );
 
   pair(
-    "4Ps Beneficiary",
+    "4PS BENEFICIARY",
     field(O, ["5-4PS", "4PS", "fourPs"]),
-    "Household ID",
+    "HOUSEHOLD ID",
     field(O, ["6-HOUSE-ID", "houseID"])
   );
 
   row(
-    "Learning Modality",
+    "LEARNING MODALITY",
     field(O, [
       "7-LEARNING-MODALITY",
       "learningModality"
@@ -1512,22 +1514,22 @@ function generatePDF(record) {
 
   /* VI. BALIK-ARAL / TRANSFER */
 
-  section("VI. Balik-Aral / Transfer Information");
+  section("VI. BALIK-ARAL / TRANSFER INFORMATION");
 
   pair(
-    "Previous Grade",
+    "PREVIOUS GRADE",
     field(T, ["1-LAST-GRADE-LEVEL", "lastGradeLevel"]),
-    "School Year",
+    "SCHOOL YEAR",
     field(T, ["3-LAST-SCHOOL-YEAR", "lastSchoolYear"])
   );
 
   row(
-    "Previous School",
+    "PREVIOUS SCHOOL",
     field(T, ["2-LAST-SCHOOL", "lastSchool"])
   );
 
   row(
-    "Previous School ID",
+    "PREVIOUS SCHOOL ID",
     field(T, ["4-SCHOOL-ID", "schoolID"])
   );
 
@@ -1554,7 +1556,7 @@ function generatePDF(record) {
   doc.setFontSize(7.5);
 
   doc.text(
-    "Date of Enrollment: " + val(enrollmentDate),
+    "DATE OF ENROLLMENT: " + upper(enrollmentDate),
     margin,
     y
   );
@@ -1577,14 +1579,14 @@ function generatePDF(record) {
   doc.setFontSize(7);
 
   doc.text(
-    "Parent / Guardian Signature",
+    "PARENT / GUARDIAN SIGNATURE",
     margin + signatureWidth / 2,
     y + 4,
     { align: "center" }
   );
 
   doc.text(
-    "School Personnel / Verifier",
+    "SCHOOL PERSONNEL / VERIFIER",
     margin + signatureWidth + 15 + signatureWidth / 2,
     y + 4,
     { align: "center" }
@@ -1608,7 +1610,7 @@ function generatePDF(record) {
   doc.setFontSize(7);
 
   doc.text(
-    "For school verification. Not an official DepEd-issued form.",
+    "FOR SCHOOL VERIFICATION. NOT AN OFFICIAL DEPED-ISSUED FORM.",
     W / 2,
     y,
     { align: "center" }
@@ -1625,8 +1627,8 @@ function generatePDF(record) {
     doc.setFontSize(7);
 
     doc.text(
-      "EnrollEase | Taal High School | JHS | Page " +
-      page + " of " + totalPages,
+      "ENROLLEASE | TAAL HIGH SCHOOL | JHS | PAGE " +
+      page + " OF " + totalPages,
       W / 2,
       footerY,
       { align: "center" }
@@ -1636,10 +1638,10 @@ function generatePDF(record) {
   /* SAVE PDF */
 
   const safeName =
-    name.replace(/[^a-z0-9_-]/gi, "_") || "Student";
+    name.replace(/[^a-z0-9_-]/gi, "_") || "STUDENT";
 
   const safeID =
-    String(registrationID || "NoID")
+    String(registrationID || "NOID")
       .replace(/[^a-z0-9_-]/gi, "_");
 
   const filename =
