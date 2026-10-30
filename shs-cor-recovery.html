@@ -1254,7 +1254,7 @@ function generatePDF(record) {
   header();
 
   // I. SHS ENROLLMENT INFORMATION
-  section("I. SHS ENROLLMENT INFORMATION");
+  section("I. LEARNERS INFORMATION");
 
   pair(
     "School Year",
@@ -1271,7 +1271,7 @@ function generatePDF(record) {
   );
 
   // II. LEARNER PERSONAL INFORMATION
-  section("II. LEARNER PERSONAL INFORMATION");
+  section("II. PERSONAL INFORMATION");
 
   row("Full Name", name);
 
@@ -1313,11 +1313,12 @@ function generatePDF(record) {
   );
 
   // III. ADDRESS AND FAMILY INFORMATION
-  section("III. ADDRESS AND FAMILY INFORMATION");
+  section("III. ADDRESS INFORMATION");
 
   row("Current Address", address(C));
   row("Permanent Address", address(A));
-
+  
+section("IV. PARENTS/GUARDIAN INFORMATION");
   pair(
     "Father's Name",
     F["1-FATHER-NAME"],
@@ -1340,7 +1341,7 @@ function generatePDF(record) {
   );
 
   // IV. OTHER INFORMATION
-  section("IV. OTHER INFORMATION");
+  section("V. OTHER INFORMATION");
 
   pair(
     "Indigenous People",
@@ -1364,7 +1365,7 @@ function generatePDF(record) {
   );
 
   row("Learning Modality", O["7-LEARNING-MODALITY"]);
-
+section("VI. FOR SENIOR HIGH SCHOOL");
   row(
     "Termination",
     first(L, ["3-TERMINATION", "TERMINATION", "termination"])
@@ -1402,7 +1403,7 @@ function generatePDF(record) {
   );
 
   // V. BALIK-ARAL / TRANSFER INFORMATION
-  section("V. BALIK-ARAL / TRANSFER INFORMATION");
+  section("VII. BALIK-ARAL / TRANSFER INFORMATION");
 
   pair(
     "Previous Grade",
