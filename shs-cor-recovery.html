@@ -1014,9 +1014,9 @@ function generatePDF(record) {
 
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-const m = 12;
-const cw = W - 2 * m;
-const footerY = H - 7;
+  const m = 12;
+  const cw = W - 2 * m;
+  const footerY = H - 7;
 
   const L = record["1-LEARNERS-INFORMATION"] || record.learnersInformation || {};
   const P = record["2-PERSONAL-INFORMATION"] || record.personalInformation || {};
@@ -1159,7 +1159,8 @@ const footerY = H - 7;
     doc.setFontSize(9);
     doc.text(v(L["1-SCHOOL-YEAR"]), dividerX + 3, y + 10.5);
 
-    y += 19;
+    // Additional space after the header box
+    y += 22;
   }
 
   // ============================================================
@@ -1167,30 +1168,53 @@ const footerY = H - 7;
   // ============================================================
 
   function ensure(height) {
-  if (y + height > H - 12) {
-    doc.addPage();
-    header();
+    if (y + height > H - 12) {
+      doc.addPage();
+      header();
+    }
   }
-}
 
   // ============================================================
   // SECTION HEADER
   // ============================================================
 
   function section(title) {
-    ensure(14);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
 
+    // Automatically wrap long section headings
+    const lines = doc.splitTextToSize(
+      title.toUpperCase(),
+      cw - 8
+    );
+
+    const lineHeight = 4;
+    const sectionHeight = Math.max(8, lines.length * lineHeight + 4);
+    const bottomSpacing = 6;
+
+    // Check available space before drawing the section
+    ensure(sectionHeight + bottomSpacing);
+
+    // Section background
     doc.setFillColor(232, 237, 245);
     doc.setDrawColor(170, 185, 205);
-    doc.rect(m, y, cw, 7, "FD");
+    doc.setLineWidth(0.3);
 
+    doc.rect(m, y, cw, sectionHeight, "FD");
+
+    // Section title
     doc.setFont("helvetica", "bold");
     doc.setTextColor(7, 27, 73);
     doc.setFontSize(8);
-    doc.text(title.toUpperCase(), m + 2, y + 4.7);
 
-    // Space between section heading and content
-    y += 12;
+    doc.text(
+      lines,
+      m + 4,
+      y + 4.5
+    );
+
+    // Space between heading and content
+    y += sectionHeight + bottomSpacing;
 
     doc.setTextColor(0);
   }
@@ -1223,7 +1247,7 @@ const footerY = H - 7;
     doc.setFontSize(8);
     doc.text(lines, m + lw + 2, y + 4.5);
 
-    // Small spacing between rows
+    // Spacing between rows
     y += h + 1;
   }
 
@@ -1264,7 +1288,7 @@ const footerY = H - 7;
     doc.text(a, m + lw + 1.5, y + 4.5);
     doc.text(b, m + half + lw + 1.5, y + 4.5);
 
-    // Small spacing between rows
+    // Spacing between rows
     y += h + 1;
   }
 
@@ -1542,7 +1566,6 @@ const footerY = H - 7;
 
   doc.save("SHS_COR_" + safeName + "_" + safeID + ".pdf");
 }
-
 
 /* =========================================
    DOWNLOAD SHS COR
