@@ -1178,7 +1178,7 @@ function generatePDF(record) {
   // ============================================================
 
   function section(title) {
-    ensure(11);
+    ensure(14);
 
     doc.setFillColor(232, 237, 245);
     doc.setDrawColor(170, 185, 205);
@@ -1189,7 +1189,10 @@ function generatePDF(record) {
     doc.setFontSize(8);
     doc.text(title.toUpperCase(), m + 2, y + 4.7);
 
-    y += 9;
+    // Space between section heading and content
+    y += 12;
+
+    doc.setTextColor(0);
   }
 
   // ============================================================
@@ -1220,7 +1223,8 @@ function generatePDF(record) {
     doc.setFontSize(8);
     doc.text(lines, m + lw + 2, y + 4.5);
 
-    y += h;
+    // Small spacing between rows
+    y += h + 1;
   }
 
   // ============================================================
@@ -1260,16 +1264,21 @@ function generatePDF(record) {
     doc.text(a, m + lw + 1.5, y + 4.5);
     doc.text(b, m + half + lw + 1.5, y + 4.5);
 
-    y += h;
+    // Small spacing between rows
+    y += h + 1;
   }
 
   // ============================================================
   // GENERATE COR
   // ============================================================
 
+  // Initial document header
   header();
 
-  // I. SHS ENROLLMENT INFORMATION
+  // ============================================================
+  // I. LEARNERS INFORMATION
+  // ============================================================
+
   section("I. LEARNERS INFORMATION");
 
   pair(
@@ -1288,14 +1297,13 @@ function generatePDF(record) {
 
   row(
     "BALIK-ARAL / TRANSFER",
-    field(L, [
-      "5-BALIK-ARAL"
-    ])
+    field(L, ["5-BALIK-ARAL"])
   );
 
-  header();
+  // ============================================================
+  // II. PERSONAL INFORMATION
+  // ============================================================
 
-  // II. LEARNER PERSONAL INFORMATION
   section("II. PERSONAL INFORMATION");
 
   row("FULL NAME", name);
@@ -1303,7 +1311,7 @@ function generatePDF(record) {
   pair(
     "LAST NAME",
     P["2-LAST-NAME"],
-    "First Name",
+    "FIRST NAME",
     P["3-FIRST-NAME"]
   );
 
@@ -1333,21 +1341,25 @@ function generatePDF(record) {
   pair(
     "RELIGION",
     P["10-RELIGION"],
-    "MOTHER TOUNGE",
+    "MOTHER TONGUE",
     P["11-MOTHER-TONGUE"]
   );
 
-  header();
+  // ============================================================
+  // III. ADDRESS INFORMATION
+  // ============================================================
 
-  // III. ADDRESS AND FAMILY INFORMATION
   section("III. ADDRESS INFORMATION");
 
   row("CURRENT ADDRESS", address(C));
   row("PERMANENT ADDRESS", address(A));
 
-  header();
+  // ============================================================
+  // IV. PARENTS / GUARDIAN INFORMATION
+  // ============================================================
 
-section("IV. PARENTS/GUARDIAN INFORMATION");
+  section("IV. PARENTS / GUARDIAN INFORMATION");
+
   pair(
     "FATHER'S NAME",
     F["1-FATHER-NAME"],
@@ -1369,40 +1381,43 @@ section("IV. PARENTS/GUARDIAN INFORMATION");
     F["6-GUARDIAN-CONTACT"]
   );
 
-  header();
+  // ============================================================
+  // V. OTHER INFORMATION
+  // ============================================================
 
-  // IV. OTHER INFORMATION
   section("V. OTHER INFORMATION");
 
   pair(
-    "Indigenous People",
+    "INDIGENOUS PEOPLE",
     O["1-IP"],
-    "Culture",
+    "CULTURE",
     O["2-CULTURE"]
   );
 
   pair(
-    "Disability",
+    "DISABILITY",
     O["3-DISABILITY"],
-    "Disability Type",
+    "DISABILITY TYPE",
     O["4-DISABILITY-TYPE"]
   );
 
   pair(
-    "4Ps Beneficiary",
+    "4Ps BENEFICIARY",
     O["5-4PS"],
-    "Household ID",
+    "HOUSEHOLD ID",
     O["6-HOUSE-ID"]
   );
 
-  row("Learning Modality", O["7-LEARNING-MODALITY"]);
+  row("LEARNING MODALITY", O["7-LEARNING-MODALITY"]);
 
-  header();
+  // ============================================================
+  // VI. SENIOR HIGH SCHOOL INFORMATION
+  // ============================================================
 
-  
-section("VI. FOR SENIOR HIGH SCHOOL");
+  section("VI. SENIOR HIGH SCHOOL INFORMATION");
+
   row(
-    "TTERMINATION",
+    "TERMINATION",
     first(L, ["3-TERMINATION", "TERMINATION", "termination"])
   );
 
@@ -1427,10 +1442,10 @@ section("VI. FOR SENIOR HIGH SCHOOL");
     ])
   );
 
-  header();
+  // ============================================================
+  // VII. BALIK-ARAL / TRANSFER INFORMATION
+  // ============================================================
 
-
-  // V. BALIK-ARAL / TRANSFER INFORMATION
   section("VII. BALIK-ARAL / TRANSFER INFORMATION");
 
   pair(
@@ -1443,18 +1458,9 @@ section("VI. FOR SENIOR HIGH SCHOOL");
   row("LAST SCHOOL ATTENDED", T["2-LAST-SCHOOL"]);
   row("SCHOOL ID", T["4-SCHOOL-ID"]);
 
-  const enrollmentDate =
-    first(record, [
-      "8-TIME-STAMP",
-      "timestamp",
-      "timeStamp",
-      "dateOfEnrollment"
-    ]) ||
-    findScalar(record, [
-      "timestamp",
-      "timeStamp",
-      "dateOfEnrollment"
-    ]);
+  // ============================================================
+  // SIGNATURE AND VERIFICATION
+  // ============================================================
 
   ensure(35);
 
