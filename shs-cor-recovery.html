@@ -1008,13 +1008,15 @@ function generatePDF(record) {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
-    format: "a4"
+    format: "a4",
+    compress: true
   });
 
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
   const m = 12;
   const cw = W - 2 * m;
+  const footerY = H - 8;
 
   const L = record["1-LEARNERS-INFORMATION"] || record.learnersInformation || {};
   const P = record["2-PERSONAL-INFORMATION"] || record.personalInformation || {};
@@ -1080,7 +1082,7 @@ function generatePDF(record) {
 
   function header() {
     doc.setTextColor(0);
-    doc.setDrawColor(0);
+    doc.setDrawColor(30, 50, 80);
     doc.setLineWidth(0.6);
 
     doc.setFont("helvetica", "normal");
@@ -1131,18 +1133,29 @@ function generatePDF(record) {
     // Registration ID and School Year box
     doc.rect(m, y, cw, 14);
 
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.text("REGISTRATION ID", m + 3, y + 5);
 
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
-    doc.text(String(regID || "—"), m + 3, y + 10.5);
+    doc.text(
+      doc.splitTextToSize(
+        String(regID || "—"),
+        cw * 0.52
+      ),
+      m + 3,
+      y + 10.5
+    );
 
     const dividerX = m + cw * 0.59;
     doc.line(dividerX, y, dividerX, y + 14);
 
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.text("SCHOOL YEAR", dividerX + 3, y + 5);
 
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.text(v(L["1-SCHOOL-YEAR"]), dividerX + 3, y + 10.5);
 
@@ -1154,7 +1167,7 @@ function generatePDF(record) {
   // ============================================================
 
   function ensure(height) {
-    if (y + height > H - 18) {
+    if (y + height > H - 17) {
       doc.addPage();
       header();
     }
@@ -1168,11 +1181,12 @@ function generatePDF(record) {
     ensure(11);
 
     doc.setFillColor(232, 237, 245);
+    doc.setDrawColor(170, 185, 205);
     doc.rect(m, y, cw, 7, "FD");
 
     doc.setFont("helvetica", "bold");
+    doc.setTextColor(7, 27, 73);
     doc.setFontSize(8);
-    doc.setTextColor(0);
     doc.text(title.toUpperCase(), m + 2, y + 4.7);
 
     y += 9;
@@ -1194,6 +1208,7 @@ function generatePDF(record) {
 
     ensure(h);
 
+    doc.setDrawColor(185, 195, 210);
     doc.rect(m, y, cw, h);
     doc.line(m + lw, y, m + lw, y + h);
 
@@ -1227,6 +1242,7 @@ function generatePDF(record) {
 
     ensure(h);
 
+    doc.setDrawColor(185, 195, 210);
     doc.rect(m, y, cw, h);
     doc.line(m + half, y, m + half, y + h);
     doc.line(m + lw, y, m + lw, y + h);
@@ -1317,7 +1333,7 @@ function generatePDF(record) {
 
   row("Current Address", address(C));
   row("Permanent Address", address(A));
-  
+
 section("IV. PARENTS/GUARDIAN INFORMATION");
   pair(
     "Father's Name",
@@ -1431,9 +1447,9 @@ section("VI. FOR SENIOR HIGH SCHOOL");
     ])
   );
 
-  ensure(27);
+  ensure(35);
 
-  y += 8;
+  y += 5;
 
   const sw = (cw - 15) / 2;
 
@@ -1444,14 +1460,14 @@ section("VI. FOR SENIOR HIGH SCHOOL");
   doc.setFontSize(7);
 
   doc.text(
-    "Parent / Guardian Signature",
+    "PARENT / GUARDIAN INFORMATION",
     m + sw / 2,
     y + 4,
     { align: "center" }
   );
 
   doc.text(
-    "School Personnel / Verifier",
+    "SCHOOL PERSONNEL",
     m + sw + 15 + sw / 2,
     y + 4,
     { align: "center" }
@@ -1497,7 +1513,7 @@ section("VI. FOR SENIOR HIGH SCHOOL");
       "EnrollEase | Taal High School | SHS | Page " +
       i + " of " + pages,
       W / 2,
-      H - 8,
+      footerY,
       { align: "center" }
     );
   }
