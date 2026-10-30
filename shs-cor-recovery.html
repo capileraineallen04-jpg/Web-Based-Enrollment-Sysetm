@@ -1273,88 +1273,103 @@ function generatePDF(record) {
   section("I. LEARNERS INFORMATION");
 
   pair(
-    "School Year",
+    "SCHOOL YEAR",
     L["1-SCHOOL-YEAR"],
-    "Grade Level",
+    "GRADE LEVEL",
     "Grade " + grade
   );
 
   pair(
-    "With LRN",
+    "WITH-LRN",
     first(L, ["4-WITH-LRN", "3-WITH-LRN"]),
     "LRN",
     lrn
   );
 
+  row(
+    "BALIK-ARAL / TRANSFER",
+    field(L, [
+      "5-BALIK-ARAL"
+    ])
+  );
+
+  header();
+
   // II. LEARNER PERSONAL INFORMATION
   section("II. PERSONAL INFORMATION");
 
-  row("Full Name", name);
+  row("FULL NAME", name);
 
   pair(
-    "Last Name",
+    "LAST NAME",
     P["2-LAST-NAME"],
     "First Name",
     P["3-FIRST-NAME"]
   );
 
   pair(
-    "Middle Name",
+    "MIDDLE NAME",
     P["4-MIDDLE-NAME"],
-    "Extension",
+    "EXTENSION",
     P["5-EXTENSION"]
   );
 
   pair(
-    "Birthdate",
+    "BIRTHDATE",
     P["6-BIRTHDATE"],
-    "Age",
+    "AGE",
     P["8-AGE"]
   );
 
   pair(
-    "Sex",
+    "SEX",
     P["7-SEX"],
     "PSA",
     P["1-PSA"]
   );
 
-  row("Place of Birth", P["9-PLACE-OF-BIRTH"]);
+  row("PLACE OF BIRTH", P["9-PLACE-OF-BIRTH"]);
 
   pair(
-    "Religion",
+    "RELIGION",
     P["10-RELIGION"],
-    "Mother Tongue",
+    "MOTHER TOUNGE",
     P["11-MOTHER-TONGUE"]
   );
+
+  header();
 
   // III. ADDRESS AND FAMILY INFORMATION
   section("III. ADDRESS INFORMATION");
 
-  row("Current Address", address(C));
-  row("Permanent Address", address(A));
+  row("CURRENT ADDRESS", address(C));
+  row("PERMANENT ADDRESS", address(A));
+
+  header();
 
 section("IV. PARENTS/GUARDIAN INFORMATION");
   pair(
-    "Father's Name",
+    "FATHER'S NAME",
     F["1-FATHER-NAME"],
-    "Contact",
+    "FATHER'S CONTACT",
     F["2-FATHER-CONTACT"]
   );
 
   pair(
-    "Mother's Name",
+    "MOTHER'S / MAIDEN NAME",
     F["3-MOTHER-NAME"],
-    "Contact",
+    "MOTHER'S CONTACT",
     F["4-MOTHER-CONTACT"]
   );
 
   pair(
-    "Guardian's Name",
+    "GUARDIAN'S NAME",
     F["5-GUARDIAN-NAME"],
-    "Contact",
+    "GUARDIAN'S CONTACT",
     F["6-GUARDIAN-CONTACT"]
   );
+
+  header();
 
   // IV. OTHER INFORMATION
   section("V. OTHER INFORMATION");
@@ -1381,18 +1396,22 @@ section("IV. PARENTS/GUARDIAN INFORMATION");
   );
 
   row("Learning Modality", O["7-LEARNING-MODALITY"]);
+
+  header();
+
+  
 section("VI. FOR SENIOR HIGH SCHOOL");
   row(
-    "Termination",
+    "TTERMINATION",
     first(L, ["3-TERMINATION", "TERMINATION", "termination"])
   );
 
   row(
-    "Track",
+    "TRACK",
     first(L, ["6-TRACK", "5-TRACK", "TRACK", "track"])
   );
 
-  const strandLabel = Number(grade) === 11 ? "Cluster" : "Strand";
+  const strandLabel = Number(grade) === 11 ? "CLUSTER" : "STRAND";
 
   row(
     strandLabel,
@@ -1408,44 +1427,34 @@ section("VI. FOR SENIOR HIGH SCHOOL");
     ])
   );
 
-  row(
-    "Balik-Aral / Transfer",
-    first(L, [
-      "5-BALIK-ARAL",
-      "4-BALIK-ARAL",
-      "BALIK-ARAL",
-      "balik-aral"
-    ])
-  );
+  header();
+
 
   // V. BALIK-ARAL / TRANSFER INFORMATION
   section("VII. BALIK-ARAL / TRANSFER INFORMATION");
 
   pair(
-    "Previous Grade",
+    "LAST GRADE LEVEL COMPLETED",
     T["1-LAST-GRADE-LEVEL"],
-    "School Year",
+    "LAST SCHOOL YEAR COMPLETED",
     T["3-LAST-SCHOOL-YEAR"]
   );
 
-  row("Previous School", T["2-LAST-SCHOOL"]);
-  row("Previous School ID", T["4-SCHOOL-ID"]);
+  row("LAST SCHOOL ATTENDED", T["2-LAST-SCHOOL"]);
+  row("SCHOOL ID", T["4-SCHOOL-ID"]);
 
-  // VI. RECORD AND VERIFICATION
-  section("VI. RECORD AND VERIFICATION");
-
-  row("Registration ID", regID);
-
-  row(
-    "Date of Enrollment",
+  const enrollmentDate =
     first(record, [
       "8-TIME-STAMP",
       "timestamp",
       "timeStamp",
-      "dateSubmitted",
       "dateOfEnrollment"
-    ])
-  );
+    ]) ||
+    findScalar(record, [
+      "timestamp",
+      "timeStamp",
+      "dateOfEnrollment"
+    ]);
 
   ensure(35);
 
