@@ -1014,9 +1014,9 @@ function generatePDF(record) {
 
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  const m = 12;
-  const cw = W - 2 * m;
-  const footerY = H - 8;
+const m = 12;
+const cw = W - 2 * m;
+const footerY = H - 7;
 
   const L = record["1-LEARNERS-INFORMATION"] || record.learnersInformation || {};
   const P = record["2-PERSONAL-INFORMATION"] || record.personalInformation || {};
@@ -1167,11 +1167,11 @@ function generatePDF(record) {
   // ============================================================
 
   function ensure(height) {
-    if (y + height > H - 17) {
-      doc.addPage();
-      header();
-    }
+  if (y + height > H - 12) {
+    doc.addPage();
+    header();
   }
+}
 
   // ============================================================
   // SECTION HEADER
