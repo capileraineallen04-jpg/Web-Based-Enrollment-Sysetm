@@ -1536,10 +1536,34 @@ function generatePDF(record) {
   // ============================================================
   // SIGNATURE AND VERIFICATION
   // ============================================================
+  /* VERIFICATION */
+
+  const enrollmentDate =
+    first(record, [
+      "8-TIME-STAMP",
+      "timestamp",
+      "timeStamp",
+      "dateOfEnrollment"
+    ]) ||
+    findScalar(record, [
+      "timestamp",
+      "timeStamp",
+      "dateOfEnrollment"
+    ]);
 
   ensure(35);
 
   y += 5;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+
+  doc.text(
+    "DATE OF ENROLLMENT: " + upper(enrollmentDate),
+    margin,
+    y
+  );
+
 
   const sw = (cw - 15) / 2;
 
