@@ -1070,7 +1070,7 @@ function val(value) {
 }
 
 function generatePDF(record) {
-  if (!window.jspdf || !window.jspdf.jsPDF) {
+  if (!window.jspdf?.jsPDF) {
     throw new Error(
       "THE PDF LIBRARY FAILED TO LOAD. CHECK YOUR INTERNET CONNECTION AND RELOAD THE PAGE."
     );
@@ -1112,6 +1112,7 @@ function generatePDF(record) {
   function header() {
     doc.setTextColor(0);
     doc.setDrawColor(30, 50, 80);
+    doc.setLineWidth(0.6);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
@@ -1158,7 +1159,6 @@ function generatePDF(record) {
       { align: "center" }
     );
 
-    doc.setLineWidth(0.6);
     doc.line(margin, 37, W - margin, 37);
 
     doc.setFont("helvetica", "bold");
@@ -1449,7 +1449,7 @@ function generatePDF(record) {
 
   /* III. ADDRESS */
 
-  section("III. ADDRESS INFORMATION");
+  section("III. LEARNER ADDRESS");
 
   row("CURRENT ADDRESS", address(C));
   row("PERMANENT ADDRESS", address(A));
@@ -1481,7 +1481,7 @@ function generatePDF(record) {
 
   /* V. OTHER INFORMATION */
 
-  section("V. OTHER INFORMATION");
+  section("V. OTHER LEARNER INFORMATION");
 
   pair(
     "INDIGENOUS PEOPLE",
