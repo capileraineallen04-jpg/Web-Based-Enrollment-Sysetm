@@ -1159,8 +1159,8 @@ function generatePDF(record) {
     doc.setFontSize(9);
     doc.text(v(L["1-SCHOOL-YEAR"]), dividerX + 3, y + 10.5);
 
-    // Additional space after the header box
-    y += 22;
+    // Consistent spacing after the header box
+    y += 18;
   }
 
   // ============================================================
@@ -1190,9 +1190,8 @@ function generatePDF(record) {
 
     const lineHeight = 4;
     const sectionHeight = Math.max(8, lines.length * lineHeight + 4);
-    const bottomSpacing = 6;
+    const bottomSpacing = 3;
 
-    // Check available space before drawing the section
     ensure(sectionHeight + bottomSpacing);
 
     // Section background
@@ -1213,7 +1212,7 @@ function generatePDF(record) {
       y + 4.5
     );
 
-    // Space between heading and content
+    // Consistent spacing below section heading
     y += sectionHeight + bottomSpacing;
 
     doc.setTextColor(0);
@@ -1236,6 +1235,7 @@ function generatePDF(record) {
     ensure(h);
 
     doc.setDrawColor(185, 195, 210);
+    doc.setLineWidth(0.2);
     doc.rect(m, y, cw, h);
     doc.line(m + lw, y, m + lw, y + h);
 
@@ -1252,41 +1252,93 @@ function generatePDF(record) {
   }
 
   // ============================================================
-  // TWO-COLUMN ROW
+  // TWO-COLUMN ROW - IMPROVED LABEL WRAPPING
   // ============================================================
 
   function pair(label1, value1, label2, value2) {
     const half = cw / 2;
-    const lw = 27;
+    const lw = 32;
     const vw = half - lw - 4;
 
+    // Wrap values
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
 
     const a = doc.splitTextToSize(v(value1), vw);
     const b = doc.splitTextToSize(v(value2), vw);
 
-    const h = Math.max(8, Math.max(a.length, b.length) * 3.5 + 3);
+    // Wrap long labels
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(6.5);
+
+    const labelLines1 = doc.splitTextToSize(label1, lw - 3);
+    const labelLines2 = doc.splitTextToSize(label2, lw - 3);
+
+    // Calculate required heights
+    const labelHeight1 = labelLines1.length * 3;
+    const labelHeight2 = labelLines2.length * 3;
+
+    const labelHeight = Math.max(
+      labelHeight1,
+      labelHeight2
+    );
+
+    const valueHeight = Math.max(
+      a.length * 3.5,
+      b.length * 3.5
+    );
+
+    const h = Math.max(
+      9,
+      Math.max(labelHeight, valueHeight) + 4
+    );
 
     ensure(h);
 
+    // Table borders
     doc.setDrawColor(185, 195, 210);
+    doc.setLineWidth(0.2);
+
     doc.rect(m, y, cw, h);
+
     doc.line(m + half, y, m + half, y + h);
     doc.line(m + lw, y, m + lw, y + h);
     doc.line(m + half + lw, y, m + half + lw, y + h);
 
+    // First label
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(7);
+    doc.setFontSize(6.5);
+    doc.setTextColor(0);
 
-    doc.text(label1, m + 1.5, y + 4.5);
-    doc.text(label2, m + half + 1.5, y + 4.5);
+    doc.text(
+      labelLines1,
+      m + 1.5,
+      y + (h - labelHeight1) / 2 + 2.5
+    );
 
+    // Second label
+    doc.text(
+      labelLines2,
+      m + half + 1.5,
+      y + (h - labelHeight2) / 2 + 2.5
+    );
+
+    // First value
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
 
-    doc.text(a, m + lw + 1.5, y + 4.5);
-    doc.text(b, m + half + lw + 1.5, y + 4.5);
+    doc.text(
+      a,
+      m + lw + 1.5,
+      y + (h - a.length * 3.5) / 2 + 2.8
+    );
+
+    // Second value
+    doc.text(
+      b,
+      m + half + lw + 1.5,
+      y + (h - b.length * 3.5) / 2 + 2.8
+    );
 
     // Spacing between rows
     y += h + 1;
@@ -1296,7 +1348,6 @@ function generatePDF(record) {
   // GENERATE COR
   // ============================================================
 
-  // Initial document header
   header();
 
   // ============================================================
