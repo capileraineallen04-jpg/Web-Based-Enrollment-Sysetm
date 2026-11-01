@@ -649,7 +649,7 @@ function getPersonal(record) {
 function normalizeLRN(value) {
   // Remove quotation marks, spaces, hyphens, and other formatting.
   // This also handles values accidentally stored with extra quotes.
-  return String(value ?? "").replace(/\\D/g, "");
+return String(value ?? "").replace(/\D/g, "");
 }
 
 function getLRN(record) {
@@ -963,7 +963,7 @@ form.addEventListener("submit", async event => {
     return;
   }
 
-  if (method === "lrn" && !/^\\d{12}$/.test(query)) {
+if (method === "lrn" && !/^\d{12}$/.test(query)) {
     showMessage("Please enter a valid 12-digit LRN.", "error");
     searchValue.focus();
     return;
@@ -1042,7 +1042,7 @@ recoveryMethod.addEventListener("change", updateRecoveryMethod);
 
 searchValue.addEventListener("input", () => {
   if (recoveryMethod.value === "lrn") {
-    searchValue.value = searchValue.value.replace(/\\D/g, "").slice(0, 12);
+searchValue.value = searchValue.value.replace(/\D/g, "").slice(0, 12);
   }
 });
 
