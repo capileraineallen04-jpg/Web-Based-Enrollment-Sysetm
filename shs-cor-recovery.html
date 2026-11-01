@@ -391,7 +391,7 @@ button {
       <h2>SHS COR Recovery</h2>
       <p>
         Recover your Senior High School Certificate of Registration
-        using your Registration ID.
+        using your Registration ID or Learner Reference Number (LRN).
       </p>
     </div>
 
@@ -402,7 +402,7 @@ button {
       <p class="description">
         Enter the information associated with your enrollment.
         This page searches only Senior High School records using
-        your Registration ID.
+        your Registration ID or LRN.
       </p>
 
       <form id="recoveryForm">
@@ -422,20 +422,24 @@ button {
           </div>
 
           <div class="field">
-            <label for="searchType">Recovery Method</label>
-            <input type="text" id="searchType"
-                   value="Registration ID" readonly
-                   aria-readonly="true">
+            <label for="recoveryMethod">Recovery Method</label>
+            <select id="recoveryMethod" required>
+              <option value="registrationID">Registration ID</option>
+              <option value="lrn">Learner Reference Number (LRN)</option>
+            </select>
+            <p class="help-text">
+              Choose whether to recover your record using your Registration ID or LRN.
+            </p>
           </div>
 
         </div>
 
         <div class="field">
-          <label for="searchValue">Registration ID</label>
+          <label for="searchValue" id="searchLabel">Registration ID</label>
           <input type="text" id="searchValue"
                  placeholder="Enter your Registration ID"
                  autocomplete="off" required>
-          <p class="help-text">
+          <p class="help-text" id="searchHelp">
             Enter the Registration ID assigned when you enrolled.
           </p>
         </div>
@@ -519,7 +523,10 @@ const $ = id => document.getElementById(id);
 
 const form = $("recoveryForm");
 const gradeSelect = $("gradeLevel");
+const recoveryMethod = $("recoveryMethod");
 const searchValue = $("searchValue");
+const searchLabel = $("searchLabel");
+const searchHelp = $("searchHelp");
 const message = $("message");
 const recordSection = $("recordSection");
 const recordGrid = $("recordGrid");
@@ -718,8 +725,8 @@ function getName(personal) {
   );
 }
 
-function matchesRegistrationID(
-  record, firebaseKey, query, databaseName
+function matchesRecoveryValue(
+  record, firebaseKey, query, databaseName, method
 ) {
   if (!record || typeof record !== "object") return false;
 
@@ -727,6 +734,12 @@ function matchesRegistrationID(
   if (grade !== 11 && grade !== 12) return false;
 
   const target = query.trim().toLowerCase();
+
+  if (method === "lrn") {
+    const lrn = getLRN(record).trim().toLowerCase();
+    return lrn === target;
+  }
+
   const registrationID = getRegistrationID(
     record, firebaseKey
   ).trim().toLowerCase();
@@ -753,7 +766,7 @@ async function fetchDB(databaseName) {
   return response.json();
 }
 
-async function findRecord(query, selectedGrade) {
+async function findRecord(query, selectedGrade, method) {
   const databaseName = DATABASES[selectedGrade];
 
   if (!databaseName) {
@@ -777,8 +790,8 @@ async function findRecord(query, selectedGrade) {
 
   for (const [firebaseKey, record] of Object.entries(data)) {
     if (
-      matchesRegistrationID(
-        record, firebaseKey, query, databaseName
+      matchesRecoveryValue(
+        record, firebaseKey, query, databaseName, method
       )
     ) {
       return {
@@ -905,6 +918,8 @@ form.addEventListener("submit", async event => {
 
   const query = searchValue.value.trim();
   const selectedGrade = Number(gradeSelect.value);
+  const method = recoveryMethod.value;
+  const methodLabel = method === "lrn" ? "LRN" : "Registration ID";
 
   if (!selectedGrade || !DATABASES[selectedGrade]) {
     showMessage("Please select your grade level first.", "error");
@@ -913,7 +928,13 @@ form.addEventListener("submit", async event => {
   }
 
   if (!query) {
-    showMessage("Please enter your Registration ID.", "error");
+    showMessage("Please enter your " + methodLabel + ".", "error");
+    searchValue.focus();
+    return;
+  }
+
+  if (method === "lrn" && !/^\\d{12}$/.test(query)) {
+    showMessage("Please enter a valid 12-digit LRN.", "error");
     searchValue.focus();
     return;
   }
@@ -923,18 +944,18 @@ form.addEventListener("submit", async event => {
 
   showMessage(
     "Searching Grade " + selectedGrade +
-    " Senior High School records. Please wait...",
+    " Senior High School records using your " + methodLabel + ". Please wait...",
     "info"
   );
 
   try {
-    const found = await findRecord(query, selectedGrade);
+    const found = await findRecord(query, selectedGrade, method);
 
     if (!found) {
       showMessage(
         "No matching enrollment record was found in Grade " +
         selectedGrade +
-        ". Verify your grade level and Registration ID, then try again.",
+        ". Verify your grade level and " + methodLabel + ", then try again.",
         "error"
       );
       return;
@@ -968,12 +989,41 @@ form.addEventListener("submit", async event => {
 });
 
 /* =========================================
+   RECOVERY METHOD
+========================================= */
+
+function updateRecoveryMethod() {
+  const isLRN = recoveryMethod.value === "lrn";
+
+  searchLabel.textContent = isLRN ? "Learner Reference Number (LRN)" : "Registration ID";
+  searchValue.placeholder = isLRN ? "Enter your 12-digit LRN" : "Enter your Registration ID";
+  searchHelp.textContent = isLRN
+    ? "Enter the 12-digit LRN recorded during enrollment."
+    : "Enter the Registration ID assigned when you enrolled.";
+
+  searchValue.maxLength = isLRN ? 12 : 80;
+  searchValue.inputMode = isLRN ? "numeric" : "text";
+  searchValue.value = "";
+  resetRecord();
+  clearMessage();
+}
+
+recoveryMethod.addEventListener("change", updateRecoveryMethod);
+
+searchValue.addEventListener("input", () => {
+  if (recoveryMethod.value === "lrn") {
+    searchValue.value = searchValue.value.replace(/\\D/g, "").slice(0, 12);
+  }
+});
+
+/* =========================================
    CLEAR FORM
 ========================================= */
 
 $("clearButton").addEventListener("click", () => {
   form.reset();
   searchValue.value = "";
+  updateRecoveryMethod();
 
   resetRecord();
   clearMessage();
