@@ -646,14 +646,38 @@ function getPersonal(record) {
   );
 }
 
+function normalizeLRN(value) {
+  // Remove quotation marks, spaces, hyphens, and other formatting.
+  // This also handles values accidentally stored with extra quotes.
+  return String(value ?? "").replace(/\\D/g, "");
+}
+
 function getLRN(record) {
   return (
     first(getLearners(record), [
-      "5-LRN", "8-LRN", "LRN", "lrn"
+      "5-LRN",
+      "8-LRN",
+      "LRN",
+      "lrn",
+      "Learner Reference Number",
+      "LearnerReferenceNumber"
     ]) ||
-    first(getPersonal(record), ["LRN", "lrn"]) ||
+    first(getPersonal(record), [
+      "5-LRN",
+      "8-LRN",
+      "LRN",
+      "lrn",
+      "Learner Reference Number",
+      "LearnerReferenceNumber"
+    ]) ||
     findScalar(record, [
-      "LRN", "learnerReferenceNumber", "learnerReferenceNo"
+      "5-LRN",
+      "8-LRN",
+      "LRN",
+      "learnerReferenceNumber",
+      "learnerReferenceNo",
+      "learnerReference",
+      "Learner Reference Number"
     ])
   );
 }
@@ -736,8 +760,14 @@ function matchesRecoveryValue(
   const target = query.trim().toLowerCase();
 
   if (method === "lrn") {
-    const lrn = getLRN(record).trim().toLowerCase();
-    return lrn === target;
+    const searchedLRN = normalizeLRN(query);
+    const storedLRN = normalizeLRN(getLRN(record));
+
+    return (
+      searchedLRN.length === 12 &&
+      storedLRN.length === 12 &&
+      storedLRN === searchedLRN
+    );
   }
 
   const registrationID = getRegistrationID(
