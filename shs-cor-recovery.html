@@ -901,7 +901,7 @@ function displayRecord(record, registrationID, grade) {
 
   const items = [
     ["School Level", "Senior High School"],
-    ["Grade Level", "Grade " + grade],
+    ["Grade Level", "GRADE " + grade],
     ["Registration ID", registrationID],
     ["School Year", field(L, ["1-SCHOOL-YEAR", "schoolYear"])],
     ["Student Name", getName(P)],
@@ -1557,7 +1557,7 @@ function generatePDF(record) {
     "SCHOOL YEAR",
     L["1-SCHOOL-YEAR"],
     "GRADE LEVEL",
-    "Grade " + grade
+    "GRADE " + grade
   );
 
   pair(
