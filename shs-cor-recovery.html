@@ -502,7 +502,6 @@ button {
 
   <footer class="footer">
     <p>EnrollEase | Taal High School</p>
-    <p>Senior High School Enrollment Recovery</p>
   </footer>
 
 </main>
@@ -1974,9 +1973,7 @@ downloadButton.addEventListener("click", () => {
 
     showMessage(
       getSchoolLevelAbbreviation(recoveredGrade) +
-      " COR PDF generated successfully! Grade Level: Grade " +
-      recoveredGrade + ".",
-      "success"
+      " COR PDF generated successfully!"
     );
 
   } catch (error) {
@@ -1991,7 +1988,7 @@ downloadButton.addEventListener("click", () => {
   } finally {
     downloadButton.disabled = false;
     downloadButton.textContent =
-      "Download " + getSchoolLevelAbbreviation(recoveredGrade) + " COR PDF";
+      "Download COR PDF";
   }
 });
 
