@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SHS COR Recovery | EnrollEase: THS</title>
+<title>JHS &amp; SHS COR Recovery | EnrollEase: THS</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -388,9 +387,9 @@ button {
 
     <div class="hero">
       <div class="hero-icon" aria-hidden="true">↻</div>
-      <h2>SHS COR Recovery</h2>
+      <h2>JHS &amp; SHS COR Recovery</h2>
       <p>
-        Recover your Senior High School Certificate of Registration
+        Recover your Junior High School or Senior High School Certificate of Registration
         using your Registration ID or Learner Reference Number (LRN).
       </p>
     </div>
@@ -401,7 +400,7 @@ button {
 
       <p class="description">
         Enter the information associated with your enrollment.
-        This page searches only Senior High School records using
+        This page searches the selected Junior High School or Senior High School grade database using
         your Registration ID or LRN.
       </p>
 
@@ -412,8 +411,16 @@ button {
             <label for="gradeLevel">Select Your Grade Level</label>
             <select id="gradeLevel" required>
               <option value="">Choose your grade level</option>
-              <option value="11">Grade 11</option>
-              <option value="12">Grade 12</option>
+              <optgroup label="Junior High School">
+                <option value="7">Grade 7</option>
+                <option value="8">Grade 8</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+              </optgroup>
+              <optgroup label="Senior High School">
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+              </optgroup>
             </select>
             <p class="help-text">
               Select the grade level you enrolled in.
@@ -471,7 +478,7 @@ button {
         <div class="button-group">
           <button type="button" id="downloadButton"
                   class="button primary">
-            Download SHS COR PDF
+            Download COR PDF
           </button>
         </div>
 
@@ -511,9 +518,21 @@ const FIREBASE_URL =
   "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
 
 const DATABASES = {
+  7: "JHS-STUDENTS-GRADE-7",
+  8: "JHS-STUDENTS-GRADE-8",
+  9: "JHS-STUDENTS-GRADE-9",
+  10: "JHS-STUDENTS-GRADE-10",
   11: "SHS-STUDENTS-GRADE-11",
   12: "SHS-STUDENTS-GRADE-12"
 };
+
+function getSchoolLevel(grade) {
+  return Number(grade) >= 11 ? "Senior High School" : "Junior High School";
+}
+
+function getSchoolLevelAbbreviation(grade) {
+  return Number(grade) >= 11 ? "SHS" : "JHS";
+}
 
 /* =========================================
    ELEMENTS AND STATE
@@ -710,7 +729,7 @@ function getRegistrationID(record, firebaseKey) {
 
 function gradeFromValue(raw) {
   const value = String(raw || "").trim();
-  const match = value.match(/(?:grade\s*)?(11|12)(?:\b|$)/i);
+  const match = value.match(/(?:grade\s*)?(7|8|9|10|11|12)(?:\b|$)/i);
   return match ? Number(match[1]) : 0;
 }
 
@@ -755,7 +774,7 @@ function matchesRecoveryValue(
   if (!record || typeof record !== "object") return false;
 
   const grade = getGrade(record, databaseName);
-  if (grade !== 11 && grade !== 12) return false;
+  if (grade < 7 || grade > 12) return false;
 
   const target = query.trim().toLowerCase();
 
@@ -900,22 +919,27 @@ function displayRecord(record, registrationID, grade) {
   const { L, P } = sections(record);
 
   const items = [
-    ["School Level", "Senior High School"],
+    ["School Level", getSchoolLevel(grade)],
     ["Grade Level", "GRADE " + grade],
     ["Registration ID", registrationID],
     ["School Year", field(L, ["1-SCHOOL-YEAR", "schoolYear"])],
     ["Student Name", getName(P)],
-    ["Termination", field(L, [
-      "3-TERMINATION", "TERMINATION", "termination"
-    ])],
-    ["Track", field(L, [
-      "6-TRACK", "5-TRACK", "TRACK", "track"
-    ])],
-    [grade === 11 ? "Cluster" : "Strand", field(L, [
-      "7-STRAND", "8-STRAND", "STRAND",
-      "CLUSTER", "cluster", "strand"
-    ])]
   ];
+
+  if (Number(grade) >= 11) {
+    items.push(
+      ["Termination", field(L, [
+        "3-TERMINATION", "TERMINATION", "termination"
+      ])],
+      ["Track", field(L, [
+        "6-TRACK", "5-TRACK", "TRACK", "track"
+      ])],
+      [Number(grade) === 11 ? "Cluster" : "Strand", field(L, [
+        "7-STRAND", "8-STRAND", "STRAND",
+        "CLUSTER", "cluster", "strand"
+      ])]
+    );
+  }
 
   items.forEach(([label, value]) => {
     const item = document.createElement("div");
@@ -974,7 +998,8 @@ if (method === "lrn" && !/^\d{12}$/.test(query)) {
 
   showMessage(
     "Searching Grade " + selectedGrade +
-    " Senior High School records using your " + methodLabel + ". Please wait...",
+    " " + getSchoolLevel(selectedGrade) +
+    " records using your " + methodLabel + ". Please wait...",
     "info"
   );
 
@@ -999,7 +1024,8 @@ if (method === "lrn" && !/^\d{12}$/.test(query)) {
     displayRecord(found.record, found.id, found.grade);
 
     showMessage(
-      "Enrollment record recovered successfully! Grade Level: Grade " +
+      "Enrollment record recovered successfully! " +
+      getSchoolLevel(found.grade) + " - Grade " +
       found.grade + ".",
       "success"
     );
@@ -1257,7 +1283,7 @@ function generatePDF(record) {
     doc.setFontSize(8);
 
     doc.text(
-      "SENIOR HIGH SCHOOL",
+      getSchoolLevel(grade).toUpperCase(),
       W / 2,
       49,
       { align: "center" }
@@ -1699,6 +1725,7 @@ function generatePDF(record) {
   // VI. SENIOR HIGH SCHOOL INFORMATION
   // ============================================================
 
+  if (Number(grade) >= 11) {
   section("VI. SENIOR HIGH SCHOOL INFORMATION");
 
   row(
@@ -1737,12 +1764,17 @@ function generatePDF(record) {
       "cluster"
     ])
   );
+  }
 
   // ============================================================
   // VII. BALIK-ARAL / TRANSFER INFORMATION
   // ============================================================
 
-  section("VII. BALIK-ARAL / TRANSFER INFORMATION");
+  section(
+    Number(grade) >= 11
+      ? "VII. BALIK-ARAL / TRANSFER INFORMATION"
+      : "VI. BALIK-ARAL / TRANSFER INFORMATION"
+  );
 
   pair(
     "LAST GRADE LEVEL COMPLETED",
@@ -1899,7 +1931,8 @@ function generatePDF(record) {
     doc.setTextColor(80, 80, 80);
 
     doc.text(
-      "EnrollEase | Taal High School | SHS | Page " +
+      "EnrollEase | Taal High School | " +
+      getSchoolLevelAbbreviation(grade) + " | Page " +
       i + " of " + pages,
       W / 2,
       footerY,
@@ -1915,12 +1948,13 @@ function generatePDF(record) {
   const safeID = String(regID || "NoID").replace(/[^a-z0-9_-]/gi, "_");
 
   doc.save(
-    "SHS_COR_" + safeName + "_" + safeID + ".pdf"
+    getSchoolLevelAbbreviation(grade) + "_COR_" +
+    safeName + "_" + safeID + ".pdf"
   );
 }
 
 /* =========================================
-   DOWNLOAD SHS COR
+   DOWNLOAD JHS / SHS COR
 ========================================= */
 
 downloadButton.addEventListener("click", () => {
@@ -1939,13 +1973,14 @@ downloadButton.addEventListener("click", () => {
     generatePDF(recoveredRecord);
 
     showMessage(
-      "SHS COR PDF generated successfully! Grade Level: Grade " +
+      getSchoolLevelAbbreviation(recoveredGrade) +
+      " COR PDF generated successfully! Grade Level: Grade " +
       recoveredGrade + ".",
       "success"
     );
 
   } catch (error) {
-    console.error("SHS COR PDF error:", error);
+    console.error("JHS/SHS COR PDF error:", error);
 
     showMessage(
       error.message ||
@@ -1955,7 +1990,8 @@ downloadButton.addEventListener("click", () => {
 
   } finally {
     downloadButton.disabled = false;
-    downloadButton.textContent = "Download SHS COR PDF";
+    downloadButton.textContent =
+      "Download " + getSchoolLevelAbbreviation(recoveredGrade) + " COR PDF";
   }
 });
 
