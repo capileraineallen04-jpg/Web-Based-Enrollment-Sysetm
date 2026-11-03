@@ -836,2042 +836,1271 @@
     </div>
 
     <script>
-      "use strict";
-
-      // =====================================================
-      // FIREBASE CONFIGURATION
-      // =====================================================
-
-      const FIREBASE_URL =
-        "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
-
-      const form = document.getElementById("enrollmentForm");
-      const gradeLevel = document.getElementById("gradeLevel");
-      const trackSelect = document.getElementById("track");
-      const clusterStrandSelect =
-        document.getElementById("clusterStrand");
-      const clusterStrandLabel =
-        document.getElementById("clusterStrandLabel");
-
-      const birthdateInput =
-        document.querySelector('[name="birthdate"]');
-
-      const ageInput =
-        document.querySelector('[name="age"]');
-
-      const sameAddress =
-        document.querySelector('[name="sameaddress"]');
-
-      const enrollButton =
-        document.getElementById("enrollButton");
-
-      let isEnrolling = false;
-
-      // =====================================================
-      // SHS TRACK / CLUSTER / STRAND OPTIONS
-      // =====================================================
-
-      const shsOptions = {
-        "GRADE 11": {
-          ACADEMIC: [
-            "HUMANITIES AND SOCIAL SCIENCES",
-            "SCIENCE, TECHNOLOGY, ENGINEERING AND MATHEMATICS",
-            "ACCOUNTANCY, BUSINESS AND MANAGEMENT",
-          ],
-
-          "TECH-PRO": [
-            "INFORMATION AND COMMUNICATION TECHNOLOGY",
-            "INDUSTRIAL TECHNOLOGY",
-            "HOME ECONOMICS",
-          ],
-        },
-
-        "GRADE 12": {
-          ACADEMIC: [
-            "HUMANITIES AND SOCIAL SCIENCES",
-            "SCIENCE, TECHNOLOGY, ENGINEERING AND MATHEMATICS",
-            "ACCOUNTANCY, BUSINESS AND MANAGEMENT",
-            "GENERAL ACADEMIC STRAND",
-          ],
-
-          "TECHNOLOGICAL-VOCATIONAL LIVELIHOOD": [
-            "COMPUTER PROGRAMMING",
-            "CONSUMER ELECTRONICS",
-            "HOME ECONOMICS",
-          ],
-        },
-      };
-
-      function populateSelect(
-        select,
-        placeholder,
-        values
-      ) {
-        select.replaceChildren();
-
-        const defaultOption =
-          document.createElement("option");
-
-        defaultOption.value = "";
-        defaultOption.textContent = placeholder;
-
-        select.appendChild(defaultOption);
-
-        values.forEach((value) => {
-          const option =
-            document.createElement("option");
-
-          option.value = value;
-          option.textContent = value;
-
-          select.appendChild(option);
-        });
-      }
-
-      function updateSHSOptions() {
-        const selectedGrade =
-          gradeLevel.value;
-
-        const options =
-          shsOptions[selectedGrade];
-
-        trackSelect.value = "";
-        clusterStrandSelect.value = "";
-
-        populateSelect(
-          trackSelect,
-          "Select Track",
-          []
-        );
-
-        populateSelect(
-          clusterStrandSelect,
-          "Select Cluster/Strand",
-          []
-        );
-
-        if (!options) {
-          trackSelect.disabled = true;
-          clusterStrandSelect.disabled = true;
-
-          trackSelect.required = false;
-          clusterStrandSelect.required = false;
-
-          clusterStrandLabel.innerHTML =
-            'Cluster/Strand <span class="required">*</span>';
-
-          syncRequiredMarkers();
-
-          return;
-        }
-
-        trackSelect.disabled = false;
-        clusterStrandSelect.disabled = false;
-
-        trackSelect.required = true;
-        clusterStrandSelect.required = true;
-
-        if (selectedGrade === "GRADE 11") {
-          clusterStrandLabel.innerHTML =
-            'Cluster <span class="required">*</span>';
-
-          populateSelect(
-            trackSelect,
-            "Select Track",
-            Object.keys(
-              shsOptions["GRADE 11"]
-            )
-          );
-        } else {
-          clusterStrandLabel.innerHTML =
-            'Strand <span class="required">*</span>';
-
-          populateSelect(
-            trackSelect,
-            "Select Track",
-            Object.keys(
-              shsOptions["GRADE 12"]
-            )
-          );
-        }
-
-        syncRequiredMarkers();
-      }
-
-      function updateClustersAndStrands() {
-        const selectedGrade =
-          gradeLevel.value;
-
-        const selectedTrack =
-          trackSelect.value;
-
-        const gradeOptions =
-          shsOptions[selectedGrade];
-
-        const choices =
-          gradeOptions &&
-          gradeOptions[selectedTrack]
-            ? gradeOptions[selectedTrack]
-            : [];
-
-        const label =
-          selectedGrade === "GRADE 11"
-            ? "Cluster"
-            : "Strand";
-
-        clusterStrandLabel.innerHTML =
-          label +
-          ' <span class="required">*</span>';
-
-        populateSelect(
-          clusterStrandSelect,
-          "Select " + label,
-          choices
-        );
-
-        syncRequiredMarkers();
-      }
-
-      gradeLevel.addEventListener(
-        "change",
-        updateSHSOptions
-      );
-
-      trackSelect.addEventListener(
-        "change",
-        updateClustersAndStrands
-      );
-
-      // =====================================================
-      // FIREBASE DATASET
-      // =====================================================
-
-      function getDatabaseName() {
-        if (gradeLevel.value === "GRADE 11") {
-          return "SHS-STUDENTS-GRADE-11";
-        }
-
-        if (gradeLevel.value === "GRADE 12") {
-          return "SHS-STUDENTS-GRADE-12";
-        }
-
-        return null;
-      }
-
-      // =====================================================
-      // BIRTHDATE
-      // =====================================================
-
-      birthdateInput.addEventListener(
-        "input",
-        function () {
-          let value =
-            this.value
-              .replace(/\D/g, "")
-              .substring(0, 8);
-
-          if (value.length >= 5) {
-            value =
-              value.substring(0, 2) +
-              "/" +
-              value.substring(2, 4) +
-              "/" +
-              value.substring(4, 8);
-          } else if (value.length >= 3) {
-            value =
-              value.substring(0, 2) +
-              "/" +
-              value.substring(2, 4);
-          }
-
-          this.value = value;
-
-          updateBirthdateAndAge();
-
-          if (this.value.trim()) {
-            clearFieldError(this);
-          }
-        }
-      );
-
-      function updateBirthdateAndAge() {
-        const match =
-          birthdateInput.value.match(
-            /^(\d{2})\/(\d{2})\/(\d{4})$/
-          );
-
-        if (!match) {
-          ageInput.value = "";
-          return;
-        }
-
-        const month =
-          Number(match[1]);
-
-        const day =
-          Number(match[2]);
-
-        const year =
-          Number(match[3]);
-
-        const birthDate =
-          new Date(
-            year,
-            month - 1,
-            day
-          );
-
-        const today =
-          new Date();
-
-        if (
-          birthDate.getFullYear() !== year ||
-          birthDate.getMonth() !== month - 1 ||
-          birthDate.getDate() !== day ||
-          birthDate > today
-        ) {
-          ageInput.value = "";
-          return;
-        }
-
-        let age =
-          today.getFullYear() -
-          year;
-
-        if (
-          today.getMonth() <
-            month - 1 ||
-          (
-            today.getMonth() ===
-              month - 1 &&
-            today.getDate() < day
-          )
-        ) {
-          age--;
-        }
-
-        ageInput.value = age;
-      }
-
-      // =====================================================
-      // ADDRESS COPYING
-      // =====================================================
-
-      const addressPairs = [
-        [
-          "currenthouseNO",
-          "permanenthouseNO",
-        ],
-        [
-          "currentstreet",
-          "permanentstreet",
-        ],
-        [
-          "currentbarangay",
-          "permanentbarangay",
-        ],
-        [
-          "currentmunicipalitycity",
-          "permanentcity",
-        ],
-        [
-          "currentprovince",
-          "permanentprovince",
-        ],
-        [
-          "currentzipCode",
-          "permanentzipCode",
-        ],
-      ];
-
-      function getField(name) {
-        return document.querySelector(
-          `[name="${name}"]`
-        );
-      }
-
-      function copyPermanentAddress() {
-        if (
-          sameAddress.value !== "YES"
-        ) {
-          return;
-        }
-
-        addressPairs.forEach(
-          ([
-            currentName,
-            permanentName,
-          ]) => {
-            getField(
-              permanentName
-            ).value =
-              getField(
-                currentName
-              ).value;
-          }
-        );
-      }
-
-      sameAddress.addEventListener(
-        "change",
-        function () {
-          if (
-            this.value === "YES"
-          ) {
-            copyPermanentAddress();
-          } else {
-            addressPairs.forEach(
-              ([
-                ,
-                permanentName,
-              ]) => {
-                getField(
-                  permanentName
-                ).value = "";
-              }
-            );
-          }
-
-          controlOptionalFields();
-          syncRequiredMarkers();
-        }
-      );
-
-      addressPairs.forEach(
-        ([currentName]) => {
-          getField(
-            currentName
-          ).addEventListener(
-            "input",
-            () => {
-              if (
-                sameAddress.value ===
-                "YES"
-              ) {
-                copyPermanentAddress();
-              }
-            }
-          );
-        }
-      );
-
-      // =====================================================
-      // CONDITIONAL FIELDS
-      // =====================================================
-
-      function setDisabledAndClear(
-        field,
-        disabled
-      ) {
-        field.disabled =
-          disabled;
-
-        if (disabled) {
-          field.value = "";
-
-          clearFieldError(
-            field
-          );
-        }
-      }
-
-      function controlOptionalFields() {
-        const withLRN =
-          getField("with-lrn");
-
-        const balikAral =
-          getField("balik-aral");
-
-        const ip =
-          getField("ip");
-
-        const disability =
-          getField("disability");
-
-        const fourPs =
-          getField("4Ps");
-
-        // LRN
-        const lrnRequired =
-          withLRN.value === "YES";
-
-        setDisabledAndClear(
-          getField("lrn"),
-          withLRN.value === "NO"
-        );
-
-        getField("lrn").required =
-          lrnRequired;
-
-        const lrnAsterisk =
-          document.querySelector(
-            ".conditional-lrn-asterisk"
-          );
-
-        if (lrnAsterisk) {
-          lrnAsterisk.style.display =
-            lrnRequired
-              ? "inline"
-              : "none";
-        }
-
-        // Balik-Aral
-        const returningRequired =
-          balikAral.value === "YES";
-
-        [
-          "Lastgradelevel",
-          "Lastschool",
-          "Lastschoolyear",
-          "schoolid",
-        ].forEach(
-          (name) => {
-            const field =
-              getField(name);
-
-            setDisabledAndClear(
-              field,
-              !returningRequired
-            );
-
-            field.required =
-              returningRequired;
-          }
-        );
-
-        document
-          .querySelectorAll(
-            ".returning-required"
-          )
-          .forEach(
-            (asterisk) => {
-              asterisk.style.display =
-                returningRequired
-                  ? "inline"
-                  : "none";
-            }
-          );
-
-        // Indigenous People
-        const cultureRequired =
-          ip.value === "YES";
-
-        setDisabledAndClear(
-          getField("culture"),
-          !cultureRequired
-        );
-
-        getField("culture").required =
-          cultureRequired;
-
-        document.querySelector(
-          ".culture-required"
-        ).style.display =
-          cultureRequired
-            ? "inline"
-            : "none";
-
-        // Disability
-        const disabilityRequired =
-          disability.value ===
-          "YES";
-
-        setDisabledAndClear(
-          getField("disType"),
-          !disabilityRequired
-        );
-
-        getField("disType").required =
-          disabilityRequired;
-
-        document.querySelector(
-          ".disability-required"
-        ).style.display =
-          disabilityRequired
-            ? "inline"
-            : "none";
-
-        // 4P's
-        const houseRequired =
-          fourPs.value === "YES";
-
-        setDisabledAndClear(
-          getField("HouseID"),
-          !houseRequired
-        );
-
-        getField("HouseID").required =
-          houseRequired;
-
-        document.querySelector(
-          ".houseid-required"
-        ).style.display =
-          houseRequired
-            ? "inline"
-            : "none";
-
-        // Permanent Address
-        const permanentRequired =
-          sameAddress.value ===
-          "NO";
-
-        [
-          "permanenthouseNO",
-          "permanentstreet",
-          "permanentbarangay",
-          "permanentcity",
-          "permanentprovince",
-          "permanentzipCode",
-        ].forEach(
-          (name) => {
-            const field =
-              getField(name);
-
-            field.required =
-              permanentRequired;
-
-            if (
-              sameAddress.value ===
-              "YES"
-            ) {
-              field.disabled =
-                true;
-            } else {
-              field.disabled =
-                false;
-            }
-          }
-        );
-
-        document
-          .querySelectorAll(
-            ".permanent-required"
-          )
-          .forEach(
-            (asterisk) => {
-              asterisk.style.display =
-                permanentRequired
-                  ? "inline"
-                  : "none";
-            }
-          );
-
-        syncRequiredMarkers();
-      }
-
-      [
-        "with-lrn",
-        "balik-aral",
-        "ip",
-        "disability",
-        "4Ps",
-      ].forEach(
-        (name) => {
-          getField(
-            name
-          ).addEventListener(
-            "change",
-            controlOptionalFields
-          );
-        }
-      );
-
-      // =====================================================
-      // VALIDATION UI
-      // =====================================================
-
-      function getFieldContainer(
-        field
-      ) {
-        return (
-          field.closest(".field") ||
-          field.closest(
-            ".section-box"
-          )
-        );
-      }
-
-      function showFieldError(
-        field,
-        message
-      ) {
-        if (!field) {
-          return;
-        }
-
-        const container =
-          getFieldContainer(
-            field
-          );
-
-        field.classList.add(
-          "input-error"
-        );
-
-        if (!container) {
-          return;
-        }
-
-        container.classList.add(
-          "has-error"
-        );
-
-        let errorMessage =
-          container.querySelector(
-            ".field-error"
-          );
-
-        if (!errorMessage) {
-          errorMessage =
-            document.createElement(
-              "div"
-            );
-
-          errorMessage.className =
-            "field-error";
-
-          container.appendChild(
-            errorMessage
-          );
-        }
-
-        errorMessage.textContent =
-          message;
-      }
-
-      function clearFieldError(
-        field
-      ) {
-        if (!field) {
-          return;
-        }
-
-        const container =
-          getFieldContainer(
-            field
-          );
-
-        field.classList.remove(
-          "input-error"
-        );
-
-        if (!container) {
-          return;
-        }
-
-        container.classList.remove(
-          "has-error"
-        );
-
-        const errorMessage =
-          container.querySelector(
-            ".field-error"
-          );
-
-        if (errorMessage) {
-          errorMessage.remove();
-        }
-      }
-
-      function clearAllErrors() {
-        document
-          .querySelectorAll(
-            ".input-error"
-          )
-          .forEach(
-            (field) => {
-              clearFieldError(
-                field
-              );
-            }
-          );
-      }
-
-      function scrollToField(
-        field
-      ) {
-        if (!field) {
-          return;
-        }
-
-        setTimeout(() => {
-          field.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-
-          setTimeout(() => {
-            field.focus();
-          }, 250);
-        }, 50);
-      }
-
-      function validateRequiredFields(
-        requiredFields
-      ) {
-        clearAllErrors();
-
-        for (
-          const [
-            field,
-            label,
-          ] of requiredFields
-        ) {
-          if (!field) {
-            continue;
-          }
-
-          if (field.disabled) {
-            continue;
-          }
-
-          if (
-            !field.value.trim()
-          ) {
-            showFieldError(
-              field,
-              "Please fill out this field."
-            );
-
-            scrollToField(
-              field
-            );
-
-            return false;
-          }
-        }
-
-        return true;
-      }
-
-      // =====================================================
-      // AUTOMATIC ERROR REMOVAL
-      // =====================================================
-
-      document.addEventListener(
-        "input",
-        function (event) {
-          const field =
-            event.target;
-
-          if (
-            !field.matches(
-              "input, textarea, select"
-            )
-          ) {
-            return;
-          }
-
-          if (
-            field.value.trim()
-          ) {
-            clearFieldError(
-              field
-            );
-          }
-        }
-      );
-
-      document.addEventListener(
-        "change",
-        function (event) {
-          const field =
-            event.target;
-
-          if (
-            !field.matches(
-              "input, textarea, select"
-            )
-          ) {
-            return;
-          }
-
-          if (
-            field.value.trim()
-          ) {
-            clearFieldError(
-              field
-            );
-          }
-        }
-      );
-
-      // =====================================================
-      // REQUIRED FIELD MARKERS
-      // =====================================================
-
-      function syncRequiredMarkers() {
-        document
-          .querySelectorAll(
-            "input, select, textarea"
-          )
-          .forEach(
-            (field) => {
-              const container =
-                field.closest(
-                  ".field"
-                ) ||
-                field.closest(
-                  ".section-box"
-                );
-
-              if (!container) {
-                return;
-              }
-
-              const label =
-                container.querySelector(
-                  "label"
-                );
-
-              if (!label) {
-                return;
-              }
-
-              // Don't automatically add asterisk
-              // to special labels that already have one.
-              if (
-                label.querySelector(
-                  ".required"
-                )
-              ) {
-                return;
-              }
-
-              if (
-                field.required &&
-                !field.disabled
-              ) {
-                const asterisk =
-                  document.createElement(
-                    "span"
-                  );
-
-                asterisk.className =
-                  "required";
-
-                asterisk.textContent =
-                  "*";
-
-                label.appendChild(
-                  asterisk
-                );
-              }
-            }
-          );
-      }
-
-      // =====================================================
-      // BIRTHDATE VALIDATION
-      // =====================================================
-
-      function validateBirthdate() {
-        const value =
-          birthdateInput.value.trim();
-
-        const match =
-          value.match(
-            /^(\d{2})\/(\d{2})\/(\d{4})$/
-          );
-
-        if (!match) {
-          showFieldError(
-            birthdateInput,
-            "Please enter your birthdate in MM/DD/YYYY format."
-          );
-
-          scrollToField(
-            birthdateInput
-          );
-
-          return false;
-        }
-
-        const month =
-          Number(match[1]);
-
-        const day =
-          Number(match[2]);
-
-        const year =
-          Number(match[3]);
-
-        const date =
-          new Date(
-            year,
-            month - 1,
-            day
-          );
-
-        if (
-          date.getFullYear() !==
-            year ||
-          date.getMonth() !==
-            month - 1 ||
-          date.getDate() !==
-            day ||
-          date > new Date()
-        ) {
-          showFieldError(
-            birthdateInput,
-            "Please enter a valid birthdate."
-          );
-
-          scrollToField(
-            birthdateInput
-          );
-
-          return false;
-        }
-
-        clearFieldError(
-          birthdateInput
-        );
-
-        updateBirthdateAndAge();
-
-        return true;
-      }
-
-      // =====================================================
-      // DIGIT VALIDATION
-      // =====================================================
-
-      function validateDigits(
-        field,
-        label,
-        length
-      ) {
-        const pattern =
-          new RegExp(
-            "^\\d{" +
-              length +
-              "}$"
-          );
-
-        if (
-          !pattern.test(
-            field.value.trim()
-          )
-        ) {
-          showFieldError(
-            field,
-            `${label} must contain exactly ${length} digits.`
-          );
-
-          scrollToField(
-            field
-          );
-
-          return false;
-        }
-
-        clearFieldError(
-          field
-        );
-
-        return true;
-      }
-
-      // =====================================================
-      // ENROLL
-      // =====================================================
-
-      async function goToSuccess() {
-        if (isEnrolling) {
-          return;
-        }
-
-        isEnrolling = true;
-
-        enrollButton.disabled =
-          true;
-
-        enrollButton.textContent =
-          "ENROLLING...";
-
-        try {
-          // Convert text fields to uppercase.
-          Array.from(
-            form.elements
-          ).forEach(
-            (field) => {
-              if (
-                field.tagName ===
-                  "INPUT" &&
-                field.type ===
-                  "text" &&
-                !field.disabled
-              ) {
-                field.value =
-                  field.value.toUpperCase();
-              }
-            }
-          );
-
-          copyPermanentAddress();
-          updateBirthdateAndAge();
-
-          const names = [
-            "schoolYear",
-            "gradeLevel",
-            "termination",
-            "with-lrn",
-            "balik-aral",
-            "track",
-            "clusterStrand",
-            "psa",
-            "lrn",
-            "lastName",
-            "firstName",
-            "middleName",
-            "extension",
-            "birthdate",
-            "sex",
-            "age",
-            "placeOfBirth",
-            "religion",
-            "motherTongue",
-
-            "currenthouseNO",
-            "currentstreet",
-            "currentbarangay",
-            "currentmunicipalitycity",
-            "currentprovince",
-            "currentzipCode",
-
-            "sameaddress",
-
-            "permanenthouseNO",
-            "permanentstreet",
-            "permanentbarangay",
-            "permanentcity",
-            "permanentprovince",
-            "permanentzipCode",
-
-            "fatherName",
-            "fatherContact",
-            "motherName",
-            "motherContact",
-            "guardianName",
-            "guardianContact",
-
-            "ip",
-            "culture",
-            "disability",
-            "disType",
-            "4Ps",
-            "HouseID",
-            "LearningModalities",
-
-            "Lastgradelevel",
-            "Lastschool",
-            "Lastschoolyear",
-            "schoolid",
-          ];
-
-          const fields = {};
-
-          names.forEach(
-            (name) => {
-              fields[name] =
-                getField(name);
-            }
-          );
-
-          // =================================================
-          // REQUIRED FIELDS
-          // =================================================
-
-          const requiredFields = [
-            [
-              fields.schoolYear,
-              "School Year",
-            ],
-
-            [
-              fields.gradeLevel,
-              "Grade Level",
-            ],
-
-            [
-              fields["with-lrn"],
-              "With LRN",
-            ],
-
-            [
-              fields["balik-aral"],
-              "Balik-Aral/Transfer",
-            ],
-
-            [
-              fields.psa,
-              "PSA NO.",
-            ],
-
-            [
-              fields.lastName,
-              "Last Name",
-            ],
-
-            [
-              fields.firstName,
-              "First Name",
-            ],
-
-            [
-              fields.birthdate,
-              "Birthdate",
-            ],
-
-            [
-              fields.sex,
-              "Sex",
-            ],
-
-            [
-              fields.placeOfBirth,
-              "Place of Birth",
-            ],
-
-            [
-              fields.religion,
-              "Religion",
-            ],
-
-            [
-              fields.motherTongue,
-              "Mother Tongue",
-            ],
-
-            [
-              fields.currenthouseNO,
-              "Current House NO.",
-            ],
-
-            [
-              fields.currentstreet,
-              "Current Street",
-            ],
-
-            [
-              fields.currentbarangay,
-              "Current Barangay",
-            ],
-
-            [
-              fields.currentmunicipalitycity,
-              "Current Municipality/City",
-            ],
-
-            [
-              fields.currentprovince,
-              "Current Province",
-            ],
-
-            [
-              fields.currentzipCode,
-              "Current Zip Code",
-            ],
-
-            [
-              fields.sameaddress,
-              "Same Address",
-            ],
-
-            [
-              fields.fatherName,
-              "Father's Name",
-            ],
-
-            [
-              fields.fatherContact,
-              "Father's Contact",
-            ],
-
-            [
-              fields.motherName,
-              "Mother's Name",
-            ],
-
-            [
-              fields.motherContact,
-              "Mother's Contact",
-            ],
-
-            [
-              fields.guardianName,
-              "Guardian Name",
-            ],
-
-            [
-              fields.guardianContact,
-              "Guardian Contact",
-            ],
-
-            [
-              fields.ip,
-              "Indigenous People",
-            ],
-
-            [
-              fields.disability,
-              "Disability",
-            ],
-
-            [
-              fields["4Ps"],
-              "4P's Community",
-            ],
-
-            [
-
-            [
-              fields.termination,
-              "Termination",
-            ],
+      
+"use strict";
+
+// =====================================================
+// FIREBASE CONFIGURATION
+// =====================================================
+
+const FIREBASE_URL =
+  "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+const form = document.getElementById("enrollmentForm");
+const gradeLevel = document.getElementById("gradeLevel");
+const trackSelect = document.getElementById("track");
+const clusterStrandSelect = document.getElementById("clusterStrand");
+const clusterStrandLabel = document.getElementById("clusterStrandLabel");
+
+const birthdateInput = document.querySelector('[name="birthdate"]');
+const ageInput = document.querySelector('[name="age"]');
+const sameAddress = document.querySelector('[name="sameaddress"]');
+const enrollButton = document.getElementById("enrollButton");
+
+let isEnrolling = false;
+
+// =====================================================
+// SHS TRACK / CLUSTER / STRAND OPTIONS
+// =====================================================
+
+const shsOptions = {
+  "GRADE 11": {
+    "ACADEMIC": [
+      "HUMANITIES AND SOCIAL SCIENCES",
+      "SCIENCE, TECHNOLOGY, ENGINEERING AND MATHEMATICS",
+      "ACCOUNTANCY, BUSINESS AND MANAGEMENT"
+    ],
+
+    "TECH-PRO": [
+      "INFORMATION AND COMMUNICATION TECHNOLOGY",
+      "INDUSTRIAL TECHNOLOGY",
+      "HOME ECONOMICS"
+    ]
+  },
+
+  "GRADE 12": {
+    "ACADEMIC": [
+      "HUMANITIES AND SOCIAL SCIENCES",
+      "SCIENCE, TECHNOLOGY, ENGINEERING AND MATHEMATICS",
+      "ACCOUNTANCY, BUSINESS AND MANAGEMENT",
+      "GENERAL ACADEMIC STRAND"
+    ],
+
+    "TECHNOLOGICAL-VOCATIONAL LIVELIHOOD": [
+      "COMPUTER PROGRAMMING",
+      "CONSUMER ELECTRONICS",
+      "HOME ECONOMICS"
+    ]
+  }
+};
+
+// =====================================================
+// GENERAL FIELD FUNCTIONS
+// =====================================================
+
+function getField(name) {
+  return document.querySelector(`[name="${name}"]`);
+}
+
+function populateSelect(select, placeholder, values) {
+  select.replaceChildren();
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = placeholder;
+
+  select.appendChild(defaultOption);
+
+  values.forEach(value => {
+    const option = document.createElement("option");
+
+    option.value = value;
+    option.textContent = value;
 
+    select.appendChild(option);
+  });
+}
+
+// =====================================================
+// SHS GRADE / TRACK / STRAND DETECTION
+// =====================================================
+
+function updateSHSOptions() {
+  const selectedGrade = gradeLevel.value.trim().toUpperCase();
+
+  populateSelect(trackSelect, "Select Track", []);
+  populateSelect(clusterStrandSelect, "Select Cluster/Strand", []);
+
+  trackSelect.value = "";
+  clusterStrandSelect.value = "";
+
+  if (!shsOptions[selectedGrade]) {
+    trackSelect.disabled = true;
+    clusterStrandSelect.disabled = true;
+
+    trackSelect.required = false;
+    clusterStrandSelect.required = false;
+
+    clusterStrandLabel.innerHTML =
+      'Cluster/Strand <span class="required">*</span>';
+
+    syncRequiredMarkers();
+    return;
+  }
+
+  const isGrade11 = selectedGrade === "GRADE 11";
+
+  trackSelect.disabled = false;
+  trackSelect.required = true;
+
+  // Strand/cluster becomes available after choosing a track.
+  clusterStrandSelect.disabled = true;
+  clusterStrandSelect.required = true;
+
+  clusterStrandLabel.innerHTML =
+    (isGrade11 ? "Cluster" : "Strand") +
+    ' <span class="required">*</span>';
+
+  populateSelect(
+    trackSelect,
+    "Select Track",
+    Object.keys(shsOptions[selectedGrade])
+  );
+
+  syncRequiredMarkers();
+}
+
+function updateClustersAndStrands() {
+  const selectedGrade = gradeLevel.value.trim().toUpperCase();
+  const selectedTrack = trackSelect.value.trim().toUpperCase();
+
+  populateSelect(
+    clusterStrandSelect,
+    "Select Cluster/Strand",
+    []
+  );
+
+  clusterStrandSelect.value = "";
+
+  const gradeOptions = shsOptions[selectedGrade];
+
+  if (
+    !gradeOptions ||
+    !gradeOptions[selectedTrack]
+  ) {
+    clusterStrandSelect.disabled = true;
+    return;
+  }
+
+  const isGrade11 = selectedGrade === "GRADE 11";
+  const label = isGrade11 ? "Cluster" : "Strand";
+
+  clusterStrandLabel.innerHTML =
+    label + ' <span class="required">*</span>';
+
+  populateSelect(
+    clusterStrandSelect,
+    "Select " + label,
+    gradeOptions[selectedTrack]
+  );
+
+  clusterStrandSelect.disabled = false;
+  clusterStrandSelect.required = true;
+
+  syncRequiredMarkers();
+}
+
+gradeLevel.addEventListener("change", updateSHSOptions);
+
+trackSelect.addEventListener("change", updateClustersAndStrands);
+
+// =====================================================
+// FIREBASE DATASET
+// =====================================================
+
+function getDatabaseName() {
+  if (gradeLevel.value === "GRADE 11") {
+    return "SHS-STUDENTS-GRADE-11";
+  }
+
+  if (gradeLevel.value === "GRADE 12") {
+    return "SHS-STUDENTS-GRADE-12";
+  }
+
+  return null;
+}
+
+// =====================================================
+// BIRTHDATE AND AGE
+// =====================================================
+
+function updateBirthdateAndAge() {
+  const match = birthdateInput.value.match(
+    /^(\d{2})\/(\d{2})\/(\d{4})$/
+  );
+
+  if (!match) {
+    ageInput.value = "";
+    return;
+  }
+
+  const month = Number(match[1]);
+  const day = Number(match[2]);
+  const year = Number(match[3]);
+
+  const birthDate = new Date(year, month - 1, day);
+  const today = new Date();
+
+  if (
+    birthDate.getFullYear() !== year ||
+    birthDate.getMonth() !== month - 1 ||
+    birthDate.getDate() !== day ||
+    birthDate > today
+  ) {
+    ageInput.value = "";
+    return;
+  }
+
+  let age = today.getFullYear() - year;
+
+  if (
+    today.getMonth() < month - 1 ||
+    (
+      today.getMonth() === month - 1 &&
+      today.getDate() < day
+    )
+  ) {
+    age--;
+  }
+
+  ageInput.value = age;
+}
+
+birthdateInput.addEventListener("input", function () {
+  let value = this.value.replace(/\D/g, "").substring(0, 8);
+
+  if (value.length >= 5) {
+    value =
+      value.substring(0, 2) + "/" +
+      value.substring(2, 4) + "/" +
+      value.substring(4, 8);
+  } else if (value.length >= 3) {
+    value =
+      value.substring(0, 2) + "/" +
+      value.substring(2, 4);
+  }
+
+  this.value = value;
+
+  updateBirthdateAndAge();
+
+  if (this.value.trim()) {
+    clearFieldError(this);
+  }
+});
+
+// =====================================================
+// ADDRESS COPYING
+// =====================================================
+
+const addressPairs = [
+  ["currenthouseNO", "permanenthouseNO"],
+  ["currentstreet", "permanentstreet"],
+  ["currentbarangay", "permanentbarangay"],
+  ["currentmunicipalitycity", "permanentcity"],
+  ["currentprovince", "permanentprovince"],
+  ["currentzipCode", "permanentzipCode"]
+];
+
+function copyPermanentAddress() {
+  if (sameAddress.value !== "YES") {
+    return;
+  }
+
+  addressPairs.forEach(([currentName, permanentName]) => {
+    const currentField = getField(currentName);
+    const permanentField = getField(permanentName);
+
+    if (currentField && permanentField) {
+      permanentField.value = currentField.value;
+    }
+  });
+}
+
+function clearPermanentAddress() {
+  addressPairs.forEach(([, permanentName]) => {
+    const field = getField(permanentName);
+
+    if (field) {
+      field.value = "";
+      clearFieldError(field);
+    }
+  });
+}
+
+// Automatically copy or clear when selection changes.
+sameAddress.addEventListener("change", function () {
+  if (this.value === "YES") {
+    copyPermanentAddress();
+  } else {
+    clearPermanentAddress();
+  }
+
+  controlOptionalFields();
+  syncRequiredMarkers();
+});
+
+// Automatically update permanent address when current address changes.
+addressPairs.forEach(([currentName]) => {
+  getField(currentName).addEventListener("input", function () {
+    if (sameAddress.value === "YES") {
+      copyPermanentAddress();
+    }
+  });
+});
+
+// =====================================================
+// CONDITIONAL FIELDS
+// =====================================================
+
+function setDisabledAndClear(field, disabled) {
+  field.disabled = disabled;
+
+  if (disabled) {
+    field.value = "";
+    clearFieldError(field);
+  }
+}
+
+function controlOptionalFields() {
+
+  const withLRN = getField("with-lrn");
+  const balikAral = getField("balik-aral");
+  const ip = getField("ip");
+  const disability = getField("disability");
+  const fourPs = getField("4Ps");
+
+  // ===================================================
+  // LRN
+  // ===================================================
+
+  const lrnRequired = withLRN.value === "YES";
+
+  setDisabledAndClear(
+    getField("lrn"),
+    withLRN.value !== "YES"
+  );
+
+  getField("lrn").required = lrnRequired;
+
+  document.querySelector(
+    ".conditional-lrn-asterisk"
+  ).style.display = lrnRequired ? "inline" : "none";
+
+  // ===================================================
+  // BALIK-ARAL / TRANSFER
+  // ===================================================
+
+  const returningRequired = balikAral.value === "YES";
+
+  [
+    "Lastgradelevel",
+    "Lastschool",
+    "Lastschoolyear",
+    "schoolid"
+  ].forEach(name => {
+    const field = getField(name);
+
+    setDisabledAndClear(field, !returningRequired);
+    field.required = returningRequired;
+  });
+
+  document.querySelectorAll(".returning-required").forEach(
+    asterisk => {
+      asterisk.style.display =
+        returningRequired ? "inline" : "none";
+    }
+  );
+
+  // ===================================================
+  // INDIGENOUS PEOPLE
+  // ===================================================
+
+  const cultureRequired = ip.value === "YES";
+
+  setDisabledAndClear(
+    getField("culture"),
+    !cultureRequired
+  );
+
+  getField("culture").required = cultureRequired;
+
+  document.querySelector(
+    ".culture-required"
+  ).style.display = cultureRequired ? "inline" : "none";
+
+  // ===================================================
+  // DISABILITY
+  // ===================================================
+
+  const disabilityRequired = disability.value === "YES";
+
+  setDisabledAndClear(
+    getField("disType"),
+    !disabilityRequired
+  );
+
+  getField("disType").required = disabilityRequired;
+
+  document.querySelector(
+    ".disability-required"
+  ).style.display =
+    disabilityRequired ? "inline" : "none";
+
+  // ===================================================
+  // 4P'S
+  // ===================================================
+
+  const houseRequired = fourPs.value === "YES";
+
+  setDisabledAndClear(
+    getField("HouseID"),
+    !houseRequired
+  );
+
+  getField("HouseID").required = houseRequired;
+
+  document.querySelector(
+    ".houseid-required"
+  ).style.display = houseRequired ? "inline" : "none";
+
+  // ===================================================
+  // PERMANENT ADDRESS
+  // ===================================================
+
+  const permanentRequired = sameAddress.value === "NO";
+
+  if (sameAddress.value === "YES") {
+    // Copy BEFORE disabling the permanent address fields.
+    copyPermanentAddress();
+  }
+
+  addressPairs.forEach(([, permanentName]) => {
+    const field = getField(permanentName);
+
+    field.disabled = sameAddress.value !== "NO";
+    field.required = permanentRequired;
+
+    if (sameAddress.value !== "YES" && sameAddress.value !== "NO") {
+      field.value = "";
+    }
+  });
+
+  document.querySelectorAll(".permanent-required").forEach(
+    asterisk => {
+      asterisk.style.display =
+        permanentRequired ? "inline" : "none";
+    }
+  );
+
+  syncRequiredMarkers();
+}
+
+// Conditional field event listeners.
 [
-              fields.track,
-              "Track",
-            ],
+  "with-lrn",
+  "balik-aral",
+  "ip",
+  "disability",
+  "4Ps"
+].forEach(name => {
+  getField(name).addEventListener(
+    "change",
+    controlOptionalFields
+  );
+});
 
-            [
-              fields.clusterStrand,
-              "Cluster/Strand",
-            ],
+// =====================================================
+// VALIDATION UI
+// =====================================================
 
-          ];
+function getFieldContainer(field) {
+  return (
+    field.closest(".field") ||
+    field.closest(".section-box")
+  );
+}
 
-          // =================================================
-          // CONDITIONAL REQUIRED FIELDS
-          // =================================================
+function showFieldError(field, message) {
+  if (!field) return;
 
-          if (
-            fields["with-lrn"]
-              .value === "YES"
-          ) {
-            requiredFields.push([
-              fields.lrn,
-              "LRN",
-            ]);
-          }
+  const container = getFieldContainer(field);
 
-          if (
-            fields["balik-aral"]
-              .value === "YES"
-          ) {
-            requiredFields.push(
-              [
-                fields.Lastgradelevel,
-                "Last Grade Level",
-              ],
-              [
-                fields.Lastschool,
-                "Last School Attended",
-              ],
-              [
-                fields.Lastschoolyear,
-                "Last School Year Completed",
-              ],
-              [
-                fields.schoolid,
-                "School ID",
-              ]
-            );
-          }
+  field.classList.add("input-error");
 
-          if (
-            fields.sameaddress
-              .value === "NO"
-          ) {
-            requiredFields.push(
-              [
-                fields.permanenthouseNO,
-                "Permanent House NO.",
-              ],
-              [
-                fields.permanentstreet,
-                "Permanent Street",
-              ],
-              [
-                fields.permanentbarangay,
-                "Permanent Barangay",
-              ],
-              [
-                fields.permanentcity,
-                "Permanent Municipality/City",
-              ],
-              [
-                fields.permanentprovince,
-                "Permanent Province",
-              ],
-              [
-                fields.permanentzipCode,
-                "Permanent Zip Code",
-              ]
-            );
-          }
+  if (!container) return;
 
-          if (
-            fields.ip.value ===
-            "YES"
-          ) {
-            requiredFields.push([
-              fields.culture,
-              "Culture",
-            ]);
-          }
+  container.classList.add("has-error");
 
-          if (
-            fields.disability
-              .value === "YES"
-          ) {
-            requiredFields.push([
-              fields.disType,
-              "Disability Type",
-            ]);
-          }
+  let errorMessage = container.querySelector(".field-error");
 
-          if (
-            fields["4Ps"].value ===
-            "YES"
-          ) {
-            requiredFields.push([
-              fields.HouseID,
-              "4P's Household ID",
-            ]);
-          }
+  if (!errorMessage) {
+    errorMessage = document.createElement("div");
+    errorMessage.className = "field-error";
 
-          // =================================================
-          // CHECK REQUIRED FIELDS
-          // =================================================
+    container.appendChild(errorMessage);
+  }
 
-          if (
-            !validateRequiredFields(
-              requiredFields
-            )
-          ) {
-            return;
-          }
+  errorMessage.textContent = message;
+}
 
-          // =================================================
-          // BIRTHDATE
-          // =================================================
+function clearFieldError(field) {
+  if (!field) return;
 
-          if (
-            !validateBirthdate()
-          ) {
-            return;
-          }
+  const container = getFieldContainer(field);
 
-          // =================================================
-          // LRN
-          // =================================================
+  field.classList.remove("input-error");
 
-          if (
-            fields["with-lrn"]
-              .value === "YES"
-          ) {
-            if (
-              !validateDigits(
-                fields.lrn,
-                "LRN",
-                12
-              )
-            ) {
-              return;
-            }
-          }
+  if (!container) return;
 
-          // =================================================
-          // CONTACT NUMBERS
-          // =================================================
+  container.classList.remove("has-error");
 
-          const contactFields = [
-            [
-              fields.fatherContact,
-              "Father's Contact Number",
-            ],
+  const errorMessage = container.querySelector(".field-error");
 
-            [
-              fields.motherContact,
-              "Mother's Contact Number",
-            ],
+  if (errorMessage) {
+    errorMessage.remove();
+  }
+}
 
-            [
-              fields.guardianContact,
-              "Guardian Contact Number",
-            ],
-          ];
+function clearAllErrors() {
+  document.querySelectorAll(".input-error").forEach(field => {
+    clearFieldError(field);
+  });
+}
 
-          for (
-            const [
-              field,
-              label,
-            ] of contactFields
-          ) {
-            if (
-              !validateDigits(
-                field,
-                label,
-                11
-              )
-            ) {
-              return;
-            }
-          }
+function scrollToField(field) {
+  if (!field) return;
 
-          // =================================================
-          // ZIP CODES
-          // =================================================
+  setTimeout(() => {
+    field.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
 
-          if (
-            !validateDigits(
-              fields.currentzipCode,
-              "Current Zip Code",
-              4
-            )
-          ) {
-            return;
-          }
+    setTimeout(() => field.focus(), 250);
+  }, 50);
+}
 
-          if (
-            fields.sameaddress
-              .value === "NO"
-          ) {
-            if (
-              !validateDigits(
-                fields.permanentzipCode,
-                "Permanent Zip Code",
-                4
-              )
-            ) {
-              return;
-            }
-          }
+function validateRequiredFields(requiredFields) {
+  clearAllErrors();
 
-          // =================================================
-          // DATABASE
-          // =================================================
+  for (const [field, label] of requiredFields) {
+    if (!field || field.disabled) {
+      continue;
+    }
 
-          const dataset =
-            getDatabaseName();
-
-          if (!dataset) {
-            showFieldError(
-              fields.gradeLevel,
-              "Please select Grade 11 or Grade 12."
-            );
-
-            scrollToField(
-              fields.gradeLevel
-            );
-
-            return;
-          }
-
-          // =================================================
-          // VALID TRACK / CLUSTER / STRAND
-          // =================================================
-
-          const validOptions =
-            shsOptions[
-              fields.gradeLevel
-                .value
-            ];
-
-          const validChoices =
-            validOptions?.[
-              fields.track.value
-            ];
-
-          if (
-            !validChoices ||
-            !validChoices.includes(
-              fields.clusterStrand
-                .value
-            )
-          ) {
-            showFieldError(
-              fields.clusterStrand,
-              "Please select a valid cluster or strand."
-            );
-
-            scrollToField(
-              fields.clusterStrand
-            );
-
-            return;
-          }
-
-          // =================================================
-          // GET EXISTING STUDENTS
-          // =================================================
-
-          const response =
-            await fetch(
-              `${FIREBASE_URL}/${dataset}.json`
-            );
-
-          if (!response.ok) {
-            throw new Error(
-              "Unable to retrieve existing SHS students."
-            );
-          }
-
-          const allStudents =
-            await response.json();
-
-          // =================================================
-          // DUPLICATE LRN
-          // =================================================
-
-          if (
-            fields["with-lrn"]
-              .value === "YES" &&
-            allStudents
-          ) {
-            const enteredLRN =
-              fields.lrn.value.trim();
-
-            const duplicateLRN =
-              Object.values(
-                allStudents
-              ).some(
-                (student) => {
-                  if (
-                    !student ||
-                    typeof student !==
-                      "object"
-                  ) {
-                    return false;
-                  }
-
-                  const learnerInfo =
-                    student[
-                      "1-LEARNERS-INFORMATION"
-                    ] ||
-                    student[
-                      "1-School-Information"
-                    ] ||
-                    {};
-
-                  const existingLRN =
-                    learnerInfo[
-                      "8-LRN"
-                    ] ??
-                    learnerInfo[
-                      "5-LRN"
-                    ];
-
-                  return (
-                    existingLRN !=
-                      null &&
-                    String(
-                      existingLRN
-                    ).trim() ===
-                      enteredLRN
-                  );
-                }
-              );
-
-            if (
-              duplicateLRN
-            ) {
-              showFieldError(
-                fields.lrn,
-                "This LRN is already enrolled."
-              );
-
-              scrollToField(
-                fields.lrn
-              );
-
-              return;
-            }
-          }
-
-          // =================================================
-          // GENERATE REGISTRATION ID
-          // =================================================
-
-          let studentID;
-
-          do {
-            studentID =
-              "STU-" +
-              Math.floor(
-                Math.random() *
-                  1000000
-              )
-                .toString()
-                .padStart(
-                  6,
-                  "0"
-                );
-          } while (
-            allStudents &&
-            allStudents[
-              studentID
-            ]
-          );
-
-          // =================================================
-          // TIMESTAMP
-          // =================================================
-
-          const today =
-            new Date();
-
-          const formattedDate =
-            String(
-              today.getMonth() + 1
-            ).padStart(
-              2,
-              "0"
-            ) +
-            "/" +
-            String(
-              today.getDate()
-            ).padStart(
-              2,
-              "0"
-            ) +
-            "/" +
-            today.getFullYear();
-
-          // =================================================
-          // STUDENT DATA
-          // =================================================
-
-          const studentData = {
-            "1-LEARNERS-INFORMATION":
-              {
-                "1-SCHOOL-YEAR":
-                  fields.schoolYear
-                    .value,
-
-                "2-GRADE-LEVEL":
-                  fields.gradeLevel
-                    .value,
-
-                "3-TERMINATION":
-                  fields.termination
-                    .value,
-
-                "4-WITH-LRN":
-                  fields["with-lrn"]
-                    .value,
-
-                "5-BALIK-ARAL":
-                  fields["balik-aral"]
-                    .value,
-
-                "6-TRACK":
-                  fields.track
-                    .value,
-
-                "7-STRAND":
-                  fields.clusterStrand
-                    .value,
-
-                "8-LRN":
-                  fields.lrn
-                    .value,
-              },
-
-            "2-PERSONAL-INFORMATION":
-              {
-                "1-PSA":
-                  fields.psa.value,
-
-                "2-LAST-NAME":
-                  fields.lastName
-                    .value,
-
-                "3-FIRST-NAME":
-                  fields.firstName
-                    .value,
-
-                "4-MIDDLE-NAME":
-                  fields.middleName
-                    .value,
-
-                "5-EXTENSION":
-                  fields.extension
-                    .value,
-
-                "6-BIRTHDATE":
-                  fields.birthdate
-                    .value,
-
-                "7-SEX":
-                  fields.sex.value,
-
-                "8-AGE":
-                  fields.age.value,
-
-                "9-PLACE-OF-BIRTH":
-                  fields.placeOfBirth
-                    .value,
-
-                "10-RELIGION":
-                  fields.religion
-                    .value,
-
-                "11-MOTHER-TONGUE":
-                  fields.motherTongue
-                    .value,
-              },
-
-            "3-CURRENT-ADDRESS":
-              {
-                "1-HOUSE-NO":
-                  fields.currenthouseNO
-                    .value,
-
-                "2-STREET":
-                  fields.currentstreet
-                    .value,
-
-                "3-BARANGAY":
-                  fields.currentbarangay
-                    .value,
-
-                "4-CITY":
-                  fields.currentmunicipalitycity
-                    .value,
-
-                "5-PROVINCE":
-                  fields.currentprovince
-                    .value,
-
-                "6-ZIP-CODE":
-                  fields.currentzipCode
-                    .value,
-              },
-
-            "4-PERMANENT-ADDRESS":
-              {
-                "1-HOUSE-NO":
-                  fields.permanenthouseNO
-                    .value,
-
-                "2-STREET":
-                  fields.permanentstreet
-                    .value,
-
-                "3-BARANGAY":
-                  fields.permanentbarangay
-                    .value,
-
-                "4-CITY":
-                  fields.permanentcity
-                    .value,
-
-                "5-PROVINCE":
-                  fields.permanentprovince
-                    .value,
-
-                "6-ZIP-CODE":
-                  fields.permanentzipCode
-                    .value,
-              },
-
-            "5-PARENTS":
-              {
-                "1-FATHER-NAME":
-                  fields.fatherName
-                    .value,
-
-                "2-FATHER-CONTACT":
-                  fields.fatherContact
-                    .value,
-
-                "3-MOTHER-NAME":
-                  fields.motherName
-                    .value,
-
-                "4-MOTHER-CONTACT":
-                  fields.motherContact
-                    .value,
-
-                "5-GUARDIAN-NAME":
-                  fields.guardianName
-                    .value,
-
-                "6-GUARDIAN-CONTACT":
-                  fields.guardianContact
-                    .value,
-              },
-
-            "6-OPTIONAL":
-              {
-                "1-IP":
-                  fields.ip.value,
-
-                "2-CULTURE":
-                  fields.culture
-                    .value,
-
-                "3-DISABILITY":
-                  fields.disability
-                    .value,
-
-                "4-DISABILITY-TYPE":
-                  fields.disType
-                    .value,
-
-                "5-4PS":
-                  fields["4Ps"].value,
-
-                "6-HOUSE-ID":
-                  fields.HouseID
-                    .value,
-
-                "7-LEARNING-MODALITY":
-                  fields.LearningModalities
-                    .value,
-              },
-
-            "7-BALIK-ARAL-TRANSFER":
-              {
-                "1-LAST-GRADE-LEVEL":
-                  fields.Lastgradelevel
-                    .value,
-
-                "2-LAST-SCHOOL":
-                  fields.Lastschool
-                    .value,
-
-                "3-LAST-SCHOOL-YEAR":
-                  fields.Lastschoolyear
-                    .value,
-
-                "4-SCHOOL-ID":
-                  fields.schoolid
-                    .value,
-              },
-
-            "8-TIME-STAMP":
-              formattedDate,
-
-            "9-REGISTRATION-ID":
-              studentID,
-          };
-
-          // =================================================
-          // SAVE TO FIREBASE
-          // =================================================
-
-          const saveResponse =
-            await fetch(
-              `${FIREBASE_URL}/${dataset}/${studentID}.json`,
-              {
-                method: "PUT",
-
-                headers: {
-                  "Content-Type":
-                    "application/json",
-                },
-
-                body:
-                  JSON.stringify(
-                    studentData
-                  ),
-              }
-            );
-
-          if (
-            !saveResponse.ok
-          ) {
-            throw new Error(
-              "Failed to save SHS student enrollment."
-            );
-          }
-
-          // =================================================
-          // CONFIRM SAVED RECORD
-          // =================================================
-
-          const savedRecord =
-            await saveResponse.json();
-
-          if (
-            !savedRecord ||
-            savedRecord[
-              "9-REGISTRATION-ID"
-            ] !== studentID
-          ) {
-            throw new Error(
-              "Firebase did not confirm the saved student record."
-            );
-          }
-
-          // =================================================
-          // SAVE LOCAL STORAGE
-          // =================================================
-
-          localStorage.setItem(
-            "studentID",
-            studentID
-          );
-
-          localStorage.setItem(
-            "studentDatabase",
-            dataset
-          );
-
-          // =================================================
-          // SUCCESS
-          // =================================================
-
-          alert(
-            "YOU REGISTERED SUCCESSFULLY!"
-          );
-
-          window.location.href =
-            "./successfulEnrollment.html";
-
-        } catch (error) {
-          console.error(
-            "SHS Enrollment Error:",
-            error
-          );
-
-          alert(
-            "An error occurred while saving the enrollment. Please check your internet connection and try again."
-          );
-
-        } finally {
-          isEnrolling = false;
-
-          enrollButton.disabled =
-            false;
-
-          enrollButton.textContent =
-            "ENROLL";
-        }
-      }
-
-      // =====================================================
-      // ENROLL BUTTON
-      // =====================================================
-
-      enrollButton.addEventListener(
-        "click",
-        goToSuccess
+    if (!field.value.trim()) {
+      showFieldError(
+        field,
+        `${label} is required. Please fill out this field.`
       );
 
-      // =====================================================
-      // INITIAL STATE
-      // =====================================================
+      scrollToField(field);
+      return false;
+    }
+  }
 
-      updateSHSOptions();
-      controlOptionalFields();
-      updateBirthdateAndAge();
-      syncRequiredMarkers();
+  return true;
+}
+
+// =====================================================
+// AUTOMATIC ERROR REMOVAL
+// =====================================================
+
+document.addEventListener("input", function (event) {
+  const field = event.target;
+
+  if (!field.matches("input, textarea, select")) {
+    return;
+  }
+
+  if (field.value.trim()) {
+    clearFieldError(field);
+  }
+});
+
+document.addEventListener("change", function (event) {
+  const field = event.target;
+
+  if (!field.matches("input, textarea, select")) {
+    return;
+  }
+
+  if (field.value.trim()) {
+    clearFieldError(field);
+  }
+});
+
+// =====================================================
+// REQUIRED FIELD MARKERS
+// =====================================================
+
+function syncRequiredMarkers() {
+  document.querySelectorAll("input, select, textarea").forEach(field => {
+    const container =
+      field.closest(".field") ||
+      field.closest(".section-box");
+
+    if (!container) return;
+
+    const label = container.querySelector("label");
+
+    if (!label) return;
+
+    // Avoid duplicate asterisks.
+    if (label.querySelector(".required")) {
+      return;
+    }
+
+    if (field.required && !field.disabled) {
+      const asterisk = document.createElement("span");
+
+      asterisk.className = "required";
+      asterisk.textContent = "*";
+
+      label.appendChild(asterisk);
+    }
+  });
+}
+
+// =====================================================
+// BIRTHDATE VALIDATION
+// =====================================================
+
+function validateBirthdate() {
+  const value = birthdateInput.value.trim();
+
+  const match = value.match(
+    /^(\d{2})\/(\d{2})\/(\d{4})$/
+  );
+
+  if (!match) {
+    showFieldError(
+      birthdateInput,
+      "Please enter your birthdate in MM/DD/YYYY format."
+    );
+
+    scrollToField(birthdateInput);
+    return false;
+  }
+
+  const month = Number(match[1]);
+  const day = Number(match[2]);
+  const year = Number(match[3]);
+
+  const date = new Date(year, month - 1, day);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day ||
+    date > new Date()
+  ) {
+    showFieldError(
+      birthdateInput,
+      "Please enter a valid birthdate."
+    );
+
+    scrollToField(birthdateInput);
+    return false;
+  }
+
+  clearFieldError(birthdateInput);
+  updateBirthdateAndAge();
+
+  return true;
+}
+
+// =====================================================
+// DIGIT VALIDATION
+// =====================================================
+
+function validateDigits(field, label, length) {
+  const pattern = new RegExp("^\\d{" + length + "}$");
+
+  if (!pattern.test(field.value.trim())) {
+    showFieldError(
+      field,
+      `${label} must contain exactly ${length} digits.`
+    );
+
+    scrollToField(field);
+    return false;
+  }
+
+  clearFieldError(field);
+  return true;
+}
+
+// =====================================================
+// ENROLLMENT PROCESS
+// =====================================================
+
+async function goToSuccess() {
+  if (isEnrolling) return;
+
+  isEnrolling = true;
+
+  enrollButton.disabled = true;
+  enrollButton.textContent = "ENROLLING...";
+
+  try {
+
+    // =================================================
+    // UPPERCASE TEXT FIELDS
+    // =================================================
+
+    Array.from(form.elements).forEach(field => {
+      if (
+        field.tagName === "INPUT" &&
+        field.type === "text" &&
+        !field.disabled
+      ) {
+        field.value = field.value.toUpperCase();
+      }
+    });
+
+    copyPermanentAddress();
+    updateBirthdateAndAge();
+
+    // =================================================
+    // FIELD REFERENCES
+    // =================================================
+
+    const names = [
+      "schoolYear",
+      "gradeLevel",
+      "termination",
+      "with-lrn",
+      "balik-aral",
+      "track",
+      "clusterStrand",
+      "psa",
+      "lrn",
+      "lastName",
+      "firstName",
+      "middleName",
+      "extension",
+      "birthdate",
+      "sex",
+      "age",
+      "placeOfBirth",
+      "religion",
+      "motherTongue",
+
+      "currenthouseNO",
+      "currentstreet",
+      "currentbarangay",
+      "currentmunicipalitycity",
+      "currentprovince",
+      "currentzipCode",
+
+      "sameaddress",
+
+      "permanenthouseNO",
+      "permanentstreet",
+      "permanentbarangay",
+      "permanentcity",
+      "permanentprovince",
+      "permanentzipCode",
+
+      "fatherName",
+      "fatherContact",
+      "motherName",
+      "motherContact",
+      "guardianName",
+      "guardianContact",
+
+      "ip",
+      "culture",
+      "disability",
+      "disType",
+      "4Ps",
+      "HouseID",
+      "LearningModalities",
+
+      "Lastgradelevel",
+      "Lastschool",
+      "Lastschoolyear",
+      "schoolid"
+    ];
+
+    const fields = {};
+
+    names.forEach(name => {
+      fields[name] = getField(name);
+    });
+
+    // =================================================
+    // REQUIRED FIELDS
+    // =================================================
+
+    const requiredFields = [
+      [fields.schoolYear, "School Year"],
+      [fields.gradeLevel, "Grade Level"],
+      [fields["with-lrn"], "With LRN"],
+      [fields["balik-aral"], "Balik-Aral/Transfer"],
+
+      [fields.psa, "PSA Number"],
+      [fields.lastName, "Last Name"],
+      [fields.firstName, "First Name"],
+      [fields.birthdate, "Birthdate"],
+      [fields.sex, "Sex"],
+      [fields.placeOfBirth, "Place of Birth"],
+      [fields.religion, "Religion"],
+      [fields.motherTongue, "Mother Tongue"],
+
+      [fields.currenthouseNO, "Current House Number"],
+      [fields.currentstreet, "Current Street"],
+      [fields.currentbarangay, "Current Barangay"],
+      [fields.currentmunicipalitycity, "Current Municipality/City"],
+      [fields.currentprovince, "Current Province"],
+      [fields.currentzipCode, "Current Zip Code"],
+
+      [fields.sameaddress, "Same Address"],
+
+      [fields.fatherName, "Father's Name"],
+      [fields.fatherContact, "Father's Contact"],
+      [fields.motherName, "Mother's Name"],
+      [fields.motherContact, "Mother's Contact"],
+      [fields.guardianName, "Guardian Name"],
+      [fields.guardianContact, "Guardian Contact"],
+
+      [fields.ip, "Indigenous People"],
+      [fields.disability, "Disability"],
+      [fields["4Ps"], "4P's Community"],
+      [fields.LearningModalities, "Learning Modality"],
+
+      [fields.termination, "Termination"],
+      [fields.track, "Track"],
+      [fields.clusterStrand, "Cluster/Strand"]
+    ];
+
+    // =================================================
+    // CONDITIONAL REQUIRED FIELDS
+    // =================================================
+
+    if (fields["with-lrn"].value === "YES") {
+      requiredFields.push([
+        fields.lrn,
+        "LRN"
+      ]);
+    }
+
+    if (fields["balik-aral"].value === "YES") {
+      requiredFields.push(
+        [fields.Lastgradelevel, "Last Grade Level"],
+        [fields.Lastschool, "Last School Attended"],
+        [fields.Lastschoolyear, "Last School Year Completed"],
+        [fields.schoolid, "School ID"]
+      );
+    }
+
+    if (fields.sameaddress.value === "NO") {
+      requiredFields.push(
+        [fields.permanenthouseNO, "Permanent House Number"],
+        [fields.permanentstreet, "Permanent Street"],
+        [fields.permanentbarangay, "Permanent Barangay"],
+        [fields.permanentcity, "Permanent Municipality/City"],
+        [fields.permanentprovince, "Permanent Province"],
+        [fields.permanentzipCode, "Permanent Zip Code"]
+      );
+    }
+
+    if (fields.ip.value === "YES") {
+      requiredFields.push([
+        fields.culture,
+        "Culture"
+      ]);
+    }
+
+    if (fields.disability.value === "YES") {
+      requiredFields.push([
+        fields.disType,
+        "Disability Type"
+      ]);
+    }
+
+    if (fields["4Ps"].value === "YES") {
+      requiredFields.push([
+        fields.HouseID,
+        "4P's Household ID"
+      ]);
+    }
+
+    // =================================================
+    // CHECK REQUIRED FIELDS
+    // =================================================
+
+    if (!validateRequiredFields(requiredFields)) {
+      return;
+    }
+
+    // =================================================
+    // BIRTHDATE
+    // =================================================
+
+    if (!validateBirthdate()) {
+      return;
+    }
+
+    // =================================================
+    // LRN VALIDATION
+    // =================================================
+
+    if (fields["with-lrn"].value === "YES") {
+      if (!validateDigits(fields.lrn, "LRN", 12)) {
+        return;
+      }
+    }
+
+    // =================================================
+    // CONTACT NUMBER VALIDATION
+    // =================================================
+
+    const contactFields = [
+      [fields.fatherContact, "Father's Contact Number"],
+      [fields.motherContact, "Mother's Contact Number"],
+      [fields.guardianContact, "Guardian Contact Number"]
+    ];
+
+    for (const [field, label] of contactFields) {
+      if (!validateDigits(field, label, 11)) {
+        return;
+      }
+    }
+
+    // =================================================
+    // ZIP CODE VALIDATION
+    // =================================================
+
+    if (
+      !validateDigits(
+        fields.currentzipCode,
+        "Current Zip Code",
+        4
+      )
+    ) {
+      return;
+    }
+
+    if (fields.sameaddress.value === "NO") {
+      if (
+        !validateDigits(
+          fields.permanentzipCode,
+          "Permanent Zip Code",
+          4
+        )
+      ) {
+        return;
+      }
+    }
+
+    // =================================================
+    // DATABASE SELECTION
+    // =================================================
+
+    const dataset = getDatabaseName();
+
+    if (!dataset) {
+      showFieldError(
+        fields.gradeLevel,
+        "Please select Grade 11 or Grade 12."
+      );
+
+      scrollToField(fields.gradeLevel);
+      return;
+    }
+
+    // =================================================
+    // VALIDATE TRACK / CLUSTER / STRAND
+    // =================================================
+
+    const selectedGrade = fields.gradeLevel.value.trim().toUpperCase();
+    const selectedTrack = fields.track.value.trim().toUpperCase();
+    const selectedClusterStrand = fields.clusterStrand.value;
+
+    const validOptions = shsOptions[selectedGrade];
+
+    const validChoices = validOptions
+      ? validOptions[selectedTrack]
+      : null;
+
+    if (
+      !validChoices ||
+      !validChoices.includes(selectedClusterStrand)
+    ) {
+      showFieldError(
+        fields.clusterStrand,
+        "Please select a valid track and cluster/strand."
+      );
+
+      scrollToField(fields.clusterStrand);
+      return;
+    }
+
+    // =================================================
+    // GET EXISTING STUDENTS
+    // =================================================
+
+    const response = await fetch(
+      `${FIREBASE_URL}/${dataset}.json`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        "Unable to retrieve existing SHS students."
+      );
+    }
+
+    const allStudents = await response.json();
+
+    // =================================================
+    // DUPLICATE LRN DETECTION
+    // =================================================
+
+    if (
+      fields["with-lrn"].value === "YES" &&
+      allStudents
+    ) {
+      const enteredLRN = fields.lrn.value.trim();
+
+      const duplicateLRN = Object.values(allStudents).some(student => {
+        if (!student || typeof student !== "object") {
+          return false;
+        }
+
+        const learnerInfo =
+          student["1-LEARNERS-INFORMATION"] ||
+          student["1-School-Information"] ||
+          {};
+
+        const existingLRN =
+          learnerInfo["8-LRN"] ??
+          learnerInfo["5-LRN"];
+
+        return (
+          existingLRN != null &&
+          String(existingLRN).trim() === enteredLRN
+        );
+      });
+
+      if (duplicateLRN) {
+        showFieldError(
+          fields.lrn,
+          "This LRN is already enrolled."
+        );
+
+        scrollToField(fields.lrn);
+        return;
+      }
+    }
+
+    // =================================================
+    // GENERATE REGISTRATION ID
+    // =================================================
+
+    let studentID;
+
+    do {
+      studentID =
+        "STU-" +
+        Math.floor(Math.random() * 1000000)
+          .toString()
+          .padStart(6, "0");
+
+    } while (
+      allStudents &&
+      allStudents[studentID]
+    );
+
+    // =================================================
+    // TIMESTAMP
+    // =================================================
+
+    const today = new Date();
+
+    const formattedDate =
+      String(today.getMonth() + 1).padStart(2, "0") +
+      "/" +
+      String(today.getDate()).padStart(2, "0") +
+      "/" +
+      today.getFullYear();
+
+    // =================================================
+    // STUDENT DATA
+    // =================================================
+
+    const studentData = {
+
+      "1-LEARNERS-INFORMATION": {
+        "1-SCHOOL-YEAR": fields.schoolYear.value,
+        "2-GRADE-LEVEL": fields.gradeLevel.value,
+        "3-TERMINATION": fields.termination.value,
+        "4-WITH-LRN": fields["with-lrn"].value,
+        "5-BALIK-ARAL": fields["balik-aral"].value,
+        "6-TRACK": fields.track.value,
+        "7-STRAND": fields.clusterStrand.value,
+        "8-LRN": fields.lrn.value
+      },
+
+      "2-PERSONAL-INFORMATION": {
+        "1-PSA": fields.psa.value,
+        "2-LAST-NAME": fields.lastName.value,
+        "3-FIRST-NAME": fields.firstName.value,
+        "4-MIDDLE-NAME": fields.middleName.value,
+        "5-EXTENSION": fields.extension.value,
+        "6-BIRTHDATE": fields.birthdate.value,
+        "7-SEX": fields.sex.value,
+        "8-AGE": fields.age.value,
+        "9-PLACE-OF-BIRTH": fields.placeOfBirth.value,
+        "10-RELIGION": fields.religion.value,
+        "11-MOTHER-TONGUE": fields.motherTongue.value
+      },
+
+      "3-CURRENT-ADDRESS": {
+        "1-HOUSE-NO": fields.currenthouseNO.value,
+        "2-STREET": fields.currentstreet.value,
+        "3-BARANGAY": fields.currentbarangay.value,
+        "4-CITY": fields.currentmunicipalitycity.value,
+        "5-PROVINCE": fields.currentprovince.value,
+        "6-ZIP-CODE": fields.currentzipCode.value
+      },
+
+      "4-PERMANENT-ADDRESS": {
+        "1-HOUSE-NO": fields.permanenthouseNO.value,
+        "2-STREET": fields.permanentstreet.value,
+        "3-BARANGAY": fields.permanentbarangay.value,
+        "4-CITY": fields.permanentcity.value,
+        "5-PROVINCE": fields.permanentprovince.value,
+        "6-ZIP-CODE": fields.permanentzipCode.value
+      },
+
+      "5-PARENTS": {
+        "1-FATHER-NAME": fields.fatherName.value,
+        "2-FATHER-CONTACT": fields.fatherContact.value,
+        "3-MOTHER-NAME": fields.motherName.value,
+        "4-MOTHER-CONTACT": fields.motherContact.value,
+        "5-GUARDIAN-NAME": fields.guardianName.value,
+        "6-GUARDIAN-CONTACT": fields.guardianContact.value
+      },
+
+      "6-OPTIONAL": {
+        "1-IP": fields.ip.value,
+        "2-CULTURE": fields.culture.value,
+        "3-DISABILITY": fields.disability.value,
+        "4-DISABILITY-TYPE": fields.disType.value,
+        "5-4PS": fields["4Ps"].value,
+        "6-HOUSE-ID": fields.HouseID.value,
+        "7-LEARNING-MODALITY": fields.LearningModalities.value
+      },
+
+      "7-BALIK-ARAL-TRANSFER": {
+        "1-LAST-GRADE-LEVEL": fields.Lastgradelevel.value,
+        "2-LAST-SCHOOL": fields.Lastschool.value,
+        "3-LAST-SCHOOL-YEAR": fields.Lastschoolyear.value,
+        "4-SCHOOL-ID": fields.schoolid.value
+      },
+
+      "8-TIME-STAMP": formattedDate,
+
+      "9-REGISTRATION-ID": studentID
+    };
+
+    // =================================================
+    // SAVE TO FIREBASE
+    // =================================================
+
+    const saveResponse = await fetch(
+      `${FIREBASE_URL}/${dataset}/${studentID}.json`,
+      {
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(studentData)
+      }
+    );
+
+    if (!saveResponse.ok) {
+      throw new Error(
+        "Failed to save SHS student enrollment."
+      );
+    }
+
+    // =================================================
+    // CONFIRM SAVED RECORD
+    // =================================================
+
+    const savedRecord = await saveResponse.json();
+
+    if (
+      !savedRecord ||
+      savedRecord["9-REGISTRATION-ID"] !== studentID
+    ) {
+      throw new Error(
+        "Firebase did not confirm the saved student record."
+      );
+    }
+
+    // =================================================
+    // SAVE LOCAL STORAGE
+    // =================================================
+
+    localStorage.setItem("studentID", studentID);
+    localStorage.setItem("studentDatabase", dataset);
+
+    // =================================================
+    // SUCCESS
+    // =================================================
+
+    alert("YOU REGISTERED SUCCESSFULLY!");
+
+    window.location.href = "./successfulEnrollment.html";
+
+  } catch (error) {
+
+    console.error("SHS Enrollment Error:", error);
+
+    alert(
+      "An error occurred while saving the enrollment. Please check your internet connection and try again."
+    );
+
+  } finally {
+
+    isEnrolling = false;
+
+    enrollButton.disabled = false;
+    enrollButton.textContent = "ENROLL";
+  }
+}
+
+// =====================================================
+// ENROLL BUTTON
+// =====================================================
+
+enrollButton.addEventListener("click", goToSuccess);
+
+// =====================================================
+// INITIAL STATE
+// =====================================================
+
+updateSHSOptions();
+controlOptionalFields();
+updateBirthdateAndAge();
+syncRequiredMarkers();
     </script>
   </body>
 </html>
