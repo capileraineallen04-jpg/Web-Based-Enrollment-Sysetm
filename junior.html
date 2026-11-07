@@ -416,738 +416,979 @@
       </form>
     </div>
 
-    <script>
-      const FIREBASE_URL =
-        "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
+<script>
+  const FIREBASE_URL =
+    "https://enrollease---enrollment-form-default-rtdb.asia-southeast1.firebasedatabase.app";
 
-      const form = document.getElementById("enrollmentForm");
+  const form = document.getElementById("enrollmentForm");
+  const gradeLevel = document.getElementById("gradeLevel");
+  const birthdateInput = document.querySelector('[name="birthdate"]');
+  const ageInput = document.querySelector('[name="age"]');
 
-      const gradeLevel = document.getElementById("gradeLevel");
+  // =====================================================
+  // BIRTHDATE FORMAT: MM/DD/YYYY
+  // =====================================================
 
-      const birthdateInput = document.querySelector('[name="birthdate"]');
+  birthdateInput.addEventListener("input", function () {
+    let value = this.value.replace(/\D/g, "").substring(0, 8);
 
-      const ageInput = document.querySelector('[name="age"]');
+    if (value.length >= 5) {
+      value =
+        value.substring(0, 2) +
+        "/" +
+        value.substring(2, 4) +
+        "/" +
+        value.substring(4, 8);
+    } else if (value.length >= 3) {
+      value = value.substring(0, 2) + "/" + value.substring(2, 4);
+    }
 
-      // =====================================================
-      // BIRTHDATE FORMAT: MM/DD/YYYY
-      // =====================================================
+    this.value = value;
+    updateBirthdateAndAge();
+  });
 
-      birthdateInput.addEventListener("input", function () {
-        let value = this.value.replace(/\D/g, "").substring(0, 8);
+  birthdateInput.addEventListener("change", updateBirthdateAndAge);
 
-        if (value.length >= 5) {
-          value =
-            value.substring(0, 2) +
-            "/" +
-            value.substring(2, 4) +
-            "/" +
-            value.substring(4, 8);
-        } else if (value.length >= 3) {
-          value = value.substring(0, 2) + "/" + value.substring(2, 4);
+  function updateBirthdateAndAge() {
+    const value = birthdateInput.value.trim();
+    const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+    if (!match) {
+      ageInput.value = "";
+      return;
+    }
+
+    const month = Number(match[1]);
+    const day = Number(match[2]);
+    const year = Number(match[3]);
+
+    const birthDate = new Date(year, month - 1, day);
+
+    if (
+      birthDate.getFullYear() !== year ||
+      birthDate.getMonth() !== month - 1 ||
+      birthDate.getDate() !== day
+    ) {
+      ageInput.value = "";
+      return;
+    }
+
+    const today = new Date();
+
+    if (birthDate > today) {
+      ageInput.value = "";
+      return;
+    }
+
+    let age = today.getFullYear() - year;
+
+    if (
+      today.getMonth() < month - 1 ||
+      (today.getMonth() === month - 1 && today.getDate() < day)
+    ) {
+      age--;
+    }
+
+    ageInput.value = age;
+  }
+
+  // =====================================================
+  // JHS DATABASE NAME
+  // =====================================================
+
+  function getDatabaseName() {
+    const selectedGrade = gradeLevel.value;
+    const validGrades = ["GRADE 7", "GRADE 8", "GRADE 9", "GRADE 10"];
+
+    if (!validGrades.includes(selectedGrade)) {
+      return null;
+    }
+
+    return "JHS-STUDENTS-" + selectedGrade.replace(/\s+/g, "-");
+  }
+
+  // =====================================================
+  // COPY PERMANENT ADDRESS
+  // =====================================================
+
+  const sameAddress = document.querySelector('[name="sameaddress"]');
+
+  const addressPairs = [
+    ["currenthouseNO", "permanenthouseNO"],
+    ["currentstreet", "permanentstreet"],
+    ["currentbarangay", "permanentbarangay"],
+    ["currentmunicipalitycity", "permanentcity"],
+    ["currentprovince", "permanentprovince"],
+    ["currentzipCode", "permanentzipCode"],
+  ];
+
+  function copyPermanentAddress() {
+    if (sameAddress.value === "YES") {
+      addressPairs.forEach(([currentName, permanentName]) => {
+        document.querySelector(`[name="${permanentName}"]`).value =
+          document.querySelector(`[name="${currentName}"]`).value;
+      });
+    }
+  }
+
+  sameAddress.addEventListener("change", function () {
+    if (this.value === "YES") {
+      copyPermanentAddress();
+    } else {
+      addressPairs.forEach(([, permanentName]) => {
+        document.querySelector(`[name="${permanentName}"]`).value = "";
+      });
+    }
+
+    controlOptionalFields();
+    refreshRequiredAsterisks();
+  });
+
+  addressPairs.forEach(([currentName]) => {
+    document
+      .querySelector(`[name="${currentName}"]`)
+      .addEventListener("input", function () {
+        if (sameAddress.value === "YES") {
+          copyPermanentAddress();
         }
+      });
+  });
 
-        this.value = value;
-        updateBirthdateAndAge();
+  // =====================================================
+  // CONDITIONAL FIELD CONTROL
+  // =====================================================
+
+  function setDisabledAndClear(field, disabled) {
+    field.disabled = disabled;
+
+    if (disabled) {
+      field.value = "";
+      field.classList.remove("input-error");
+    }
+  }
+
+  function controlOptionalFields() {
+    const withLRN = document.querySelector('[name="with-lrn"]');
+    const lrn = document.querySelector('[name="lrn"]');
+
+    const balikAral = document.querySelector('[name="balik-aral"]');
+
+    const returningFields = [
+      document.querySelector('[name="Lastgradelevel"]'),
+      document.querySelector('[name="Lastschool"]'),
+      document.querySelector('[name="Lastschoolyear"]'),
+      document.querySelector('[name="schoolid"]'),
+    ];
+
+    const ip = document.querySelector('[name="ip"]');
+    const culture = document.querySelector('[name="culture"]');
+
+    const disability = document.querySelector('[name="disability"]');
+    const disabilityType = document.querySelector('[name="disType"]');
+
+    const fourPs = document.querySelector('[name="4Ps"]');
+    const houseID = document.querySelector('[name="HouseID"]');
+
+    setDisabledAndClear(lrn, withLRN.value === "NO");
+
+    returningFields.forEach((field) => {
+      setDisabledAndClear(field, balikAral.value === "NO");
+    });
+
+    setDisabledAndClear(culture, ip.value === "NO");
+    setDisabledAndClear(disabilityType, disability.value === "NO");
+    setDisabledAndClear(houseID, fourPs.value === "NO");
+
+    if (sameAddress.value === "YES") {
+      copyPermanentAddress();
+    }
+
+    if (sameAddress.value === "YES") {
+      addressPairs.forEach(([, permanentName]) => {
+        document.querySelector(`[name="${permanentName}"]`).disabled = true;
+      });
+    } else {
+      addressPairs.forEach(([, permanentName]) => {
+        document.querySelector(`[name="${permanentName}"]`).disabled = false;
+      });
+    }
+  }
+
+  ["with-lrn", "balik-aral", "ip", "disability", "4Ps"].forEach((name) => {
+    document
+      .querySelector(`[name="${name}"]`)
+      .addEventListener("change", function () {
+        controlOptionalFields();
+        refreshRequiredAsterisks();
+      });
+  });
+
+  // =====================================================
+  // VALIDATION HELPERS
+  // =====================================================
+
+  function getFieldContainer(field) {
+    return field?.closest(".field") || field?.closest(".section-box");
+  }
+
+  function showFieldError(field, message = "Please fill out this field.") {
+    if (!field) return;
+
+    const container = getFieldContainer(field);
+    field.classList.add("input-error");
+
+    if (!container) return;
+
+    let error = container.querySelector(":scope > .field-error");
+
+    if (!error) {
+      error = document.createElement("div");
+      error.className = "field-error";
+      error.setAttribute("role", "alert");
+      container.appendChild(error);
+    }
+
+    error.textContent = message;
+  }
+
+  function clearFieldError(field) {
+    if (!field) return;
+
+    field.classList.remove("input-error");
+
+    const container = getFieldContainer(field);
+    if (!container) return;
+
+    const error = container.querySelector(":scope > .field-error");
+    if (error) error.remove();
+  }
+
+  function validateRequiredFields(requiredFields) {
+    document.querySelectorAll(".input-error").forEach(clearFieldError);
+
+    for (const [field, label] of requiredFields) {
+      if (!field || field.disabled) continue;
+
+      if (!String(field.value ?? "").trim()) {
+        showFieldError(
+          field,
+          `${label} is required. Please provide an answer.`
+        );
+
+        field.focus({ preventScroll: true });
+        field.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // =====================================================
+  // REQUIRED FIELD ASTERISKS
+  // =====================================================
+
+  function refreshRequiredAsterisks() {
+    const alwaysRequired = [
+      "schoolYear", "gradeLevel", "with-lrn", "balik-aral", "psa",
+      "lastName", "firstName", "birthdate", "sex", "placeOfBirth",
+      "religion", "motherTongue", "currenthouseNO", "currentstreet",
+      "currentbarangay", "currentmunicipalitycity", "currentprovince",
+      "currentzipCode", "sameaddress", "fatherName", "fatherContact",
+      "motherName", "motherContact", "guardianName", "guardianContact",
+      "ip", "disability", "4Ps"
+    ];
+
+    const conditionalRequired = [];
+
+    if (getField("with-lrn")?.value === "YES") {
+      conditionalRequired.push("lrn");
+    }
+
+    if (getField("balik-aral")?.value === "YES") {
+      conditionalRequired.push(
+        "Lastgradelevel",
+        "Lastschool",
+        "Lastschoolyear",
+        "schoolid"
+      );
+    }
+
+    if (getField("sameaddress")?.value === "NO") {
+      conditionalRequired.push(
+        "permanenthouseNO",
+        "permanentstreet",
+        "permanentbarangay",
+        "permanentcity",
+        "permanentprovince",
+        "permanentzipCode"
+      );
+    }
+
+    if (getField("ip")?.value === "YES") {
+      conditionalRequired.push("culture");
+    }
+
+    if (getField("disability")?.value === "YES") {
+      conditionalRequired.push("disType");
+    }
+
+    if (getField("4Ps")?.value === "YES") {
+      conditionalRequired.push("HouseID");
+    }
+
+    const requiredNames = new Set([
+      ...alwaysRequired,
+      ...conditionalRequired
+    ]);
+
+    document.querySelectorAll("label").forEach((label) => {
+      label.querySelectorAll(".required").forEach((star) => star.remove());
+
+      const container =
+        label.closest(".field") || label.closest(".section-box");
+
+      const control = container?.querySelector(
+        "input[name], select[name], textarea[name]"
+      );
+
+      if (control && requiredNames.has(control.name)) {
+        const star = document.createElement("span");
+        star.className = "required";
+        star.setAttribute("aria-label", "required");
+        star.textContent = " *";
+        label.appendChild(star);
+      }
+    });
+  }
+
+  // =====================================================
+  // AUTOMATIC ERROR CLEARING
+  // =====================================================
+
+  document.addEventListener("input", (event) => {
+    const field = event.target;
+
+    if (
+      field.matches("input, select, textarea") &&
+      field.classList.contains("input-error") &&
+      field.value.trim()
+    ) {
+      clearFieldError(field);
+    }
+  });
+
+  document.addEventListener("change", (event) => {
+    const field = event.target;
+
+    if (field.matches("input, select, textarea")) {
+      if (field.classList.contains("input-error") && field.value.trim()) {
+        clearFieldError(field);
+      }
+
+      refreshRequiredAsterisks();
+    }
+  });
+
+  // =====================================================
+  // BIRTHDATE VALIDATION
+  // =====================================================
+
+  function validateBirthdate() {
+    const value = birthdateInput.value.trim();
+    const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+    if (!match) {
+      showFieldError(
+        birthdateInput,
+        "Please enter your birthdate in MM/DD/YYYY format."
+      );
+
+      birthdateInput.focus({ preventScroll: true });
+      birthdateInput.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
       });
 
-      birthdateInput.addEventListener("change", updateBirthdateAndAge);
+      return false;
+    }
 
-      function updateBirthdateAndAge() {
-        const value = birthdateInput.value.trim();
+    const month = Number(match[1]);
+    const day = Number(match[2]);
+    const year = Number(match[3]);
 
-        const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    const date = new Date(year, month - 1, day);
 
-        if (!match) {
-          ageInput.value = "";
-          return;
-        }
+    if (
+      date.getFullYear() !== year ||
+      date.getMonth() !== month - 1 ||
+      date.getDate() !== day ||
+      date > new Date()
+    ) {
+      showFieldError(birthdateInput, "Please enter a valid birthdate.");
 
-        const month = Number(match[1]);
-        const day = Number(match[2]);
-        const year = Number(match[3]);
+      birthdateInput.focus({ preventScroll: true });
+      birthdateInput.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
 
-        const birthDate = new Date(year, month - 1, day);
+      return false;
+    }
 
+    updateBirthdateAndAge();
+    return true;
+  }
+
+  function getField(name) {
+    return document.querySelector(`[name="${name}"]`);
+  }
+
+  // =====================================================
+  // PRE-SUBMISSION INFORMATION REVIEW
+  // =====================================================
+
+  function showInformationReview(fields) {
+    const reviewGroups = [
+      ["SCHOOL INFORMATION", [
+        ["School Year", fields.schoolYear],
+        ["Grade Level", fields.gradeLevel],
+        ["With LRN", fields.withLRN],
+        ["LRN", fields.lrn],
+        ["Balik-Aral", fields.balikAral],
+        ["Last Grade Level", fields.lastGrade],
+        ["Last School Attended", fields.lastSchool],
+        ["Last School Year Completed", fields.lastSchoolYear],
+        ["School ID", fields.schoolID],
+        ["PSA Number", fields.psa],
+      ]],
+
+      ["PERSONAL INFORMATION", [
+        ["Last Name", fields.lastName],
+        ["First Name", fields.firstName],
+        ["Middle Name", fields.middleName],
+        ["Extension", fields.extension],
+        ["Birthdate", fields.birthdate],
+        ["Age", fields.age],
+        ["Sex", fields.sex],
+        ["Place of Birth", fields.placeOfBirth],
+        ["Religion", fields.religion],
+        ["Mother Tongue", fields.motherTongue],
+      ]],
+
+      ["CURRENT ADDRESS", [
+        ["House Number", fields.currentHouse],
+        ["Street", fields.currentStreet],
+        ["Barangay", fields.currentBarangay],
+        ["City / Municipality", fields.currentCity],
+        ["Province", fields.currentProvince],
+        ["ZIP Code", fields.currentZip],
+      ]],
+
+      ["PERMANENT ADDRESS", [
+        ["Same as Current Address", fields.sameAddress],
+        ["House Number", fields.permanentHouse],
+        ["Street", fields.permanentStreet],
+        ["Barangay", fields.permanentBarangay],
+        ["City / Municipality", fields.permanentCity],
+        ["Province", fields.permanentProvince],
+        ["ZIP Code", fields.permanentZip],
+      ]],
+
+      ["PARENTS / GUARDIAN INFORMATION", [
+        ["Father's Name", fields.fatherName],
+        ["Father's Contact Number", fields.fatherContact],
+        ["Mother's Name", fields.motherName],
+        ["Mother's Contact Number", fields.motherContact],
+        ["Guardian's Name", fields.guardianName],
+        ["Guardian's Contact Number", fields.guardianContact],
+      ]],
+
+      ["OTHER INFORMATION", [
+        ["Indigenous People", fields.ip],
+        ["Culture / Indigenous Group", fields.culture],
+        ["Person with Disability", fields.disability],
+        ["Disability Type", fields.disabilityType],
+        ["4Ps Beneficiary", fields.fourPs],
+        ["4Ps Household ID", fields.houseID],
+        ["Learning Modality", fields.learningModalities],
+      ]],
+    ];
+
+    const reviewText = reviewGroups.map(([groupTitle, items]) => {
+      const details = items.map(([label, field]) => {
+        if (!field) return null;
+
+        const value = field.disabled
+          ? (field.value.trim() || "NOT APPLICABLE")
+          : (field.value.trim() || "—");
+
+        return `${label}: ${value}`;
+      }).filter(Boolean);
+
+      return `${groupTitle}\n${details.join("\n")}`;
+    }).join("\n\n");
+
+    return window.confirm(
+      "PLEASE REVIEW YOUR ENROLLMENT INFORMATION\n\n" +
+      "Check every detail below before submitting. If you find any " +
+      "incorrect information, click CANCEL to return to the form " +
+      "and make corrections.\n\n" +
+      reviewText +
+      "\n\nClick OK only if ALL information is correct. " +
+      "Click CANCEL to edit your information."
+    );
+  }
+
+  // =====================================================
+  // ENROLL AND SAVE TO FIREBASE
+  // =====================================================
+
+  async function goToSuccess() {
+    const enrollButton = document.getElementById("enrollButton");
+
+    if (enrollButton.disabled) return;
+
+    try {
+      // Convert text inputs to uppercase.
+      Object.values(form.elements).forEach((field) => {
         if (
-          birthDate.getFullYear() !== year ||
-          birthDate.getMonth() !== month - 1 ||
-          birthDate.getDate() !== day
+          field.tagName === "INPUT" &&
+          field.type === "text" &&
+          !field.disabled
         ) {
-          ageInput.value = "";
-          return;
+          field.value = field.value.toUpperCase();
         }
+      });
 
-        const today = new Date();
+      copyPermanentAddress();
+      updateBirthdateAndAge();
 
-        if (birthDate > today) {
-          ageInput.value = "";
-          return;
-        }
+      const fields = {
+        schoolYear: getField("schoolYear"),
+        gradeLevel: getField("gradeLevel"),
+        withLRN: getField("with-lrn"),
+        balikAral: getField("balik-aral"),
+        psa: getField("psa"),
+        lrn: getField("lrn"),
+        lastName: getField("lastName"),
+        firstName: getField("firstName"),
+        middleName: getField("middleName"),
+        extension: getField("extension"),
+        birthdate: getField("birthdate"),
+        sex: getField("sex"),
+        age: getField("age"),
+        placeOfBirth: getField("placeOfBirth"),
+        religion: getField("religion"),
+        motherTongue: getField("motherTongue"),
 
-        let age = today.getFullYear() - year;
+        currentHouse: getField("currenthouseNO"),
+        currentStreet: getField("currentstreet"),
+        currentBarangay: getField("currentbarangay"),
+        currentCity: getField("currentmunicipalitycity"),
+        currentProvince: getField("currentprovince"),
+        currentZip: getField("currentzipCode"),
 
-        if (
-          today.getMonth() < month - 1 ||
-          (today.getMonth() === month - 1 && today.getDate() < day)
-        ) {
-          age--;
-        }
+        sameAddress: getField("sameaddress"),
+        permanentHouse: getField("permanenthouseNO"),
+        permanentStreet: getField("permanentstreet"),
+        permanentBarangay: getField("permanentbarangay"),
+        permanentCity: getField("permanentcity"),
+        permanentProvince: getField("permanentprovince"),
+        permanentZip: getField("permanentzipCode"),
 
-        ageInput.value = age;
-      }
+        fatherName: getField("fatherName"),
+        fatherContact: getField("fatherContact"),
+        motherName: getField("motherName"),
+        motherContact: getField("motherContact"),
+        guardianName: getField("guardianName"),
+        guardianContact: getField("guardianContact"),
+
+        ip: getField("ip"),
+        culture: getField("culture"),
+        disability: getField("disability"),
+        disabilityType: getField("disType"),
+        fourPs: getField("4Ps"),
+        houseID: getField("HouseID"),
+        learningModalities: getField("LearningModalities"),
+
+        lastGrade: getField("Lastgradelevel"),
+        lastSchool: getField("Lastschool"),
+        lastSchoolYear: getField("Lastschoolyear"),
+        schoolID: getField("schoolid"),
+      };
 
       // =====================================================
-      // JHS DATABASE NAME
+      // REQUIRED FIELDS
       // =====================================================
 
-      function getDatabaseName() {
-        const selectedGrade = gradeLevel.value;
-
-        const validGrades = ["GRADE 7", "GRADE 8", "GRADE 9", "GRADE 10"];
-
-        if (!validGrades.includes(selectedGrade)) {
-          return null;
-        }
-
-        return "JHS-STUDENTS-" + selectedGrade.replace(/\s+/g, "-");
-      }
-
-      // =====================================================
-      // COPY PERMANENT ADDRESS
-      // =====================================================
-
-      const sameAddress = document.querySelector('[name="sameaddress"]');
-
-      const addressPairs = [
-        ["currenthouseNO", "permanenthouseNO"],
-        ["currentstreet", "permanentstreet"],
-        ["currentbarangay", "permanentbarangay"],
-        ["currentmunicipalitycity", "permanentcity"],
-        ["currentprovince", "permanentprovince"],
-        ["currentzipCode", "permanentzipCode"],
+      const requiredFields = [
+        [fields.schoolYear, "School Year"],
+        [fields.gradeLevel, "Grade Level"],
+        [fields.withLRN, "With LRN"],
+        [fields.balikAral, "Balik-Aral"],
+        [fields.psa, "PSA NO."],
+        [fields.lastName, "Last Name"],
+        [fields.firstName, "First Name"],
+        [fields.birthdate, "Birthdate"],
+        [fields.sex, "Sex"],
+        [fields.placeOfBirth, "Place of Birth"],
+        [fields.religion, "Religion"],
+        [fields.motherTongue, "Mother Tongue"],
+        [fields.currentHouse, "Current House NO."],
+        [fields.currentStreet, "Current Street"],
+        [fields.currentBarangay, "Current Barangay"],
+        [fields.currentCity, "Current City"],
+        [fields.currentProvince, "Current Province"],
+        [fields.currentZip, "Current Zip Code"],
+        [fields.sameAddress, "Same Address"],
+        [fields.fatherName, "Father's Name"],
+        [fields.fatherContact, "Father's Contact"],
+        [fields.motherName, "Mother's Name"],
+        [fields.motherContact, "Mother's Contact"],
+        [fields.guardianName, "Guardian Name"],
+        [fields.guardianContact, "Guardian Contact"],
+        [fields.ip, "Indigenous People"],
+        [fields.disability, "Disability"],
+        [fields.fourPs, "4P's Community"]
       ];
 
-      function copyPermanentAddress() {
-        if (sameAddress.value === "YES") {
-          addressPairs.forEach(([currentName, permanentName]) => {
-            document.querySelector(`[name="${permanentName}"]`).value =
-              document.querySelector(`[name="${currentName}"]`).value;
+      if (fields.withLRN.value === "YES") {
+        requiredFields.push([fields.lrn, "LRN"]);
+      }
+
+      if (fields.balikAral.value === "YES") {
+        requiredFields.push(
+          [fields.lastGrade, "Last Grade Level"],
+          [fields.lastSchool, "Last School Attended"],
+          [fields.lastSchoolYear, "Last School Year Completed"],
+          [fields.schoolID, "School ID"],
+        );
+      }
+
+      if (fields.sameAddress.value === "NO") {
+        requiredFields.push(
+          [fields.permanentHouse, "Permanent House NO."],
+          [fields.permanentStreet, "Permanent Street"],
+          [fields.permanentBarangay, "Permanent Barangay"],
+          [fields.permanentCity, "Permanent City"],
+          [fields.permanentProvince, "Permanent Province"],
+          [fields.permanentZip, "Permanent Zip Code"],
+        );
+      }
+
+      if (fields.ip.value === "YES") {
+        requiredFields.push([fields.culture, "Culture"]);
+      }
+
+      if (fields.disability.value === "YES") {
+        requiredFields.push([fields.disabilityType, "Disability Type"]);
+      }
+
+      if (fields.fourPs.value === "YES") {
+        requiredFields.push([fields.houseID, "4P's Household ID"]);
+      }
+
+      if (!validateRequiredFields(requiredFields)) return;
+
+      if (!validateBirthdate()) return;
+
+      // =====================================================
+      // LRN VALIDATION
+      // =====================================================
+
+      if (
+        fields.withLRN.value === "YES" &&
+        !/^\d{12}$/.test(fields.lrn.value.trim())
+      ) {
+        showFieldError(fields.lrn, "LRN must contain exactly 12 digits.");
+        fields.lrn.focus({ preventScroll: true });
+        fields.lrn.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+        return;
+      }
+
+      // =====================================================
+      // CONTACT NUMBER VALIDATION
+      // =====================================================
+
+      const contactFields = [
+        [fields.fatherContact, "Father's Contact Number"],
+        [fields.motherContact, "Mother's Contact Number"],
+        [fields.guardianContact, "Guardian Contact Number"],
+      ];
+
+      for (const [field, label] of contactFields) {
+        if (!/^\d{11}$/.test(field.value.trim())) {
+          showFieldError(field, `${label} must contain exactly 11 digits.`);
+          field.focus({ preventScroll: true });
+          field.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
           });
+          return;
         }
       }
 
-      sameAddress.addEventListener("change", function () {
-        if (this.value === "YES") {
-          copyPermanentAddress();
-        } else {
-          addressPairs.forEach(([, permanentName]) => {
-            document.querySelector(`[name="${permanentName}"]`).value = "";
-          });
-        }
-
-        controlOptionalFields();
-        refreshRequiredAsterisks();
-      });
-
-      addressPairs.forEach(([currentName]) => {
-        document
-          .querySelector(`[name="${currentName}"]`)
-          .addEventListener("input", function () {
-            if (sameAddress.value === "YES") {
-              copyPermanentAddress();
-            }
-          });
-      });
-
       // =====================================================
-      // CONDITIONAL FIELD CONTROL
+      // ZIP CODE VALIDATION
       // =====================================================
 
-      function setDisabledAndClear(field, disabled) {
-        field.disabled = disabled;
+      const zipFields = [
+        [fields.currentZip, "Current Zip Code"],
+        ...(fields.sameAddress.value === "NO"
+          ? [[fields.permanentZip, "Permanent Zip Code"]]
+          : []),
+      ];
 
-        if (disabled) {
-          field.value = "";
-          field.classList.remove("input-error");
+      for (const [field, label] of zipFields) {
+        if (!/^\d{4}$/.test(field.value.trim())) {
+          showFieldError(field, `${label} must contain exactly 4 digits.`);
+          field.focus({ preventScroll: true });
+          field.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+          return;
         }
       }
 
-      function controlOptionalFields() {
-        const withLRN = document.querySelector('[name="with-lrn"]');
-        const lrn = document.querySelector('[name="lrn"]');
+      // =====================================================
+      // PRE-SUBMISSION CONFIRMATION
+      // =====================================================
 
-        const balikAral = document.querySelector('[name="balik-aral"]');
+      // The student must review the information before Firebase saving.
+      // Clicking CANCEL returns to the form without saving anything.
 
-        const returningFields = [
-          document.querySelector('[name="Lastgradelevel"]'),
-          document.querySelector('[name="Lastschool"]'),
-          document.querySelector('[name="Lastschoolyear"]'),
-          document.querySelector('[name="schoolid"]'),
-        ];
+      if (!showInformationReview(fields)) {
+        return;
+      }
 
-        const ip = document.querySelector('[name="ip"]');
-        const culture = document.querySelector('[name="culture"]');
+      // =====================================================
+      // DATABASE VALIDATION
+      // =====================================================
 
-        const disability = document.querySelector('[name="disability"]');
-        const disabilityType = document.querySelector('[name="disType"]');
+      const dataset = getDatabaseName();
 
-        const fourPs = document.querySelector('[name="4Ps"]');
-        const houseID = document.querySelector('[name="HouseID"]');
+      if (!dataset) {
+        alert("Please select a valid JHS grade level.");
+        fields.gradeLevel.focus();
+        return;
+      }
 
-        setDisabledAndClear(lrn, withLRN.value === "NO");
+      enrollButton.disabled = true;
+      enrollButton.textContent = "ENROLLING...";
 
-        returningFields.forEach((field) => {
-          setDisabledAndClear(field, balikAral.value === "NO");
+      // =====================================================
+      // RETRIEVE EXISTING STUDENTS
+      // =====================================================
+
+      const response = await fetch(`${FIREBASE_URL}/${dataset}.json`);
+
+      if (!response.ok) {
+        throw new Error(
+          "Unable to retrieve existing students from Firebase.",
+        );
+      }
+
+      const allStudents = await response.json();
+
+      // =====================================================
+      // LRN-ONLY DUPLICATE DETECTION
+      // =====================================================
+
+      if (fields.withLRN.value === "YES" && allStudents) {
+        const enteredLRN = fields.lrn.value.trim();
+
+        const duplicateLRN = Object.values(allStudents).some((student) => {
+          if (!student || typeof student !== "object") return false;
+
+          // Support current and older database structures.
+          const learnerInfo =
+            student["1-LEARNERS-INFORMATION"] ||
+            student["1-School-Information"] ||
+            {};
+
+          const existingLRN =
+            learnerInfo["5-LRN"] ?? learnerInfo["8-LRN"];
+
+          return (
+            existingLRN != null &&
+            existingLRN.toString().trim() === enteredLRN
+          );
         });
 
-        setDisabledAndClear(culture, ip.value === "NO");
-
-        setDisabledAndClear(disabilityType, disability.value === "NO");
-
-        setDisabledAndClear(houseID, fourPs.value === "NO");
-
-        if (sameAddress.value === "YES") {
-          copyPermanentAddress();
-        }
-
-        if (sameAddress.value === "YES") {
-          addressPairs.forEach(([, permanentName]) => {
-            document.querySelector(`[name="${permanentName}"]`).disabled = true;
-          });
-        } else {
-          addressPairs.forEach(([, permanentName]) => {
-            document.querySelector(`[name="${permanentName}"]`).disabled =
-              false;
-          });
-        }
-      }
-
-      ["with-lrn", "balik-aral", "ip", "disability", "4Ps"].forEach((name) => {
-        document
-          .querySelector(`[name="${name}"]`)
-          .addEventListener("change", function () {
-            controlOptionalFields();
-            refreshRequiredAsterisks();
-          });
-      });
-
-      // =====================================================
-      // VALIDATION HELPERS
-      // =====================================================
-
-      function getFieldContainer(field) {
-        return field?.closest(".field") || field?.closest(".section-box");
-      }
-
-      function showFieldError(field, message = "Please fill out this field.") {
-        if (!field) return;
-        const container = getFieldContainer(field);
-        field.classList.add("input-error");
-        if (!container) return;
-        let error = container.querySelector(":scope > .field-error");
-        if (!error) {
-          error = document.createElement("div");
-          error.className = "field-error";
-          error.setAttribute("role", "alert");
-          container.appendChild(error);
-        }
-        error.textContent = message;
-      }
-
-      function clearFieldError(field) {
-        if (!field) return;
-        field.classList.remove("input-error");
-        const container = getFieldContainer(field);
-        if (!container) return;
-        const error = container.querySelector(":scope > .field-error");
-        if (error) error.remove();
-      }
-
-      function validateRequiredFields(requiredFields) {
-        document.querySelectorAll(".input-error").forEach(clearFieldError);
-        for (const [field, label] of requiredFields) {
-          if (!field || field.disabled) continue;
-          if (!String(field.value ?? "").trim()) {
-            showFieldError(field, `${label} is required. Please provide an answer.`);
-            field.focus({ preventScroll: true });
-            field.scrollIntoView({ behavior: "smooth", block: "center" });
-            return false;
-          }
-        }
-        return true;
-      }
-
-      // Show red asterisks beside labels that are actually required.
-      function refreshRequiredAsterisks() {
-        const alwaysRequired = [
-          "schoolYear", "gradeLevel", "with-lrn", "balik-aral", "psa",
-          "lastName", "firstName", "birthdate", "sex", "placeOfBirth",
-          "religion", "motherTongue", "currenthouseNO", "currentstreet",
-          "currentbarangay", "currentmunicipalitycity", "currentprovince",
-          "currentzipCode", "sameaddress", "fatherName", "fatherContact",
-          "motherName", "motherContact", "guardianName", "guardianContact",
-          "ip", "disability", "4Ps"
-        ];
-        const conditionalRequired = [];
-        if (getField("with-lrn")?.value === "YES") conditionalRequired.push("lrn");
-        if (getField("balik-aral")?.value === "YES") conditionalRequired.push("Lastgradelevel", "Lastschool", "Lastschoolyear", "schoolid");
-        if (getField("sameaddress")?.value === "NO") conditionalRequired.push("permanenthouseNO", "permanentstreet", "permanentbarangay", "permanentcity", "permanentprovince", "permanentzipCode");
-        if (getField("ip")?.value === "YES") conditionalRequired.push("culture");
-        if (getField("disability")?.value === "YES") conditionalRequired.push("disType");
-        if (getField("4Ps")?.value === "YES") conditionalRequired.push("HouseID");
-        const requiredNames = new Set([...alwaysRequired, ...conditionalRequired]);
-
-        document.querySelectorAll("label").forEach((label) => {
-          label.querySelectorAll(".required").forEach((star) => star.remove());
-          const container = label.closest(".field") || label.closest(".section-box");
-          const control = container?.querySelector("input[name], select[name], textarea[name]");
-          if (control && requiredNames.has(control.name)) {
-            const star = document.createElement("span");
-            star.className = "required";
-            star.setAttribute("aria-label", "required");
-            star.textContent = " *";
-            label.appendChild(star);
-          }
-        });
-      }
-
-      document.addEventListener("input", (event) => {
-        const field = event.target;
-        if (field.matches("input, select, textarea") && field.classList.contains("input-error") && field.value.trim()) {
-          clearFieldError(field);
-        }
-      });
-      document.addEventListener("change", (event) => {
-        const field = event.target;
-        if (field.matches("input, select, textarea")) {
-          if (field.classList.contains("input-error") && field.value.trim()) clearFieldError(field);
-          refreshRequiredAsterisks();
-        }
-      });
-
-      function validateBirthdate() {
-        const value = birthdateInput.value.trim();
-
-        const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-
-        if (!match) {
-          showFieldError(birthdateInput, "Please enter your birthdate in MM/DD/YYYY format.");
-          birthdateInput.focus({ preventScroll: true });
-          birthdateInput.scrollIntoView({ behavior: "smooth", block: "center" });
-          return false;
-        }
-
-        const month = Number(match[1]);
-        const day = Number(match[2]);
-        const year = Number(match[3]);
-
-        const date = new Date(year, month - 1, day);
-
-        if (
-          date.getFullYear() !== year ||
-          date.getMonth() !== month - 1 ||
-          date.getDate() !== day ||
-          date > new Date()
-        ) {
-          showFieldError(birthdateInput, "Please enter a valid birthdate.");
-          birthdateInput.focus({ preventScroll: true });
-          birthdateInput.scrollIntoView({ behavior: "smooth", block: "center" });
-          return false;
-        }
-
-        updateBirthdateAndAge();
-        return true;
-      }
-
-      function getField(name) {
-        return document.querySelector(`[name="${name}"]`);
-      }
-
-      // =====================================================
-      // ENROLL AND SAVE TO FIREBASE
-      // =====================================================
-
-      async function goToSuccess() {
-        const enrollButton = document.getElementById("enrollButton");
-
-        if (enrollButton.disabled) return;
-
-        try {
-          // Convert text inputs to uppercase.
-          Object.values(form.elements).forEach((field) => {
-            if (
-              field.tagName === "INPUT" &&
-              field.type === "text" &&
-              !field.disabled
-            ) {
-              field.value = field.value.toUpperCase();
-            }
-          });
-
-          copyPermanentAddress();
-          updateBirthdateAndAge();
-
-          const fields = {
-            schoolYear: getField("schoolYear"),
-            gradeLevel: getField("gradeLevel"),
-            withLRN: getField("with-lrn"),
-            balikAral: getField("balik-aral"),
-            psa: getField("psa"),
-            lrn: getField("lrn"),
-            lastName: getField("lastName"),
-            firstName: getField("firstName"),
-            middleName: getField("middleName"),
-            extension: getField("extension"),
-            birthdate: getField("birthdate"),
-            sex: getField("sex"),
-            age: getField("age"),
-            placeOfBirth: getField("placeOfBirth"),
-            religion: getField("religion"),
-            motherTongue: getField("motherTongue"),
-
-            currentHouse: getField("currenthouseNO"),
-            currentStreet: getField("currentstreet"),
-            currentBarangay: getField("currentbarangay"),
-            currentCity: getField("currentmunicipalitycity"),
-            currentProvince: getField("currentprovince"),
-            currentZip: getField("currentzipCode"),
-
-            sameAddress: getField("sameaddress"),
-            permanentHouse: getField("permanenthouseNO"),
-            permanentStreet: getField("permanentstreet"),
-            permanentBarangay: getField("permanentbarangay"),
-            permanentCity: getField("permanentcity"),
-            permanentProvince: getField("permanentprovince"),
-            permanentZip: getField("permanentzipCode"),
-
-            fatherName: getField("fatherName"),
-            fatherContact: getField("fatherContact"),
-            motherName: getField("motherName"),
-            motherContact: getField("motherContact"),
-            guardianName: getField("guardianName"),
-            guardianContact: getField("guardianContact"),
-
-            ip: getField("ip"),
-            culture: getField("culture"),
-            disability: getField("disability"),
-            disabilityType: getField("disType"),
-            fourPs: getField("4Ps"),
-            houseID: getField("HouseID"),
-            learningModalities: getField("LearningModalities"),
-
-            lastGrade: getField("Lastgradelevel"),
-            lastSchool: getField("Lastschool"),
-            lastSchoolYear: getField("Lastschoolyear"),
-            schoolID: getField("schoolid"),
-          };
-
-          // Required fields.
-          const requiredFields = [
-            [fields.schoolYear, "School Year"],
-            [fields.gradeLevel, "Grade Level"],
-            [fields.withLRN, "With LRN"],
-            [fields.balikAral, "Balik-Aral"],
-            [fields.psa, "PSA NO."],
-            [fields.lastName, "Last Name"],
-            [fields.firstName, "First Name"],
-            [fields.birthdate, "Birthdate"],
-            [fields.sex, "Sex"],
-            [fields.placeOfBirth, "Place of Birth"],
-            [fields.religion, "Religion"],
-            [fields.motherTongue, "Mother Tongue"],
-            [fields.currentHouse, "Current House NO."],
-            [fields.currentStreet, "Current Street"],
-            [fields.currentBarangay, "Current Barangay"],
-            [fields.currentCity, "Current City"],
-            [fields.currentProvince, "Current Province"],
-            [fields.currentZip, "Current Zip Code"],
-            [fields.sameAddress, "Same Address"],
-            [fields.fatherName, "Father's Name"],
-            [fields.fatherContact, "Father's Contact"],
-            [fields.motherName, "Mother's Name"],
-            [fields.motherContact, "Mother's Contact"],
-            [fields.guardianName, "Guardian Name"],
-            [fields.guardianContact, "Guardian Contact"],
-            [fields.ip, "Indigenous People"],
-            [fields.disability, "Disability"],
-            [fields.fourPs, "4P's Community"]
-          ];
-
-          if (fields.withLRN.value === "YES") {
-            requiredFields.push([fields.lrn, "LRN"]);
-          }
-
-          if (fields.balikAral.value === "YES") {
-            requiredFields.push(
-              [fields.lastGrade, "Last Grade Level"],
-              [fields.lastSchool, "Last School Attended"],
-              [fields.lastSchoolYear, "Last School Year Completed"],
-              [fields.schoolID, "School ID"],
-            );
-          }
-
-          if (fields.sameAddress.value === "NO") {
-            requiredFields.push(
-              [fields.permanentHouse, "Permanent House NO."],
-              [fields.permanentStreet, "Permanent Street"],
-              [fields.permanentBarangay, "Permanent Barangay"],
-              [fields.permanentCity, "Permanent City"],
-              [fields.permanentProvince, "Permanent Province"],
-              [fields.permanentZip, "Permanent Zip Code"],
-            );
-          }
-
-          if (fields.ip.value === "YES") {
-            requiredFields.push([fields.culture, "Culture"]);
-          }
-
-          if (fields.disability.value === "YES") {
-            requiredFields.push([fields.disabilityType, "Disability Type"]);
-          }
-
-          if (fields.fourPs.value === "YES") {
-            requiredFields.push([fields.houseID, "4P's Household ID"]);
-          }
-
-          if (!validateRequiredFields(requiredFields)) return;
-
-          if (!validateBirthdate()) return;
-
-          // LRN must contain exactly 12 digits.
-          if (
-            fields.withLRN.value === "YES" &&
-            !/^\d{12}$/.test(fields.lrn.value.trim())
-          ) {
-            showFieldError(fields.lrn, "LRN must contain exactly 12 digits.");
-            fields.lrn.focus({ preventScroll: true });
-            fields.lrn.scrollIntoView({ behavior: "smooth", block: "center" });
-            return;
-          }
-
-          // Validate contact numbers.
-          const contactFields = [
-            [fields.fatherContact, "Father's Contact Number"],
-            [fields.motherContact, "Mother's Contact Number"],
-            [fields.guardianContact, "Guardian Contact Number"],
-          ];
-
-          for (const [field, label] of contactFields) {
-            if (!/^\d{11}$/.test(field.value.trim())) {
-              showFieldError(field, `${label} must contain exactly 11 digits.`);
-              field.focus({ preventScroll: true });
-              field.scrollIntoView({ behavior: "smooth", block: "center" });
-              return;
-            }
-          }
-
-          // Validate ZIP codes.
-          const zipFields = [
-            [fields.currentZip, "Current Zip Code"],
-            ...(fields.sameAddress.value === "NO"
-              ? [[fields.permanentZip, "Permanent Zip Code"]]
-              : []),
-          ];
-
-          for (const [field, label] of zipFields) {
-            if (!/^\d{4}$/.test(field.value.trim())) {
-              showFieldError(field, `${label} must contain exactly 4 digits.`);
-              field.focus({ preventScroll: true });
-              field.scrollIntoView({ behavior: "smooth", block: "center" });
-              return;
-            }
-          }
-
-          const dataset = getDatabaseName();
-
-          if (!dataset) {
-            alert("Please select a valid JHS grade level.");
-            fields.gradeLevel.focus();
-            return;
-          }
-
-          enrollButton.disabled = true;
-          enrollButton.textContent = "ENROLLING...";
-
-          // Retrieve existing students from the selected grade dataset.
-          const response = await fetch(`${FIREBASE_URL}/${dataset}.json`);
-
-          if (!response.ok) {
-            throw new Error(
-              "Unable to retrieve existing students from Firebase.",
-            );
-          }
-
-          const allStudents = await response.json();
-
-          // LRN-only duplicate detection within the selected dataset.
-          if (fields.withLRN.value === "YES" && allStudents) {
-            const enteredLRN = fields.lrn.value.trim();
-
-            const duplicateLRN = Object.values(allStudents).some((student) => {
-              if (!student || typeof student !== "object") return false;
-
-              // Support the current structure and the older structure.
-              const learnerInfo =
-                student["1-LEARNERS-INFORMATION"] ||
-                student["1-School-Information"] ||
-                {};
-
-              const existingLRN = learnerInfo["5-LRN"] ?? learnerInfo["8-LRN"];
-
-              return (
-                existingLRN != null &&
-                existingLRN.toString().trim() === enteredLRN
-              );
-            });
-
-            if (duplicateLRN) {
-              alert("THIS STUDENT IS ALREADY ENROLLED.");
-              fields.lrn.classList.add("input-error");
-              fields.lrn.focus();
-              return;
-            }
-          }
-
-          // Generate a unique registration ID.
-          let studentID;
-
-          do {
-            studentID =
-              "STU-" +
-              Math.floor(Math.random() * 1000000)
-                .toString()
-                .padStart(6, "0");
-          } while (allStudents && allStudents[studentID]);
-
-          // Timestamp: MM/DD/YYYY.
-          const today = new Date();
-
-          const formattedDate =
-            String(today.getMonth() + 1).padStart(2, "0") +
-            "/" +
-            String(today.getDate()).padStart(2, "0") +
-            "/" +
-            today.getFullYear();
-
-          // JHS learner information: no SHS fields.
-          const learnersInformation = {
-            "1-SCHOOL-YEAR": fields.schoolYear.value,
-            "2-GRADE-LEVEL": fields.gradeLevel.value,
-            "3-WITH-LRN": fields.withLRN.value,
-            "4-BALIK-ARAL": fields.balikAral.value,
-            "5-LRN":
-              fields.withLRN.value === "YES" ? fields.lrn.value.trim() : "",
-          };
-
-          // Student record.
-          const studentData = {
-            "1-LEARNERS-INFORMATION": learnersInformation,
-
-            "2-PERSONAL-INFORMATION": {
-              "1-PSA": fields.psa.value,
-              "2-LAST-NAME": fields.lastName.value,
-              "3-FIRST-NAME": fields.firstName.value,
-              "4-MIDDLE-NAME": fields.middleName.value,
-              "5-EXTENSION": fields.extension.value,
-              "6-BIRTHDATE": fields.birthdate.value,
-              "7-SEX": fields.sex.value,
-              "8-AGE": fields.age.value,
-              "9-PLACE-OF-BIRTH": fields.placeOfBirth.value,
-              "10-RELIGION": fields.religion.value,
-              "11-MOTHER-TONGUE": fields.motherTongue.value,
-            },
-
-            "3-CURRENT-ADDRESS": {
-              "1-HOUSE-NO": fields.currentHouse.value,
-              "2-STREET": fields.currentStreet.value,
-              "3-BARANGAY": fields.currentBarangay.value,
-              "4-CITY": fields.currentCity.value,
-              "5-PROVINCE": fields.currentProvince.value,
-              "6-ZIP-CODE": fields.currentZip.value,
-            },
-
-            "4-PERMANENT-ADDRESS": {
-              "1-HOUSE-NO": fields.permanentHouse.value,
-              "2-STREET": fields.permanentStreet.value,
-              "3-BARANGAY": fields.permanentBarangay.value,
-              "4-CITY": fields.permanentCity.value,
-              "5-PROVINCE": fields.permanentProvince.value,
-              "6-ZIP-CODE": fields.permanentZip.value,
-            },
-
-            "5-PARENTS": {
-              "1-FATHER-NAME": fields.fatherName.value,
-              "2-FATHER-CONTACT": fields.fatherContact.value,
-              "3-MOTHER-NAME": fields.motherName.value,
-              "4-MOTHER-CONTACT": fields.motherContact.value,
-              "5-GUARDIAN-NAME": fields.guardianName.value,
-              "6-GUARDIAN-CONTACT": fields.guardianContact.value,
-            },
-
-            "6-OPTIONAL": {
-              "1-IP": fields.ip.value,
-              "2-CULTURE": fields.culture.value,
-              "3-DISABILITY": fields.disability.value,
-              "4-DISABILITY-TYPE": fields.disabilityType.value,
-              "5-4PS": fields.fourPs.value,
-              "6-HOUSE-ID": fields.houseID.value,
-              "7-LEARNING-MODALITY": fields.learningModalities.value,
-            },
-
-            "7-BALIK-ARAL-TRANSFER": {
-              "1-LAST-GRADE-LEVEL": fields.lastGrade.value,
-              "2-LAST-SCHOOL": fields.lastSchool.value,
-              "3-LAST-SCHOOL-YEAR": fields.lastSchoolYear.value,
-              "4-SCHOOL-ID": fields.schoolID.value,
-            },
-
-            "8-TIME-STAMP": formattedDate,
-            "9-REGISTRATION-ID": studentID,
-          };
-
-          // Save to Firebase.
-          const saveResponse = await fetch(
-            `${FIREBASE_URL}/${dataset}/${studentID}.json`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(studentData),
-            },
-          );
-
-          if (!saveResponse.ok) {
-            throw new Error("Failed to save student enrollment.");
-          }
-
-          // Store details for the success page.
-          localStorage.setItem("studentID", studentID);
-          localStorage.setItem("studentDatabase", dataset);
-
-          alert("YOU REGISTERED SUCCESSFULLY!");
-          window.location.href = "successfulEnrollment.html";
-        } catch (error) {
-          console.error("Enrollment Error:", error);
-
-          alert(
-            "An error occurred while saving the enrollment. Please check your internet connection and try again.",
-          );
-        } finally {
-          enrollButton.disabled = false;
-          enrollButton.textContent = "ENROLL";
+        if (duplicateLRN) {
+          alert("THIS STUDENT IS ALREADY ENROLLED.");
+          fields.lrn.classList.add("input-error");
+          fields.lrn.focus();
+          return;
         }
       }
 
       // =====================================================
-      // INITIAL STATE
+      // GENERATE UNIQUE REGISTRATION ID
       // =====================================================
 
-      document.addEventListener("DOMContentLoaded", function () {
-        controlOptionalFields();
-        updateBirthdateAndAge();
-        refreshRequiredAsterisks();
-      });
-    </script>
+      let studentID;
+
+      do {
+        studentID =
+          "STU-" +
+          Math.floor(Math.random() * 1000000)
+            .toString()
+            .padStart(6, "0");
+      } while (allStudents && allStudents[studentID]);
+
+      // =====================================================
+      // TIMESTAMP: MM/DD/YYYY
+      // =====================================================
+
+      const today = new Date();
+
+      const formattedDate =
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "/" +
+        String(today.getDate()).padStart(2, "0") +
+        "/" +
+        today.getFullYear();
+
+      // =====================================================
+      // JHS LEARNER INFORMATION
+      // =====================================================
+
+      const learnersInformation = {
+        "1-SCHOOL-YEAR": fields.schoolYear.value,
+        "2-GRADE-LEVEL": fields.gradeLevel.value,
+        "3-WITH-LRN": fields.withLRN.value,
+        "4-BALIK-ARAL": fields.balikAral.value,
+        "5-LRN":
+          fields.withLRN.value === "YES" ? fields.lrn.value.trim() : "",
+      };
+
+      // =====================================================
+      // STUDENT RECORD
+      // =====================================================
+
+      const studentData = {
+        "1-LEARNERS-INFORMATION": learnersInformation,
+
+        "2-PERSONAL-INFORMATION": {
+          "1-PSA": fields.psa.value,
+          "2-LAST-NAME": fields.lastName.value,
+          "3-FIRST-NAME": fields.firstName.value,
+          "4-MIDDLE-NAME": fields.middleName.value,
+          "5-EXTENSION": fields.extension.value,
+          "6-BIRTHDATE": fields.birthdate.value,
+          "7-SEX": fields.sex.value,
+          "8-AGE": fields.age.value,
+          "9-PLACE-OF-BIRTH": fields.placeOfBirth.value,
+          "10-RELIGION": fields.religion.value,
+          "11-MOTHER-TONGUE": fields.motherTongue.value,
+        },
+
+        "3-CURRENT-ADDRESS": {
+          "1-HOUSE-NO": fields.currentHouse.value,
+          "2-STREET": fields.currentStreet.value,
+          "3-BARANGAY": fields.currentBarangay.value,
+          "4-CITY": fields.currentCity.value,
+          "5-PROVINCE": fields.currentProvince.value,
+          "6-ZIP-CODE": fields.currentZip.value,
+        },
+
+        "4-PERMANENT-ADDRESS": {
+          "1-HOUSE-NO": fields.permanentHouse.value,
+          "2-STREET": fields.permanentStreet.value,
+          "3-BARANGAY": fields.permanentBarangay.value,
+          "4-CITY": fields.permanentCity.value,
+          "5-PROVINCE": fields.permanentProvince.value,
+          "6-ZIP-CODE": fields.permanentZip.value,
+        },
+
+        "5-PARENTS": {
+          "1-FATHER-NAME": fields.fatherName.value,
+          "2-FATHER-CONTACT": fields.fatherContact.value,
+          "3-MOTHER-NAME": fields.motherName.value,
+          "4-MOTHER-CONTACT": fields.motherContact.value,
+          "5-GUARDIAN-NAME": fields.guardianName.value,
+          "6-GUARDIAN-CONTACT": fields.guardianContact.value,
+        },
+
+        "6-OPTIONAL": {
+          "1-IP": fields.ip.value,
+          "2-CULTURE": fields.culture.value,
+          "3-DISABILITY": fields.disability.value,
+          "4-DISABILITY-TYPE": fields.disabilityType.value,
+          "5-4PS": fields.fourPs.value,
+          "6-HOUSE-ID": fields.houseID.value,
+          "7-LEARNING-MODALITY": fields.learningModalities.value,
+        },
+
+        "7-BALIK-ARAL-TRANSFER": {
+          "1-LAST-GRADE-LEVEL": fields.lastGrade.value,
+          "2-LAST-SCHOOL": fields.lastSchool.value,
+          "3-LAST-SCHOOL-YEAR": fields.lastSchoolYear.value,
+          "4-SCHOOL-ID": fields.schoolID.value,
+        },
+
+        "8-TIME-STAMP": formattedDate,
+        "9-REGISTRATION-ID": studentID,
+      };
+
+      // =====================================================
+      // SAVE TO FIREBASE
+      // =====================================================
+
+      const saveResponse = await fetch(
+        `${FIREBASE_URL}/${dataset}/${studentID}.json`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(studentData),
+        },
+      );
+
+      if (!saveResponse.ok) {
+        throw new Error("Failed to save student enrollment.");
+      }
+
+      // =====================================================
+      // STORE DETAILS FOR SUCCESS PAGE
+      // =====================================================
+
+      localStorage.setItem("studentID", studentID);
+      localStorage.setItem("studentDatabase", dataset);
+
+      alert("YOU REGISTERED SUCCESSFULLY!");
+      window.location.href = "successfulEnrollment.html";
+
+    } catch (error) {
+      console.error("Enrollment Error:", error);
+
+      alert(
+        "An error occurred while saving the enrollment. Please check your internet connection and try again.",
+      );
+
+    } finally {
+      enrollButton.disabled = false;
+      enrollButton.textContent = "ENROLL";
+    }
+  }
+
+  // =====================================================
+  // INITIAL STATE
+  // =====================================================
+
+  document.addEventListener("DOMContentLoaded", function () {
+    controlOptionalFields();
+    updateBirthdateAndAge();
+    refreshRequiredAsterisks();
+  });
+</script>
   </body>
 </html>
