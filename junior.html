@@ -846,98 +846,18 @@
   }
 
   // =====================================================
-  // PRE-SUBMISSION INFORMATION REVIEW
+  // PRE-SUBMISSION INSTRUCTIONS ONLY
   // =====================================================
 
-  function showInformationReview(fields) {
-    const reviewGroups = [
-      ["SCHOOL INFORMATION", [
-        ["School Year", fields.schoolYear],
-        ["Grade Level", fields.gradeLevel],
-        ["With LRN", fields.withLRN],
-        ["LRN", fields.lrn],
-        ["Balik-Aral", fields.balikAral],
-        ["Last Grade Level", fields.lastGrade],
-        ["Last School Attended", fields.lastSchool],
-        ["Last School Year Completed", fields.lastSchoolYear],
-        ["School ID", fields.schoolID],
-        ["PSA Number", fields.psa],
-      ]],
-
-      ["PERSONAL INFORMATION", [
-        ["Last Name", fields.lastName],
-        ["First Name", fields.firstName],
-        ["Middle Name", fields.middleName],
-        ["Extension", fields.extension],
-        ["Birthdate", fields.birthdate],
-        ["Age", fields.age],
-        ["Sex", fields.sex],
-        ["Place of Birth", fields.placeOfBirth],
-        ["Religion", fields.religion],
-        ["Mother Tongue", fields.motherTongue],
-      ]],
-
-      ["CURRENT ADDRESS", [
-        ["House Number", fields.currentHouse],
-        ["Street", fields.currentStreet],
-        ["Barangay", fields.currentBarangay],
-        ["City / Municipality", fields.currentCity],
-        ["Province", fields.currentProvince],
-        ["ZIP Code", fields.currentZip],
-      ]],
-
-      ["PERMANENT ADDRESS", [
-        ["Same as Current Address", fields.sameAddress],
-        ["House Number", fields.permanentHouse],
-        ["Street", fields.permanentStreet],
-        ["Barangay", fields.permanentBarangay],
-        ["City / Municipality", fields.permanentCity],
-        ["Province", fields.permanentProvince],
-        ["ZIP Code", fields.permanentZip],
-      ]],
-
-      ["PARENTS / GUARDIAN INFORMATION", [
-        ["Father's Name", fields.fatherName],
-        ["Father's Contact Number", fields.fatherContact],
-        ["Mother's Name", fields.motherName],
-        ["Mother's Contact Number", fields.motherContact],
-        ["Guardian's Name", fields.guardianName],
-        ["Guardian's Contact Number", fields.guardianContact],
-      ]],
-
-      ["OTHER INFORMATION", [
-        ["Indigenous People", fields.ip],
-        ["Culture / Indigenous Group", fields.culture],
-        ["Person with Disability", fields.disability],
-        ["Disability Type", fields.disabilityType],
-        ["4Ps Beneficiary", fields.fourPs],
-        ["4Ps Household ID", fields.houseID],
-        ["Learning Modality", fields.learningModalities],
-      ]],
-    ];
-
-    const reviewText = reviewGroups.map(([groupTitle, items]) => {
-      const details = items.map(([label, field]) => {
-        if (!field) return null;
-
-        const value = field.disabled
-          ? (field.value.trim() || "NOT APPLICABLE")
-          : (field.value.trim() || "—");
-
-        return `${label}: ${value}`;
-      }).filter(Boolean);
-
-      return `${groupTitle}\n${details.join("\n")}`;
-    }).join("\n\n");
-
+  function showInformationReview() {
     return window.confirm(
-      "PLEASE REVIEW YOUR ENROLLMENT INFORMATION\n\n" +
-      "Check every detail below before submitting. If you find any " +
-      "incorrect information, click CANCEL to return to the form " +
-      "and make corrections.\n\n" +
-      reviewText +
-      "\n\nClick OK only if ALL information is correct. " +
-      "Click CANCEL to edit your information."
+      "BEFORE SUBMITTING YOUR ENROLLMENT:\n\n" +
+      "1. Make sure that all required fields are completed.\n\n" +
+      "2. Check that the information you entered is correct.\n\n" +
+      "3. Ensure that your contact numbers and other details are accurate.\n\n" +
+      "4. Once submitted, your enrollment information will be saved.\n\n" +
+      "Click OK to proceed with enrollment.\n" +
+      "Click CANCEL to return to the form."
     );
   }
 
@@ -1160,10 +1080,7 @@
       // PRE-SUBMISSION CONFIRMATION
       // =====================================================
 
-      // The student must review the information before Firebase saving.
-      // Clicking CANCEL returns to the form without saving anything.
-
-      if (!showInformationReview(fields)) {
+      if (!showInformationReview()) {
         return;
       }
 
