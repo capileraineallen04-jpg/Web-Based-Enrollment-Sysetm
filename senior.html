@@ -830,7 +830,6 @@ function updateSHSOptions() {
   trackSelect.disabled = false;
   trackSelect.required = true;
 
-  // Strand/cluster becomes available after choosing a track.
   clusterStrandSelect.disabled = true;
   clusterStrandSelect.required = true;
 
@@ -1015,7 +1014,6 @@ function clearPermanentAddress() {
   });
 }
 
-// Automatically copy or clear when selection changes.
 sameAddress.addEventListener("change", function () {
   if (this.value === "YES") {
     copyPermanentAddress();
@@ -1027,7 +1025,6 @@ sameAddress.addEventListener("change", function () {
   syncRequiredMarkers();
 });
 
-// Automatically update permanent address when current address changes.
 addressPairs.forEach(([currentName]) => {
   getField(currentName).addEventListener("input", function () {
     if (sameAddress.value === "YES") {
@@ -1158,7 +1155,6 @@ function controlOptionalFields() {
   const permanentRequired = sameAddress.value === "NO";
 
   if (sameAddress.value === "YES") {
-    // Copy BEFORE disabling the permanent address fields.
     copyPermanentAddress();
   }
 
@@ -1183,7 +1179,6 @@ function controlOptionalFields() {
   syncRequiredMarkers();
 }
 
-// Conditional field event listeners.
 [
   "with-lrn",
   "balik-aral",
@@ -1334,7 +1329,6 @@ function syncRequiredMarkers() {
 
     if (!label) return;
 
-    // Avoid duplicate asterisks.
     if (label.querySelector(".required")) {
       return;
     }
@@ -1420,132 +1414,25 @@ function validateDigits(field, label, length) {
 }
 
 // =====================================================
-// STUDENT INFORMATION REVIEW
+// PRE-SUBMISSION INSTRUCTIONS ONLY
 // =====================================================
 
-function showInformationReview(fields) {
-
-  function displayValue(field) {
-    if (!field) return "N/A";
-
-    const value = field.value.trim();
-
-    if (value) return value;
-
-    return field.disabled
-      ? "NOT APPLICABLE"
-      : "N/A";
-  }
-
-  const reviewSections = [
-    {
-      title: "SENIOR HIGH SCHOOL INFORMATION",
-      items: [
-        ["School Year", fields.schoolYear],
-        ["Grade Level", fields.gradeLevel],
-        ["Termination", fields.termination],
-        ["With LRN", fields["with-lrn"]],
-        ["LRN", fields.lrn],
-        ["Balik-Aral / Transfer", fields["balik-aral"]],
-        ["Track", fields.track],
-        ["Cluster / Strand", fields.clusterStrand]
-      ]
-    },
-
-    {
-      title: "PERSONAL INFORMATION",
-      items: [
-        ["PSA Number", fields.psa],
-        ["Last Name", fields.lastName],
-        ["First Name", fields.firstName],
-        ["Middle Name", fields.middleName],
-        ["Extension", fields.extension],
-        ["Birthdate", fields.birthdate],
-        ["Sex", fields.sex],
-        ["Age", fields.age],
-        ["Place of Birth", fields.placeOfBirth],
-        ["Religion", fields.religion],
-        ["Mother Tongue", fields.motherTongue]
-      ]
-    },
-
-    {
-      title: "CURRENT ADDRESS",
-      items: [
-        ["House Number", fields.currenthouseNO],
-        ["Street", fields.currentstreet],
-        ["Barangay", fields.currentbarangay],
-        ["Municipality / City", fields.currentmunicipalitycity],
-        ["Province", fields.currentprovince],
-        ["ZIP Code", fields.currentzipCode]
-      ]
-    },
-
-    {
-      title: "PERMANENT ADDRESS",
-      items: [
-        ["Same as Current Address", fields.sameaddress],
-        ["House Number", fields.permanenthouseNO],
-        ["Street", fields.permanentstreet],
-        ["Barangay", fields.permanentbarangay],
-        ["Municipality / City", fields.permanentcity],
-        ["Province", fields.permanentprovince],
-        ["ZIP Code", fields.permanentzipCode]
-      ]
-    },
-
-    {
-      title: "PARENTS / GUARDIAN INFORMATION",
-      items: [
-        ["Father's Name", fields.fatherName],
-        ["Father's Contact Number", fields.fatherContact],
-        ["Mother's Name", fields.motherName],
-        ["Mother's Contact Number", fields.motherContact],
-        ["Guardian's Name", fields.guardianName],
-        ["Guardian's Contact Number", fields.guardianContact]
-      ]
-    },
-
-    {
-      title: "OTHER INFORMATION",
-      items: [
-        ["Indigenous People", fields.ip],
-        ["Culture", fields.culture],
-        ["Person with Disability", fields.disability],
-        ["Disability Type", fields.disType],
-        ["4P's Community", fields["4Ps"]],
-        ["4P's Household ID", fields.HouseID],
-        ["Learning Modality", fields.LearningModalities]
-      ]
-    },
-
-    {
-      title: "BALIK-ARAL / TRANSFER INFORMATION",
-      items: [
-        ["Last Grade Level", fields.Lastgradelevel],
-        ["Last School Attended", fields.Lastschool],
-        ["Last School Year Completed", fields.Lastschoolyear],
-        ["School ID", fields.schoolid]
-      ]
-    }
-  ];
-
-  const reviewText = reviewSections.map(section => {
-    const details = section.items
-      .map(([label, field]) => {
-        return `${label}: ${displayValue(field)}`;
-      })
-      .join("\n");
-
-    return `${section.title}\n${details}`;
-  }).join("\n\n");
-
+function showInformationReview() {
   return window.confirm(
-    "PLEASE REVIEW YOUR ENROLLMENT INFORMATION\n\n" +
-    "Check all the details below before submitting your enrollment.\n\n" +
-    reviewText +
-    "\n\nPress OK to confirm and submit your enrollment.\n" +
-    "Press CANCEL to return to the form and make corrections."
+    "BEFORE SUBMITTING YOUR ENROLLMENT:\n\n" +
+
+    "1. Make sure that all required fields are completed.\n\n" +
+
+    "2. Check that the information you entered is correct.\n\n" +
+
+    "3. Ensure that your contact numbers and other details are accurate.\n\n" +
+
+    "4. Make sure that you have selected the correct grade level, track, and strand.\n\n" +
+
+    "5. Once submitted, your enrollment information will be saved to the school database.\n\n" +
+
+    "Click OK to proceed with enrollment.\n" +
+    "Click CANCEL to return to the form."
   );
 }
 
@@ -1857,10 +1744,10 @@ async function goToSuccess() {
     }
 
     // =================================================
-    // REVIEW INFORMATION BEFORE SUBMISSION
+    // SHOW PRE-SUBMISSION INSTRUCTIONS
     // =================================================
 
-    if (!showInformationReview(fields)) {
+    if (!showInformationReview()) {
       return;
     }
 
