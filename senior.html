@@ -713,8 +713,7 @@
       </form>
     </div>
 
-    <script>
-      
+<script>
 "use strict";
 
 // =====================================================
@@ -1421,6 +1420,136 @@ function validateDigits(field, label, length) {
 }
 
 // =====================================================
+// STUDENT INFORMATION REVIEW
+// =====================================================
+
+function showInformationReview(fields) {
+
+  function displayValue(field) {
+    if (!field) return "N/A";
+
+    const value = field.value.trim();
+
+    if (value) return value;
+
+    return field.disabled
+      ? "NOT APPLICABLE"
+      : "N/A";
+  }
+
+  const reviewSections = [
+    {
+      title: "SENIOR HIGH SCHOOL INFORMATION",
+      items: [
+        ["School Year", fields.schoolYear],
+        ["Grade Level", fields.gradeLevel],
+        ["Termination", fields.termination],
+        ["With LRN", fields["with-lrn"]],
+        ["LRN", fields.lrn],
+        ["Balik-Aral / Transfer", fields["balik-aral"]],
+        ["Track", fields.track],
+        ["Cluster / Strand", fields.clusterStrand]
+      ]
+    },
+
+    {
+      title: "PERSONAL INFORMATION",
+      items: [
+        ["PSA Number", fields.psa],
+        ["Last Name", fields.lastName],
+        ["First Name", fields.firstName],
+        ["Middle Name", fields.middleName],
+        ["Extension", fields.extension],
+        ["Birthdate", fields.birthdate],
+        ["Sex", fields.sex],
+        ["Age", fields.age],
+        ["Place of Birth", fields.placeOfBirth],
+        ["Religion", fields.religion],
+        ["Mother Tongue", fields.motherTongue]
+      ]
+    },
+
+    {
+      title: "CURRENT ADDRESS",
+      items: [
+        ["House Number", fields.currenthouseNO],
+        ["Street", fields.currentstreet],
+        ["Barangay", fields.currentbarangay],
+        ["Municipality / City", fields.currentmunicipalitycity],
+        ["Province", fields.currentprovince],
+        ["ZIP Code", fields.currentzipCode]
+      ]
+    },
+
+    {
+      title: "PERMANENT ADDRESS",
+      items: [
+        ["Same as Current Address", fields.sameaddress],
+        ["House Number", fields.permanenthouseNO],
+        ["Street", fields.permanentstreet],
+        ["Barangay", fields.permanentbarangay],
+        ["Municipality / City", fields.permanentcity],
+        ["Province", fields.permanentprovince],
+        ["ZIP Code", fields.permanentzipCode]
+      ]
+    },
+
+    {
+      title: "PARENTS / GUARDIAN INFORMATION",
+      items: [
+        ["Father's Name", fields.fatherName],
+        ["Father's Contact Number", fields.fatherContact],
+        ["Mother's Name", fields.motherName],
+        ["Mother's Contact Number", fields.motherContact],
+        ["Guardian's Name", fields.guardianName],
+        ["Guardian's Contact Number", fields.guardianContact]
+      ]
+    },
+
+    {
+      title: "OTHER INFORMATION",
+      items: [
+        ["Indigenous People", fields.ip],
+        ["Culture", fields.culture],
+        ["Person with Disability", fields.disability],
+        ["Disability Type", fields.disType],
+        ["4P's Community", fields["4Ps"]],
+        ["4P's Household ID", fields.HouseID],
+        ["Learning Modality", fields.LearningModalities]
+      ]
+    },
+
+    {
+      title: "BALIK-ARAL / TRANSFER INFORMATION",
+      items: [
+        ["Last Grade Level", fields.Lastgradelevel],
+        ["Last School Attended", fields.Lastschool],
+        ["Last School Year Completed", fields.Lastschoolyear],
+        ["School ID", fields.schoolid]
+      ]
+    }
+  ];
+
+  const reviewText = reviewSections.map(section => {
+    const details = section.items
+      .map(([label, field]) => {
+        return `${label}: ${displayValue(field)}`;
+      })
+      .join("\n");
+
+    return `${section.title}\n${details}`;
+  }).join("\n\n");
+
+  return window.confirm(
+    "PLEASE REVIEW YOUR ENROLLMENT INFORMATION\n\n" +
+    "Check all the details below before submitting your enrollment.\n\n" +
+    reviewText +
+    "\n\nPress OK to confirm and submit your enrollment.\n" +
+    "Press CANCEL to return to the form and make corrections."
+  );
+}
+
+// =====================================================
 // ENROLLMENT PROCESS
 // =====================================================
 
@@ -1728,6 +1857,14 @@ async function goToSuccess() {
     }
 
     // =================================================
+    // REVIEW INFORMATION BEFORE SUBMISSION
+    // =================================================
+
+    if (!showInformationReview(fields)) {
+      return;
+    }
+
+    // =================================================
     // GET EXISTING STUDENTS
     // =================================================
 
@@ -1979,6 +2116,7 @@ updateSHSOptions();
 controlOptionalFields();
 updateBirthdateAndAge();
 syncRequiredMarkers();
-    </script>
+
+</script>
   </body>
 </html>
